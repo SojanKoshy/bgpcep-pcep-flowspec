@@ -15,6 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TriggerSyncArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.UpdateLspArgs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddArgs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveArgs;
 
 interface TopologySessionRPCs {
     ListenableFuture<OperationResult> addLsp(AddLspArgs input);
@@ -26,4 +28,8 @@ interface TopologySessionRPCs {
     ListenableFuture<OperationResult> ensureLspOperational(EnsureLspOperationalInput input);
 
     ListenableFuture<OperationResult> triggerSync(TriggerSyncArgs input);
+
+    ListenableFuture<OperationResult> labelAdd(LabelAddArgs input);
+	
+    ListenableFuture<OperationResult> labelRemove(LabelRemoveArgs input);
 }
