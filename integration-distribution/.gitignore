@@ -1,0 +1,12 @@
+# OS
+*~
+*.swp
+
+# Java / Maven
+target/
+.classpath
+.project
+.settings
+
+# IDE
+.idea

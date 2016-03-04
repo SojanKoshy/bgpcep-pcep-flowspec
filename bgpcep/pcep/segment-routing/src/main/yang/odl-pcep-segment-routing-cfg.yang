@@ -1,0 +1,67 @@
+// vi: set smarttab et sw=4 tabstop=4:
+module odl-pcep-segment-routing-cfg {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:pcep:sr:cfg";
+    prefix "pcep-sr";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import odl-pcep-api-cfg { prefix pcep; revision-date 2013-04-09; }
+    import odl-pcep-spi-cfg { prefix spi; revision-date 2013-11-15; }
+    import odl-pcep-ietf-stateful07-cfg { prefix pcep-stateful07; revision-date 2015-07-14; }
+
+    organization "Cisco Systems, Inc.";
+
+    contact "Milos Fabian <milfabia@cisco.com>";
+
+    description
+        "This module contains the data model of PCEP Extensions for Segment Routing,
+        draft-ietf-pce-segment-routing-00.
+
+        Copyright (c)2014 Cisco Systems, Inc. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2014-06-09" {
+        description
+            "Initial revision.";
+    }
+
+    identity pcep-parser-segment-routing {
+        base config:module-type;
+        config:provided-service spi:extension;
+        config:java-name-prefix SegmentRoutingPCEPParser;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case pcep-parser-segment-routing {
+            when "/config:modules/config:module/config:type = 'pcep-parser-segment-routing'";
+            leaf iana-sr-subobjects-type {
+                description "If false (default) SR-ERO type (=5) and SR-RRO type (=6) is used,
+                    else proposed type (36) is used for parsing/serialization";
+                type boolean;
+                default false;
+            }
+        }
+    }
+
+    identity pcep-segment-routing-capability {
+        base config:module-type;
+        config:java-name-prefix "PCEPSegmentRoutingCapability";
+        config:provided-service pcep:pcep-capability;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case pcep-segment-routing-capability {
+            when "/config:modules/config:module/config:type = 'pcep-segment-routing-capability'";
+            uses pcep-stateful07:stateful-capabilities;
+            leaf sr-capable {
+                type boolean;
+                default true;
+            }
+        }
+    }
+}
+
