@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddArgs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TopologyTypes1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TopologyTypes1Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TriggerSyncArgs;
@@ -152,6 +154,20 @@ final class ServerSessionManager implements PCEPSessionListenerFactory, AutoClos
     public synchronized ListenableFuture<OperationResult> triggerSync(final TriggerSyncArgs input) {
         final TopologySessionListener l = checkSessionPresence(input.getNode());
         return (l != null) ? l.triggerSync(input) : OperationResults.UNSENT.future();
+    }
+
+    @Override
+    public synchronized ListenableFuture<OperationResult> labelAdd(final LabelAddArgs input) {
+        /*final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.labelAdd(input) : OperationResults.UNSENT.future();*/
+        return null;
+    }
+
+    @Override
+    public synchronized ListenableFuture<OperationResult> labelRemove(final UpdateLspArgs input) {
+        /* final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.labelRemove(input) : OperationResults.UNSENT.future(); */
+        return null;
     }
 
     @Override

@@ -1,0 +1,215 @@
+module odl-pcep-pcecc {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:pcep:pcecc";
+    prefix "pcep-pcecc";
+
+    import pcep-types { prefix pcep; revision-date 2013-10-05; }
+    import pcep-message { prefix msg; revision-date 2013-10-07; }
+    import odl-pcep-ietf-stateful07 { prefix stateful; revision-date 2013-12-22; }
+    import odl-pcep-ietf-initiated00 { prefix crabbe; revision-date 2013-11-26; }
+    import ietf-inet-types { prefix inet; revision-date 2010-09-24; }
+    import network-topology { prefix nt; revision-date 2013-10-21; }
+    import network-topology-pcep { prefix pn; revision-date 2013-10-24; }
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+
+    organization "Huawei Technologies Co., Ltd.";
+
+    contact "Swapna K <swapna.k@huawei.com>";
+
+    description
+    "This module contains the data model of PCEP Extensions for supporting pcecc,
+    draft-zhao-pce-pcep-extension-for-pce-controller-03.
+
+    Copyright (c) Huawei Technologies Co., Ltd. 2016. All rights reserved.
+
+    This program and the accompanying materials are made available
+    under the terms of the Eclipse Public License v1.0 which
+    accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html";
+    revision "2016-02-25" {
+        description
+        "Initial revision.";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02";
+    }
+    grouping pcecc-capability-tlv {
+    description "PCECC-CAPABILITY TLV";
+    reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.1.1";
+        container pcecc-capability {
+        uses pcep:tlv;
+            leaf local-label-range-capability {
+                type boolean;
+                default false;
+            }
+            leaf global-label-range-capability {
+                type boolean;
+                default false;
+            }
+        }
+    }
+    augment "/msg:open/msg:open-message/msg:open/msg:tlvs" {
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.1";
+        uses pcecc-capability-tlv;
+    }
+
+    typedef label-number {
+        type uint32 {
+            range 0..1048576;
+        }
+    }
+
+    grouping pclabelupd-message {
+        uses pcep:message;
+        container pclabelupd-message {
+            description "Label Update Message";
+            reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-6.2";
+            uses pcep:message-header;
+            list updates {
+                choice pcelabel-update {
+                    case pcelabel-download {
+                        container labeldownload {
+                            uses stateful:srp-object;
+                            uses stateful:lsp-object;
+                            list label {
+                                uses label-object;
+                            }
+                        }
+                    }
+                    case pcelabel-map {
+                        container labelmap {
+                            uses stateful:srp-object;
+                            uses label-object;
+                            uses fec-object;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    grouping label-object {
+        description "LABEL Object";
+        reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.4";
+        container label {
+            uses pcep:object;
+            container tlvs {
+                uses pcep:tlv;
+                uses address-tlv;
+            }
+            leaf label {
+                type label-number;
+                mandatory true;
+            }
+            leaf Out-label {
+                type boolean;
+                default false;
+            }
+        }
+    }
+
+
+
+    grouping address-tlv {
+        choice address {
+            mandatory true;
+
+            case ipv4-case {
+                container ipv4 {
+                    leaf ipv4-address {
+                        type inet:ipv4-address;
+                        mandatory true;
+                    }
+
+                }
+            }
+            case ipv6-case {
+                container ipv6 {
+                    leaf ipv6-address {
+                        type inet:ipv6-address;
+                        mandatory true;
+                    }
+
+                }
+            }
+            case unnumbered-case {
+                container unnumbered{
+                    leaf node-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                    leaf interface-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                }
+            }
+        }
+    }
+
+    grouping fec-object {
+    description "FEC Object";
+        reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.5";
+        container fec {
+            uses pcep:object;
+            choice fec {
+                reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.5";
+                description "fec information";
+                case ip-node-id {
+                    when "../Object-Type = 1 or ../Object-Type = 2";
+                    description "IP Node ID";
+                    leaf node-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                }
+                case ip-adjacency {
+                    when "../Object-Type = 3 or ../Object-Type = 4";
+                    description "IP Adjacency";
+                    leaf local-ip-address {
+                        type inet:ip-address;
+                        mandatory true;
+                    }
+                    leaf remote-ip-address {
+                        type inet:ip-address;
+                        mandatory true;
+                    }
+                }
+                case unnumbered-adjacency {
+                    when "../Object-Type = 5";
+                    description "Unnumbered Adjacency with IPv4 NodeIDs";
+                    leaf local-node-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                    leaf local-interface-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                    leaf remote-node-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                    leaf remote-interface-id {
+                        type uint32;
+                        mandatory true;
+                    }
+                }
+            }
+        }
+    }
+
+    augment "/topo:label-add/topo:input/topo:arguments" {
+        ext:augment-identifier arguments-4;
+        uses stateful:srp-object;
+        uses stateful:lsp-object;
+        uses label-object;
+        uses fec-object;
+    }
+
+    augment "/topo:label-remove/topo:input/topo:arguments" {
+        ext:augment-identifier arguments-4;
+        uses stateful:srp-object;
+        uses stateful:lsp-object;
+        uses label-object;
+        uses fec-object;
+    }
+}
+

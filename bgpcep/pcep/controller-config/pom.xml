@@ -70,6 +70,11 @@
                                     <classifier>config-auto-bw</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>${project.build.directory}/classes/initial/35-pcep-pcecc.xml</file>
+                                    <type>xml</type>
+                                    <classifier>config-pcecc</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>${project.build.directory}/classes/initial/39-pcep-provider.xml</file>
                                     <type>xml</type>
                                     <classifier>config-provider</classifier>

@@ -1,0 +1,54 @@
+module odl-pcep-pcecc-cfg {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:pcep:pcecc:cfg";
+    prefix "pcep-pcecc";
+
+    import config { prefix config; revision-date 2013-04-05; }
+    import odl-pcep-api-cfg { prefix pcep; revision-date 2013-04-09; }
+    import odl-pcep-spi-cfg { prefix spi; revision-date 2013-11-15; }
+    import odl-pcep-ietf-stateful07-cfg { prefix pcep-stateful07; revision-date 2015-07-14; }
+
+    organization "Huawei Technologies Co., Ltd.";
+
+    contact "Huawei Technologies Co., Ltd.";
+
+    description
+        "This module contains the data model of PCEP Extensions for supporting pcecc,
+        draft-zhao-pce-pcep-extension-for-pce-controller-03.
+
+        Copyright (c)2016 Huawei Technologies Co., Ltd. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2016-02-25" {
+        description
+            "Initial revision.";
+    }
+
+    identity pcep-parser-pcecc {
+        base config:module-type;
+        config:provided-service spi:extension;
+        config:java-name-prefix PCEPCCParser;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case pcep-parser-pcecc {
+            when "/config:modules/config:module/config:type = 'pcep-parser-pcecc'";
+            leaf flags {
+                // To Decide if we need to take L and G setting from the configuration
+                // To decide on the label range
+                type int32; // this is just for compilation purpose
+            }
+        }
+    }
+
+    identity pcep-pcecc-capability {
+        base config:module-type;
+        config:java-name-prefix "PCEPCCCapability";
+        config:provided-service pcep:pcep-capability;
+    }
+ }
+

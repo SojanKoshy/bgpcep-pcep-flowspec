@@ -228,6 +228,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>pcep-pcecc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>pcep-topology-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -295,6 +300,13 @@
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>config-auto-bw</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>pcep-controller-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config-pcecc</classifier>
             </dependency>
 
             <dependency>

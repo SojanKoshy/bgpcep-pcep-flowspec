@@ -18,6 +18,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.NetworkTopologyPcepService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspInput;
@@ -87,5 +91,25 @@ final class TopologyRPCs implements NetworkTopologyPcepService {
                         return SuccessfulRpcResult.create(new EnsureLspOperationalOutputBuilder(input).build());
                     }
                 });
+    }
+    @Override
+    public Future<RpcResult<LabelAddOutput>> labelAdd(final LabelAddInput input) {
+        /*return Futures.transform(manager.labelAdd(input), new Function<OperationResult, RpcResult<LabelAddOutput>>() {
+            @Override
+            public RpcResult<LabelAddOutput> apply(final OperationResult input) {
+                return SuccessfulRpcResult.create(new LabelAddOutputBuilder(input).build());
+            }
+        });*/
+        return null;
+    }
+    @Override
+    public Future<RpcResult<LabelRemoveOutput>> labelRemove(final LabelRemoveInput input) {
+        /*return Futures.transform(manager.labelRemove(input), new Function<OperationResult, RpcResult<LabelRemoveOutput>>() {
+            @Override
+            public RpcResult<LabelRemoveOutput> apply(final OperationResult input) {
+                return SuccessfulRpcResult.create(new LabelRemoveOutputBuilder(input).build());
+            }
+        });*/
+        return null;
     }
 }
