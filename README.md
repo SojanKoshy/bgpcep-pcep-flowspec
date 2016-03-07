@@ -16,6 +16,7 @@ In order to build it's required to have JDK 1.7+ and Maven 3+, to get a build go
 2) For running with karaf, build the distribution 
 
 Steps:
+
     git clone https://github.com/SojanKoshy/bgpcep-pcecc.git
 
     cd bgpcep-pcecc/bgpcep
