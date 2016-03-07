@@ -4,9 +4,9 @@ This program and the accompanying materials are made available under the terms o
 
 DIRECTORY ORGANIZATION
 ======================
-pcep: PCEP-related artifacts
+bgpcep/pcep: PCEP-related artifacts
 
-pcep/pcecc: PCEPCC related artifacts
+bgpcep/pcep/pcecc: PCECC related artifacts (newly added for this project)
 
 HOW TO BUILD
 ============
@@ -17,10 +17,12 @@ In order to build it's required to have JDK 1.7+ and Maven 3+, to get a build go
 
 Steps:
     git clone https://github.com/SojanKoshy/bgpcep-pcecc.git
-    cd bgpcep-pcecc
-    cd bgpcep
-    mvn clean install
-    cd ..
-    cd integration-distribution
+
+    cd bgpcep-pcecc/bgpcep
     mvn clean install
 
+    cd ../integration-distribution
+    mvn clean install
+
+    cd distribution-karaf/target/assembly/bin
+    ./karaf
