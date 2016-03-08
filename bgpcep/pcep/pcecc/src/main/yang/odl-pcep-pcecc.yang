@@ -96,8 +96,8 @@ module odl-pcep-pcecc {
         container label {
             uses pcep:object;
             container tlvs {
-                uses pcep:tlv;
                 uses address-tlv;
+                uses pcep:vendor-information-tlvs;
             }
             leaf label {
                 type label-number;
@@ -113,36 +113,39 @@ module odl-pcep-pcecc {
 
 
     grouping address-tlv {
-        choice address {
-            mandatory true;
+            container address {
+            uses pcep:tlv;
+            choice address {
+                mandatory true;
 
-            case ipv4-case {
-                container ipv4 {
-                    leaf ipv4-address {
-                        type inet:ipv4-address;
-                        mandatory true;
+                case ipv4-case {
+                    container ipv4 {
+                        leaf ipv4-address {
+                            type inet:ipv4-address;
+                            mandatory true;
+                        }
+
                     }
-
                 }
-            }
-            case ipv6-case {
-                container ipv6 {
-                    leaf ipv6-address {
-                        type inet:ipv6-address;
-                        mandatory true;
-                    }
+                case ipv6-case {
+                    container ipv6 {
+                        leaf ipv6-address {
+                            type inet:ipv6-address;
+                            mandatory true;
+                        }
 
-                }
-            }
-            case unnumbered-case {
-                container unnumbered{
-                    leaf node-id {
-                        type uint32;
-                        mandatory true;
                     }
-                    leaf interface-id {
-                        type uint32;
-                        mandatory true;
+                }
+                case unnumbered-case {
+                    container unnumbered{
+                        leaf node-id {
+                            type uint32;
+                            mandatory true;
+                        }
+                        leaf interface-id {
+                            type uint32;
+                            mandatory true;
+                        }
                     }
                 }
             }
@@ -157,23 +160,23 @@ module odl-pcep-pcecc {
             choice fec {
                 reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.5";
                 description "fec information";
-                case ip-node-id {
-                    when "../Object-Type = 1 or ../Object-Type = 2";
-                    description "IP Node ID";
+                case ipv4-nodeid {
+                    when "../Object-Type = 1";
+                    description "IPv4 Node ID";
                     leaf node-id {
                         type uint32;
                         mandatory true;
                     }
                 }
-                case ip-adjacency {
-                    when "../Object-Type = 3 or ../Object-Type = 4";
-                    description "IP Adjacency";
+                case ipv4-adjacency {
+                    when "../Object-Type = 3";
+                    description "IPv4 Adjacency";
                     leaf local-ip-address {
-                        type inet:ip-address;
+                        type inet:ipv4-address;
                         mandatory true;
                     }
                     leaf remote-ip-address {
-                        type inet:ip-address;
+                        type inet:ipv4-address;
                         mandatory true;
                     }
                 }

@@ -12,24 +12,25 @@ import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
+import java.util.List;
 import org.opendaylight.protocol.pcep.spi.*;
 import org.opendaylight.protocol.util.BitArray;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.LabelNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.Tlvs;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.ObjectHeader;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.vendor.information.tlvs.VendorInformationTlv;
 
 
 /**
  * Parser for {@link Label}
  */
-public class PCEccLabelObjectParser  implements ObjectParser, ObjectSerializer {
+public class PCEccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBuilder>  {
 
-    public static final int CLASS = 53; //TODO
+    public static final int CLASS = 225;
 
     public static final int TYPE = 1;
 
@@ -41,6 +42,9 @@ public class PCEccLabelObjectParser  implements ObjectParser, ObjectSerializer {
     private static final int RESERVED_LABEL = 12;
     private static final int MIN_SIZE =  12;
 
+    public PCEccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
+        super(tlvReg, viTlvReg);
+    }
     @Override
     public Label parseObject(final ObjectHeader header, final ByteBuf bytes) throws PCEPDeserializerException {
         Preconditions.checkArgument(bytes != null && bytes.isReadable(), "Array of bytes is mandatory. Can't be null or empty.");
@@ -60,10 +64,11 @@ public class PCEccLabelObjectParser  implements ObjectParser, ObjectSerializer {
 
         builder.setLabel(new LabelNumber(bytes.readUnsignedInt()));
         bytes.skipBytes(RESERVED_LABEL/Byte.SIZE);
-        /*
+
+
         final TlvsBuilder tlvsBuilder = new TlvsBuilder();
         parseTlvs(tlvsBuilder, bytes.slice());
-        builder.setTlvs(tlvsBuilder.build()); */
+        builder.setTlvs(tlvsBuilder.build());
         return builder.build();
     }
 
@@ -90,9 +95,18 @@ public class PCEccLabelObjectParser  implements ObjectParser, ObjectSerializer {
         if (tlvs == null) {
             return;
         }
+
         if (tlvs.getAddress() != null) {
-            //serializeTlv(tlvs.getAddress(), body);
+            serializeTlv(tlvs.getAddress(), body);
         }
+
+        serializeVendorInformationTlvs(tlvs.getVendorInformationTlv(), body);
     }
 
+    @Override
+    protected final void addVendorInformationTlvs(final TlvsBuilder builder, final List<VendorInformationTlv> tlvs) {
+        if (!tlvs.isEmpty()) {
+            builder.setVendorInformationTlv(tlvs);
+        }
+    }
 }

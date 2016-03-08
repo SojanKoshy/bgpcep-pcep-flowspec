@@ -24,7 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 
 public class PCEccCapabilityTlvParser implements TlvParser, TlvSerializer {
 
-    public static final int TYPE = 50; //to modify
+    public static final int TYPE = 65287;
 
     private static final int MSD_LENGTH = 1;
     protected static final int FLAGS_LENGTH = 32;
