@@ -19,11 +19,9 @@ import org.opendaylight.protocol.pcep.spi.TlvSerializer;
 import org.opendaylight.protocol.pcep.spi.TlvUtil;
 import org.opendaylight.protocol.util.Ipv4Util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.Address;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.AddressBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.Ipv4Case;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.Ipv4CaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.ipv4._case.Ipv4;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.ipv4._case.Ipv4Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.Ipv4Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.ipv4._case.Ipv4;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.ipv4._case.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
 
 
@@ -31,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 /**
  * Parser for {@link Address}
  */
-public class PCEccLabelAddressIpv4TlvParser implements TlvParser, TlvSerializer {
+public class PceccLabelAddressIpv4TlvParser implements TlvParser, TlvSerializer {
 
     public static final int TYPE = 65289;
 
@@ -54,9 +52,9 @@ public class PCEccLabelAddressIpv4TlvParser implements TlvParser, TlvSerializer 
     @Override
     public void serializeTlv(final Tlv tlv, final ByteBuf buffer) {
         Preconditions.checkArgument(tlv instanceof Address, "Address is mandatory.");
-        final Address add = (Address) tlv;
+        final Address address = (Address) tlv;
         final ByteBuf body = Unpooled.buffer();
-        final Ipv4 ipv4 = ((Ipv4Case) add.getAddress()).getIpv4();
+        final Ipv4 ipv4 = ((Ipv4Case) address.getAddressFamily()).getIpv4();
         writeIpv4Address(ipv4.getIpv4Address(), body);
         TlvUtil.formatTlv(TYPE, body, buffer);
     }

@@ -9,11 +9,11 @@ package org.opendaylight.protocol.pcep.pcecc;
 
 import org.opendaylight.protocol.pcep.impl.tlv.PathSetupTypeTlvParser;
 
-public class PCEccPathSetupTypeTlvParser extends PathSetupTypeTlvParser {
+public class PceccPathSetupTypeTlvParser extends PathSetupTypeTlvParser {
 
     private static final short BASIC_PCECC_PST = 2;
     private static final short PCECC_SR_TE_PST = 3;
-    public PCEccPathSetupTypeTlvParser() {
+    public PceccPathSetupTypeTlvParser() {
         super();
         PSTS.add(BASIC_PCECC_PST);
         PSTS.add(PCECC_SR_TE_PST);

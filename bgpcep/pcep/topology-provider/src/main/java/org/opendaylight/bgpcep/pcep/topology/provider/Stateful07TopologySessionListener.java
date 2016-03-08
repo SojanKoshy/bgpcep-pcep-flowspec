@@ -68,10 +68,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.LabelupdatesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.PcelabelUpdate;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.pcelabel.update.pcelabel.download.LabeldownloadBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.pcelabel.update.pcelabel.map.LabelmapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.PceLabelUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.PceLabelDownloadBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.map._case.PceLabelMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.PcerrMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.explicit.route.object.EroBuilder;
@@ -169,12 +169,12 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
 
-        final LabeldownloadBuilder labelDownload = new LabeldownloadBuilder();
-        final LabelmapBuilder labelMap = new LabelmapBuilder();
+        final PceLabelDownloadBuilder labelDownloadBuilder = new PceLabelDownloadBuilder();
+        final PceLabelMapBuilder labelMapBuilder = new PceLabelMapBuilder();
         final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
-        final LabelupdatesBuilder updBuilder = new LabelupdatesBuilder();
-        /* check if pcecc is enabled */
+        final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
+        /* check if pcecc is enabled */
         if (args != null && args.getSrp() == null) {
             LOG.warn("Node {} does not contain SRP data", input.getNode());
             return OperationResults.UNSENT.future();
@@ -189,10 +189,10 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final SrpIdNumber srpIdNumber = srp.getOperationId();
         final Lsp inputLsp = args.getLsp();
         if (args != null && inputLsp != null) {
-            labelDownload.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
+            labelDownloadBuilder.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
                     inputLsp.getPlspId()).setDelegate(inputLsp.isDelegate()).build());
-            labelDownload.setSrp(srp);
-            updBuilder.setPcelabelUpdate((PcelabelUpdate) labelDownload);
+            labelDownloadBuilder.setSrp(srp);
+            labelUpdatesBuilder.setPceLabelUpdate((PceLabelUpdate) labelDownloadBuilder);
         }
         else {
             final Fec inputFec = args.getFec();
@@ -203,7 +203,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             }
 
             if (args != null && inputFec != null) {
-                labelMap.setFec(new FecBuilder().build());
+                labelMapBuilder.setFec(new FecBuilder().build());
 
                 final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label inputLabel = args.getLabel();
                 if (inputLabel == null) {
@@ -211,15 +211,15 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                     return OperationResults.UNSENT.future();
                 }
 
-                labelMap.setLabel(new LabelBuilder().setLabel(inputLabel.getLabel()).build());
+                labelMapBuilder.setLabel(new LabelBuilder().setLabel(inputLabel.getLabel()).build());
             }
 
-            labelMap.setSrp(srp);
-            updBuilder.setPcelabelUpdate((PcelabelUpdate) labelMap);
+            labelMapBuilder.setSrp(srp);
+            labelUpdatesBuilder.setPceLabelUpdate((PceLabelUpdate) labelMapBuilder);
         }
 
         final PclabelupdMessageBuilder pclabelupdMessageBuilder  = new PclabelupdMessageBuilder(MESSAGE_HEADER);
-        pclabelupdMessageBuilder.setLabelupdates(Collections.singletonList(updBuilder.build()));
+        pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
         final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
         return sendMessage(msg, srpIdNumber, null);
     }

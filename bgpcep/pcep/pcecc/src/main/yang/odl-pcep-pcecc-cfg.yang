@@ -9,8 +9,7 @@ module odl-pcep-pcecc-cfg {
     import odl-pcep-ietf-stateful07-cfg { prefix pcep-stateful07; revision-date 2015-07-14; }
 
     organization "Huawei Technologies Co., Ltd.";
-
-    contact "Huawei Technologies Co., Ltd.";
+    contact "Swapna K <swapnak@huawei.com>";
 
     description
         "This module contains the data model of PCEP Extensions for supporting pcecc,
@@ -31,7 +30,7 @@ module odl-pcep-pcecc-cfg {
     identity pcep-parser-pcecc {
         base config:module-type;
         config:provided-service spi:extension;
-        config:java-name-prefix PCEPCCParser;
+        config:java-name-prefix PceccParser;
     }
 
     augment "/config:modules/config:module/config:configuration" {
@@ -47,7 +46,7 @@ module odl-pcep-pcecc-cfg {
 
     identity pcep-pcecc-capability {
         base config:module-type;
-        config:java-name-prefix "PCEPCCCapability";
+        config:java-name-prefix "PceccCapability";
         config:provided-service pcep:pcep-capability;
     }
  }

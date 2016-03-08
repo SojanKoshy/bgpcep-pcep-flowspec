@@ -189,11 +189,10 @@
           <classifier>config-provider</classifier>
       </dependency>
       <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pcep-controller-config</artifactId>
-            <version>0.5.0-Beryllium</version>
-            <type>xml</type>
-            <classifier>config-pcecc</classifier>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>pcep-controller-config</artifactId>
+          <type>xml</type>
+          <classifier>config-pcecc</classifier>
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>
@@ -240,9 +239,8 @@
           <artifactId>pcep-auto-bandwidth-extension</artifactId>
       </dependency>
       <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pcep-pcecc</artifactId>
-            <version>0.5.0-Beryllium</version>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>pcep-pcecc</artifactId>
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>

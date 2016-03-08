@@ -7,8 +7,6 @@
  */
 package org.opendaylight.protocol.pcep.pcecc;
 
-
-
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -21,8 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
 
-
-public class PCEccCapabilityTlvParser implements TlvParser, TlvSerializer {
+public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
 
     public static final int TYPE = 65287;
 

@@ -20,17 +20,15 @@ import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.protocol.util.Ipv4Util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4Adjacency;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.ObjectHeader;
 
-
-
 /**
- * Parser for {@link Ipv4Adjacency}
+ * Parser for {@link Ipv4AdjacencyCase}
  */
-public class PCEccFECIPv4AdjacencyObjectParser implements ObjectParser, ObjectSerializer {
+public class PceccFecIpv4AdjacencyObjectParser implements ObjectParser, ObjectSerializer {
 
     public static final int CLASS = 226; //TODO
 
@@ -48,18 +46,17 @@ public class PCEccFECIPv4AdjacencyObjectParser implements ObjectParser, ObjectSe
         builder.setIgnore(header.isIgnore());
         builder.setProcessingRule(header.isProcessingRule());
 
-        final Ipv4AdjacencyBuilder IpAdjacencybuilder = new Ipv4AdjacencyBuilder();
+        final Ipv4AdjacencyCaseBuilder IpAdjacencybuilder = new Ipv4AdjacencyCaseBuilder();
         IpAdjacencybuilder.setLocalIpAddress(Ipv4Util.addressForByteBuf(buffer));
         IpAdjacencybuilder.setRemoteIpAddress(Ipv4Util.addressForByteBuf(buffer));
         builder.setFec(IpAdjacencybuilder.build());
         return builder.build();
     }
 
-
     @Override
     public void serializeObject(final Object object, final ByteBuf buffer) {
-        Preconditions.checkArgument(object instanceof Ipv4Adjacency, "Wrong instance of PCEPObject. Passed %s . Needed Fec IPv4 Object.", object.getClass());
-        final Ipv4Adjacency adjacencyIp = (Ipv4Adjacency) object;
+        Preconditions.checkArgument(object instanceof Ipv4AdjacencyCase, "Wrong instance of PCEPObject. Passed %s . Needed Fec IPv4 Object.", object.getClass());
+        final Ipv4AdjacencyCase adjacencyIp = (Ipv4AdjacencyCase) object;
         final ByteBuf body = Unpooled.buffer();
 
         writeIpv4Address(adjacencyIp.getLocalIpAddress(), body);

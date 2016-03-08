@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <snapshot>
-<snapshot>
     <required-capabilities>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:netty?module=netty&amp;revision=2013-11-19</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:impl?module=odl-pcep-impl-cfg&amp;revision=2013-06-27</capability>

@@ -18,9 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
 
-public class PcepOpenObjectWithPCEccTlvParser extends Stateful07OpenObjectParser {
+public class PcepOpenObjectWithPceccTlvParser extends Stateful07OpenObjectParser {
 
-    public PcepOpenObjectWithPCEccTlvParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
+    public PcepOpenObjectWithPceccTlvParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
         super(tlvReg, viTlvReg);
     }
 

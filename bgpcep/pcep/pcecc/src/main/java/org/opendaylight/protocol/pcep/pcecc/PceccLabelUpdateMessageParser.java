@@ -17,35 +17,26 @@ import org.opendaylight.protocol.pcep.spi.MessageUtil;
 import org.opendaylight.protocol.pcep.spi.ObjectRegistry;
 import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdMessage;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessage;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.Labelupdates;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.UpdatesBuilder;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.PcelabelUpdate;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelDownload;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelDownloadBuilder;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelMap;
-//import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.PcelabelUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdates;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.PceLabelUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
-
-
 
 /**
  * Parser for {@link PclabelupdMessage}
  */
-public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
+public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
 
     public static final int TYPE = 57; // TODO
 
-    public PCEccLabelUpdateMessageParser(final ObjectRegistry registry) {
+    public PceccLabelUpdateMessageParser(final ObjectRegistry registry) {
         super(registry);
     }
 
     @Override
     public void serializeMessage(final Message message, final ByteBuf out) {
-        Preconditions.checkArgument(message instanceof PclabelupdMessage, "Wrong instance of Message. Passed instance of %s. Need PceLabelUpdate.", message.getClass());
+        Preconditions.checkArgument(message instanceof PclabelupdMessage,
+                "Wrong instance of Message. Passed instance of %s. Need PceLabelUpdate.", message.getClass());
         final PclabelupdMessage msg = (PclabelupdMessage) message;
         final ByteBuf buffer = Unpooled.buffer();
         /*final List<Updates> updates = msg.getPceLabelUpdate().getUpdates();
@@ -56,7 +47,7 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
         MessageUtil.formatMessage(TYPE, buffer, out);
     }
 
-    protected void serializeUpdate(final Labelupdates update, final ByteBuf buffer) {
+    protected void serializeUpdate(final PceLabelUpdates update, final ByteBuf buffer) {
 
         // If label download
 
@@ -71,11 +62,11 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
             throw new PCEPDeserializerException("PcLabelUpt message cannot be empty.");
         }
 
-        final List<PcelabelUpdate> updateRequests = Lists.newArrayList();
+        final List<PceLabelUpdate> updateRequests = Lists.newArrayList();
 
         while (!objects.isEmpty()) {
-            final Labelupdates upd = getValidUpdates(objects, errors);
-            if(upd != null) {
+            final PceLabelUpdates pceLabelUpdates = getValidUpdates(objects, errors);
+            if(pceLabelUpdates != null) {
                 //updateRequests.add(upd);
             }
         }
@@ -86,7 +77,7 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
         return null;
     }
 
-    protected Labelupdates getValidUpdates(final List<Object> objects, final List<Message> errors) {
+    protected PceLabelUpdates getValidUpdates(final List<Object> objects, final List<Message> errors) {
 
         return null;
     }

@@ -25,49 +25,46 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.path.setup.type.tlv.PathSetupType;
 
 
-public class PCEccActivator extends AbstractPCEPExtensionProviderActivator {
+public class PceccActivator extends AbstractPCEPExtensionProviderActivator {
 
     @Override
     protected List<AutoCloseable> startImpl(final PCEPExtensionProviderContext context) {
         final List<AutoCloseable> regs = Lists.newArrayList();
 
         final ObjectRegistry objReg = context.getObjectHandlerRegistry();
-        regs.add(context.registerMessageParser(PCEccLabelUpdateMessageParser.TYPE,
-                new PCEccLabelUpdateMessageParser(objReg)));
-        regs.add(context.registerMessageSerializer(Pclabelupd.class, new PCEccLabelUpdateMessageParser(objReg)));
+        regs.add(context.registerMessageParser(PceccLabelUpdateMessageParser.TYPE,
+                new PceccLabelUpdateMessageParser(objReg)));
+        regs.add(context.registerMessageSerializer(Pclabelupd.class, new PceccLabelUpdateMessageParser(objReg)));
 
         /* Tlvs */
+        regs.add(context.registerTlvParser(PceccCapabilityTlvParser.TYPE, new PceccCapabilityTlvParser()));
+        regs.add(context.registerTlvParser(PceccPathSetupTypeTlvParser.TYPE, new PceccPathSetupTypeTlvParser()));
 
-        regs.add(context.registerTlvParser(PCEccCapabilityTlvParser.TYPE, new PCEccCapabilityTlvParser()));
-        regs.add(context.registerTlvParser(PCEccPathSetupTypeTlvParser.TYPE, new PCEccPathSetupTypeTlvParser()));
+        regs.add(context.registerTlvSerializer(PathSetupType.class, new PceccPathSetupTypeTlvParser()));
+        regs.add(context.registerTlvSerializer(PceccCapability.class, new PceccCapabilityTlvParser()));
 
-        regs.add(context.registerTlvSerializer(PathSetupType.class, new PCEccPathSetupTypeTlvParser()));
-        regs.add(context.registerTlvSerializer(PceccCapability.class, new PCEccCapabilityTlvParser()));
-
-        final PCEccFECIPv4ObjectParser fecV4Parser = new PCEccFECIPv4ObjectParser();
-        final PCEccFECIPv4AdjacencyObjectParser fecV4AdjParser = new PCEccFECIPv4AdjacencyObjectParser();
-        regs.add(context.registerObjectParser(PCEccFECIPv4ObjectParser.CLASS, PCEccFECIPv4ObjectParser.TYPE, fecV4Parser));
-        regs.add(context.registerObjectParser(PCEccFECIPv4AdjacencyObjectParser.CLASS, PCEccFECIPv4AdjacencyObjectParser.TYPE, fecV4AdjParser));
+        final PceccFecIpv4ObjectParser fecV4Parser = new PceccFecIpv4ObjectParser();
+        final PceccFecIpv4AdjacencyObjectParser fecV4AdjParser = new PceccFecIpv4AdjacencyObjectParser();
+        regs.add(context.registerObjectParser(PceccFecIpv4ObjectParser.CLASS, PceccFecIpv4ObjectParser.TYPE, fecV4Parser));
+        regs.add(context.registerObjectParser(PceccFecIpv4AdjacencyObjectParser.CLASS, PceccFecIpv4AdjacencyObjectParser.TYPE, fecV4AdjParser));
         regs.add(context.registerObjectSerializer(Fec.class, fecV4Parser));
         regs.add(context.registerObjectSerializer(Fec.class, fecV4AdjParser));
-
 
         /* Objects */
         final TlvRegistry tlvReg = context.getTlvHandlerRegistry();
         final VendorInformationTlvRegistry viTlvRegistry = context.getVendorInformationTlvRegistry();
 
-        regs.add(context.registerObjectParser(PCEccLabelObjectParser.CLASS, PCEccLabelObjectParser.TYPE,
-                new PCEccLabelObjectParser(tlvReg, viTlvRegistry)));
-        regs.add(context.registerObjectSerializer(Label.class, new PCEccLabelObjectParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectParser(PceccLabelObjectParser.CLASS, PceccLabelObjectParser.TYPE,
+                new PceccLabelObjectParser(tlvReg, viTlvRegistry)));
 
+        regs.add(context.registerObjectSerializer(Label.class, new PceccLabelObjectParser(tlvReg, viTlvRegistry)));
 
+        regs.add(context.registerObjectParser(PcepOpenObjectWithPceccTlvParser.CLASS,
+                PcepOpenObjectWithPceccTlvParser.TYPE, new PcepOpenObjectWithPceccTlvParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectSerializer(Open.class, new PcepOpenObjectWithPceccTlvParser(tlvReg, viTlvRegistry)));
 
-        regs.add(context.registerObjectParser(PcepOpenObjectWithPCEccTlvParser.CLASS,
-                PcepOpenObjectWithPCEccTlvParser.TYPE, new PcepOpenObjectWithPCEccTlvParser(tlvReg, viTlvRegistry)));
-        regs.add(context.registerObjectSerializer(Open.class, new PcepOpenObjectWithPCEccTlvParser(tlvReg, viTlvRegistry)));
-
-        regs.add(context.registerTlvParser(PCEccLabelAddressIpv4TlvParser.TYPE, new PCEccLabelAddressIpv4TlvParser()));
-        regs.add(context.registerTlvSerializer(Address.class, new PCEccLabelAddressIpv4TlvParser()));
+        regs.add(context.registerTlvParser(PceccLabelAddressIpv4TlvParser.TYPE, new PceccLabelAddressIpv4TlvParser()));
+        regs.add(context.registerTlvSerializer(Address.class, new PceccLabelAddressIpv4TlvParser()));
         return regs;
     }
 }

@@ -13,29 +13,31 @@ module odl-pcep-pcecc {
     import yang-ext { prefix ext; revision-date 2013-07-09; }
 
     organization "Huawei Technologies Co., Ltd.";
-
     contact "Swapna K <swapna.k@huawei.com>";
 
     description
-    "This module contains the data model of PCEP Extensions for supporting pcecc,
-    draft-zhao-pce-pcep-extension-for-pce-controller-03.
+        "This module contains the data model of PCEP Extensions for supporting PCECC,
+        draft-zhao-pce-pcep-extension-for-pce-controller-03.
 
-    Copyright (c) Huawei Technologies Co., Ltd. 2016. All rights reserved.
+        Copyright (c) Huawei Technologies Co., Ltd. 2016. All rights reserved.
 
-    This program and the accompanying materials are made available
-    under the terms of the Eclipse Public License v1.0 which
-    accompanies this distribution, and is available at
-    http://www.eclipse.org/legal/epl-v10.html";
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
     revision "2016-02-25" {
-        description
-        "Initial revision.";
-        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02";
+        description "Initial revision.";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03";
     }
+
     grouping pcecc-capability-tlv {
-    description "PCECC-CAPABILITY TLV";
-    reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.1.1";
+        description "PCECC-CAPABILITY TLV";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.1.1";
+
         container pcecc-capability {
-        uses pcep:tlv;
+            uses pcep:tlv;
+
             leaf local-label-range-capability {
                 type boolean;
                 default false;
@@ -46,8 +48,10 @@ module odl-pcep-pcecc {
             }
         }
     }
+
     augment "/msg:open/msg:open-message/msg:open/msg:tlvs" {
-        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.1";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.1";
+
         uses pcecc-capability-tlv;
     }
 
@@ -59,25 +63,33 @@ module odl-pcep-pcecc {
 
     grouping pclabelupd-message {
         uses pcep:message;
+
         container pclabelupd-message {
             description "Label Update Message";
-            reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-6.2";
+            reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-6.2";
+
             uses pcep:message-header;
-            list labelupdates {
-                choice pcelabel-update {
-                    case pcelabel-download {
-                        container labeldownload {
+
+            list pce-label-updates {
+                choice pce-label-update {
+                    case pce-label-download-case {
+                        container pce-label-download {
+
                             uses stateful:srp-object;
+
                             uses stateful:lsp-object;
-                            list label {
+
+                            list labels {
                                 uses label-object;
                             }
                         }
                     }
-                    case pcelabel-map {
-                        container labelmap {
+                    case pce-label-map-case {
+                        container pce-label-map {
                             uses stateful:srp-object;
+
                             uses label-object;
+
                             uses fec-object;
                         }
                     }
@@ -91,31 +103,32 @@ module odl-pcep-pcecc {
     }
 
     grouping label-object {
-        description "LABEL Object";
-        reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.4";
+        description "Label Object";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.4";
         container label {
+
             uses pcep:object;
+
             container tlvs {
                 uses address-tlv;
+
                 uses pcep:vendor-information-tlvs;
             }
             leaf label {
                 type label-number;
                 mandatory true;
             }
-            leaf Out-label {
+            leaf out-label {
                 type boolean;
                 default false;
             }
         }
     }
 
-
-
     grouping address-tlv {
-            container address {
+        container address {
             uses pcep:tlv;
-            choice address {
+            choice address-family {
                 mandatory true;
 
                 case ipv4-case {
@@ -137,7 +150,7 @@ module odl-pcep-pcecc {
                     }
                 }
                 case unnumbered-case {
-                    container unnumbered{
+                    container unnumbered {
                         leaf node-id {
                             type uint32;
                             mandatory true;
@@ -153,23 +166,26 @@ module odl-pcep-pcecc {
     }
 
     grouping fec-object {
-    description "FEC Object";
-        reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.5";
+        description "FEC Object";
+        reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.5";
+
         container fec {
             uses pcep:object;
+
             choice fec {
-                reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.5";
-                description "fec information";
-                case ipv4-nodeid {
-                    when "../Object-Type = 1";
+                reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.5";
+                description "FEC Information";
+
+                case ipv4-node-id-case {
+                    when "../object-type = 1";
                     description "IPv4 Node ID";
                     leaf node-id {
                         type uint32;
                         mandatory true;
                     }
                 }
-                case ipv4-adjacency {
-                    when "../Object-Type = 3";
+                case ipv4-adjacency-case {
+                    when "../object-type = 3";
                     description "IPv4 Adjacency";
                     leaf local-ip-address {
                         type inet:ipv4-address;
@@ -180,8 +196,8 @@ module odl-pcep-pcecc {
                         mandatory true;
                     }
                 }
-                case unnumbered-adjacency {
-                    when "../Object-Type = 5";
+                case unnumbered-adjacency-case {
+                    when "../object-type = 5";
                     description "Unnumbered Adjacency with IPv4 NodeIDs";
                     leaf local-node-id {
                         type uint32;
@@ -213,7 +229,7 @@ module odl-pcep-pcecc {
     }
 
     augment "/topo:remove-label/topo:input/topo:arguments" {
-        ext:augment-identifier arguments-4;
+        ext:augment-identifier arguments-5;
         uses stateful:srp-object;
         uses stateful:lsp-object;
         uses label-object;

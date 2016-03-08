@@ -28,7 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 /**
  * Parser for {@link Label}
  */
-public class PCEccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBuilder>  {
+public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBuilder>  {
 
     public static final int CLASS = 225;
 
@@ -42,7 +42,7 @@ public class PCEccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
     private static final int RESERVED_LABEL = 12;
     private static final int MIN_SIZE =  12;
 
-    public PCEccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
+    public PceccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
         super(tlvReg, viTlvReg);
     }
     @Override
