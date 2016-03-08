@@ -95,6 +95,9 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
             throw new PCEPDeserializerException("PcLabelUpt message cannot be empty.");
         }
 
+
+
+
         final List<PceLabelUpdates> labelUpdates = Lists.newArrayList();
 
         while (!objects.isEmpty()) {
