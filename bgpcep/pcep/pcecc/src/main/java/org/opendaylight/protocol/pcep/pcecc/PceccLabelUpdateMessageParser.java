@@ -37,19 +37,19 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
     @Override
     public void serializeMessage(final Message message, final ByteBuf out) {
         Preconditions.checkArgument(message instanceof PclabelupdMessage,
-                "Wrong instance of Message. Passed instance of %s. Need PceLabelUpdate.", message.getClass());
+                "Wrong instance of Message. Passed instance of %s. Need PclabelupdMessage.", message.getClass());
 
         final PclabelupdMessage msg = (PclabelupdMessage) message;
         final ByteBuf buffer = Unpooled.buffer();
         final List<PceLabelUpdates> labelUpdates = msg.getPclabelupdMessage().getPceLabelUpdates();
 
         for (final PceLabelUpdates labelUpdate : labelUpdates) {
-            serializeUpdate(labelUpdate, buffer);
+            serializeLabelUpdate(labelUpdate, buffer);
         }
         MessageUtil.formatMessage(TYPE, buffer, out);
     }
 
-    protected void serializeUpdate(final PceLabelUpdates update, final ByteBuf buffer) {
+    protected void serializeLabelUpdate(final PceLabelUpdates labelUpdate, final ByteBuf buffer) {
 
         //TODO: If label download
 
