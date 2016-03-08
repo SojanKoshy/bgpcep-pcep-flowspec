@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
  */
 public class PceccFecIpv4ObjectParser implements ObjectParser, ObjectSerializer {
 
-    public static final int CLASS = 226; //TODO
+    public static final int CLASS = 226; //TODO: Use value same as SVRP
 
     public static final int TYPE = 1;
     public static final int MIN_SIZE = 4;
