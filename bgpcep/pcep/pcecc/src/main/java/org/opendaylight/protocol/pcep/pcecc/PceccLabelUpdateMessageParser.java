@@ -98,6 +98,8 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
 
 
 
+
+
         final List<PceLabelUpdates> labelUpdates = Lists.newArrayList();
 
         while (!objects.isEmpty()) {
