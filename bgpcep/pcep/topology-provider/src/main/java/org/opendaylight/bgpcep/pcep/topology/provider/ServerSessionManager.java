@@ -29,11 +29,11 @@ import org.opendaylight.protocol.pcep.PCEPSession;
 import org.opendaylight.protocol.pcep.PCEPSessionListener;
 import org.opendaylight.protocol.pcep.PCEPSessionListenerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddArgs;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TopologyTypes1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TopologyTypes1Builder;
@@ -157,17 +157,15 @@ final class ServerSessionManager implements PCEPSessionListenerFactory, AutoClos
     }
 
     @Override
-    public synchronized ListenableFuture<OperationResult> labelAdd(final LabelAddArgs input) {
-        /*final TopologySessionListener l = checkSessionPresence(input.getNode());
-        return (l != null) ? l.labelAdd(input) : OperationResults.UNSENT.future();*/
-        return null;
+    public synchronized ListenableFuture<OperationResult> addLabel(final AddLabelArgs input) {
+        final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.addLabel(input) : OperationResults.UNSENT.future();
     }
 
     @Override
-    public synchronized ListenableFuture<OperationResult> labelRemove(final LabelRemoveArgs input) {
-        /* final TopologySessionListener l = checkSessionPresence(input.getNode());
-        return (l != null) ? l.labelRemove(input) : OperationResults.UNSENT.future(); */
-        return null;
+    public synchronized ListenableFuture<OperationResult> removeLabel(final RemoveLabelArgs input) {
+        final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.removeLabel(input) : OperationResults.UNSENT.future();
     }
 
     @Override

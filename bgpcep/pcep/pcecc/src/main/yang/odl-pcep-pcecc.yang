@@ -63,7 +63,7 @@ module odl-pcep-pcecc {
             description "Label Update Message";
             reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-6.2";
             uses pcep:message-header;
-            list updates {
+            list labelupdates {
                 choice pcelabel-update {
                     case pcelabel-download {
                         container labeldownload {
@@ -85,6 +85,11 @@ module odl-pcep-pcecc {
             }
         }
     }
+
+    notification pclabelupd {
+        uses pclabelupd-message;
+    }
+
     grouping label-object {
         description "LABEL Object";
         reference "https://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-02#section-7.4";
@@ -196,7 +201,7 @@ module odl-pcep-pcecc {
         }
     }
 
-    augment "/topo:label-add/topo:input/topo:arguments" {
+    augment "/topo:add-label/topo:input/topo:arguments" {
         ext:augment-identifier arguments-4;
         uses stateful:srp-object;
         uses stateful:lsp-object;
@@ -204,7 +209,7 @@ module odl-pcep-pcecc {
         uses fec-object;
     }
 
-    augment "/topo:label-remove/topo:input/topo:arguments" {
+    augment "/topo:remove-label/topo:input/topo:arguments" {
         ext:augment-identifier arguments-4;
         uses stateful:srp-object;
         uses stateful:lsp-object;

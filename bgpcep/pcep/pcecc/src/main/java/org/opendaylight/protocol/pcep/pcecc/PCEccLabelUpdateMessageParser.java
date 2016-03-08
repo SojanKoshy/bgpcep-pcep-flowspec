@@ -19,14 +19,14 @@ import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdMessage;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessage;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.Updates;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.Labelupdates;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.UpdatesBuilder;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.PcelabelUpdate;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelDownload;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelDownloadBuilder;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelMap;
 //import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.pcelabel.update.PcelabelMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.updates.PcelabelUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.PcelabelUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 
@@ -56,7 +56,7 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
         MessageUtil.formatMessage(TYPE, buffer, out);
     }
 
-    protected void serializeUpdate(final Updates update, final ByteBuf buffer) {
+    protected void serializeUpdate(final Labelupdates update, final ByteBuf buffer) {
 
         // If label download
 
@@ -74,7 +74,7 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
         final List<PcelabelUpdate> updateRequests = Lists.newArrayList();
 
         while (!objects.isEmpty()) {
-            final Updates upd = getValidUpdates(objects, errors);
+            final Labelupdates upd = getValidUpdates(objects, errors);
             if(upd != null) {
                 //updateRequests.add(upd);
             }
@@ -86,7 +86,7 @@ public class PCEccLabelUpdateMessageParser extends AbstractMessageParser {
         return null;
     }
 
-    protected Updates getValidUpdates(final List<Object> objects, final List<Message> errors) {
+    protected Labelupdates getValidUpdates(final List<Object> objects, final List<Message> errors) {
 
         return null;
     }

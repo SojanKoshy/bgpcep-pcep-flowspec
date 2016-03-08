@@ -62,22 +62,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.srp.object.SrpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.stateful.capability.tlv.Stateful;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.symbolic.path.name.tlv.SymbolicPathNameBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments4;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.LabelupdatesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.PcelabelUpdate;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.pcelabel.update.pcelabel.download.LabeldownloadBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.labelupdates.pcelabel.update.pcelabel.map.LabelmapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.PcerrMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.explicit.route.object.EroBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.path.setup.type.tlv.PathSetupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LspId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.Node1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.PccSyncState;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TriggerSyncArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.UpdateLspArgs;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelAddArgs;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelRemoveArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.pcep.client.attributes.PathComputationClient;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.pcep.client.attributes.PathComputationClientBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.pcep.client.attributes.path.computation.client.ReportedLsp;
@@ -155,12 +165,67 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
     }
 
     @Override
-    public ListenableFuture<OperationResult> labelAdd(LabelAddArgs input) {
-        return null;
+    public ListenableFuture<OperationResult> addLabel(AddLabelArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("AddLabelArgs {}", input);
+
+        final LabeldownloadBuilder labelDownload = new LabeldownloadBuilder();
+        final LabelmapBuilder labelMap = new LabelmapBuilder();
+        final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
+        final LabelupdatesBuilder updBuilder = new LabelupdatesBuilder();
+        /* check if pcecc is enabled */
+
+        if (args != null && args.getSrp() == null) {
+            LOG.warn("Node {} does not contain SRP data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+        // SRP Mandatory in label Upd, since it's present in both label download and label map
+        final SrpBuilder srpBuilder = new SrpBuilder();
+
+        // not sue whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
+        srpBuilder.setOperationId(nextRequest());
+        final Srp srp = srpBuilder.build();
+
+        final SrpIdNumber srpIdNumber = srp.getOperationId();
+        final Lsp inputLsp = args.getLsp();
+        if (args != null && inputLsp != null) {
+            labelDownload.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
+                    inputLsp.getPlspId()).setDelegate(inputLsp.isDelegate()).build());
+            labelDownload.setSrp(srp);
+            updBuilder.setPcelabelUpdate((PcelabelUpdate) labelDownload);
+        }
+        else {
+            final Fec inputFec = args.getFec();
+
+            if (inputLsp == null && inputFec == null) {
+                LOG.warn("Node {} Download or Map data properly", input.getNode());
+                return OperationResults.UNSENT.future();
+            }
+
+            if (args != null && inputFec != null) {
+                labelMap.setFec(new FecBuilder().build());
+
+                final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label inputLabel = args.getLabel();
+                if (inputLabel == null) {
+                    LOG.warn("Node {} Label map should have label information", input.getNode());
+                    return OperationResults.UNSENT.future();
+                }
+
+                labelMap.setLabel(new LabelBuilder().setLabel(inputLabel.getLabel()).build());
+            }
+
+            labelMap.setSrp(srp);
+            updBuilder.setPcelabelUpdate((PcelabelUpdate) labelMap);
+        }
+
+        final PclabelupdMessageBuilder pclabelupdMessageBuilder  = new PclabelupdMessageBuilder(MESSAGE_HEADER);
+        pclabelupdMessageBuilder.setLabelupdates(Collections.singletonList(updBuilder.build()));
+        final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
+        return sendMessage(msg, srpIdNumber, null);
     }
 
     @Override
-    public ListenableFuture<OperationResult> labelRemove(LabelRemoveArgs input) {
+    public ListenableFuture<OperationResult> removeLabel(RemoveLabelArgs input) {
         return null;
     }
 

@@ -297,7 +297,7 @@ module network-topology-pcep {
         }
     }
 
-    grouping label-add-args {
+    grouping add-label-args {
         leaf node {
                 type nt:node-ref;
                 mandatory true;
@@ -305,17 +305,17 @@ module network-topology-pcep {
         container arguments {
         }
     }
-    rpc label-add {
+    rpc add-label {
         input {
             uses ont:network-topology-reference;
-            uses label-add-args;
+            uses add-label-args;
         }
         output {
             uses operation-result;
         }
     }
 
-grouping label-remove-args {
+grouping remove-label-args {
 
     leaf node {
             type nt:node-ref;
@@ -324,10 +324,10 @@ grouping label-remove-args {
     container arguments {
     }
 }
-rpc label-remove {
+rpc remove-label {
         input {
             uses ont:network-topology-reference;
-            uses label-remove-args;
+            uses remove-label-args;
         }
         output {
             uses operation-result;
