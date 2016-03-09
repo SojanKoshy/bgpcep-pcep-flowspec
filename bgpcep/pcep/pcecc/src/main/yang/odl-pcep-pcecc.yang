@@ -79,7 +79,7 @@ module odl-pcep-pcecc {
 
                             uses stateful:lsp-object;
 
-                            list labels {
+                            list label {
                                 uses label-object;
                             }
                         }
@@ -114,7 +114,7 @@ module odl-pcep-pcecc {
 
                 uses pcep:vendor-information-tlvs;
             }
-            leaf label {
+            leaf labelNum {
                 type label-number;
                 mandatory true;
             }
@@ -221,11 +221,30 @@ module odl-pcep-pcecc {
     }
 
     augment "/topo:add-label/topo:input/topo:arguments" {
-        ext:augment-identifier arguments-4;
-        uses stateful:srp-object;
-        uses stateful:lsp-object;
-        uses label-object;
-        uses fec-object;
+        ext:augment-identifier arguments-1;
+        choice pce-label-update {
+            case pce-label-download-case {
+                container pce-label-download {
+
+                    uses stateful:srp-object;
+
+                    uses stateful:lsp-object;
+
+                    list label {
+                        uses label-object;
+                        }
+                    }
+            }
+            case pce-label-map-case {
+                container pce-label-map {
+                    uses stateful:srp-object;
+
+                    uses label-object;
+
+                    uses fec-object;
+                }
+            }
+        }
     }
 
     augment "/topo:remove-label/topo:input/topo:arguments" {

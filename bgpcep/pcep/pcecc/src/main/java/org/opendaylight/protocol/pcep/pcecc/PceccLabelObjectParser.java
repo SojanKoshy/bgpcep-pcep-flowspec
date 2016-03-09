@@ -58,11 +58,9 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
 
         bytes.skipBytes(RESERVED);
 
-
         final BitArray flags = BitArray.valueOf(bytes.readByte());
         builder.setOutLabel(flags.get(O_FLAG_OFFSET));
-
-        builder.setLabel(new LabelNumber(bytes.readUnsignedInt()));
+        builder.setLabelNum(new LabelNumber(bytes.readUnsignedInt()));
         bytes.skipBytes(RESERVED_LABEL/Byte.SIZE);
 
 
@@ -82,7 +80,7 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         final BitArray flags = new BitArray(FLAGS_SIZE);
         flags.set(O_FLAG_OFFSET, lbl.isOutLabel());
         body.writeZero(RESERVED_LABEL/Byte.SIZE);
-        final LabelNumber LabelNum = lbl.getLabel();
+        final LabelNumber LabelNum = lbl.getLabelNum();
         Preconditions.checkArgument(LabelNum != null, "Label Number is mandatory.");
         writeUnsignedInt(LabelNum.getValue(), body);
         serializeTlvs(lbl.getTlvs(), body);

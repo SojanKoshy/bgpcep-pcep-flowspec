@@ -1,6 +1,6 @@
 module odl-pcep-pcecc-cfg {
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:pcep:pcecc:cfg";
+    namespace "urn:opendaylight:params:xml:ns:yang:controller:pcep:pcecc:cfg";
     prefix "pcep-pcecc";
 
     import config { prefix config; revision-date 2013-04-05; }
