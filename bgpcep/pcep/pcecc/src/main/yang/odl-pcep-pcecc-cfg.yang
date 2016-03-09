@@ -49,5 +49,16 @@ module odl-pcep-pcecc-cfg {
         config:java-name-prefix "PceccCapability";
         config:provided-service pcep:pcep-capability;
     }
- }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case pcep-pcecc-capability {
+            when "/config:modules/config:module/config:type = 'pcep-pcecc-capability'";
+            uses pcep-stateful07:stateful-capabilities;
+            leaf pcecc-capable {
+                type boolean;
+                default true;
+            }
+        }
+    }
+}
 
