@@ -126,6 +126,7 @@
     <feature name='odl-bgpcep-pcep-pcecc' version='${project.version}'>
         <feature version='${project.version}'>odl-bgpcep-pcep-stateful07</feature>
         <bundle>mvn:org.opendaylight.bgpcep/pcep-pcecc/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.bgpcep/pcep-topology-api/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/35-pcep-pcecc.xml">mvn:org.opendaylight.bgpcep/pcep-controller-config/{{VERSION}}/xml/config-pcecc</configfile>
     </feature>
 </features>
