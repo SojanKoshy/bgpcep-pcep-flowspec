@@ -4,7 +4,7 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:netty?module=netty&amp;revision=2013-11-19</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:impl?module=odl-pcep-impl-cfg&amp;revision=2013-06-27</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:spi?module=odl-pcep-spi-cfg&amp;revision=2013-11-15</capability>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:cc:cfg?module=odl-pcep-pcecc-cfg&amp;revision=2016-02-25</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:pcecc:cfg?module=odl-pcep-pcecc-cfg&amp;revision=2016-02-25</capability>
     </required-capabilities>
     <configuration>
         <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -18,12 +18,12 @@
                     </extension>
                 </module>
                 <module>
-                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:sr:cfg">prefix:pcep-parser-pcecc</type>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:pcecc:cfg">prefix:pcep-parser-pcecc</type>
                     <name>pcep-parser-pcecc</name>
                     <!-- Need totype decide for label -->
                 </module>
                 <module>
-                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:sr:cfg">prefix:pcep-pcecc-capability</type>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:pcecc:cfg">prefix:pcep-pcecc-capability</type>
                     <name>pcep-pcecc-capability</name>
                 </module>
                 <module>
@@ -47,7 +47,7 @@
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep">prefix:pcep-capability</type>
                     <instance>
                         <name>pcep-pcecc-capability</name>
-                        <provider>/config/modules/module[name='pcep-cc-capability']/instance[name='pcep-pcecc-capability']</provider>
+                        <provider>/config/modules/module[name='pcep-pcecc-capability']/instance[name='pcep-pcecc-capability']</provider>
                     </instance>
                 </service>
             </services>
