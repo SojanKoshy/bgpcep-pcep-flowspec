@@ -221,7 +221,7 @@ module odl-pcep-pcecc {
     }
 
     augment "/topo:add-label/topo:input/topo:arguments" {
-        ext:augment-identifier arguments-1;
+        ext:augment-identifier arguments-4;
         choice pce-label-update {
             case pce-label-download-case {
                 container pce-label-download {

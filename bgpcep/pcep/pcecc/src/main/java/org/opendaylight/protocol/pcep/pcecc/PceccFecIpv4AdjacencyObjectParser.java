@@ -55,8 +55,9 @@ public class PceccFecIpv4AdjacencyObjectParser implements ObjectParser, ObjectSe
 
     @Override
     public void serializeObject(final Object object, final ByteBuf buffer) {
-        Preconditions.checkArgument(object instanceof Ipv4AdjacencyCase, "Wrong instance of PCEPObject. Passed %s . Needed Fec IPv4 Object.", object.getClass());
-        final Ipv4AdjacencyCase adjacencyIp = (Ipv4AdjacencyCase) object;
+        Preconditions.checkArgument(object instanceof Fec, "Wrong instance of PCEPObject. Passed %s . Needed Fec IPv4 Object.", object.getClass());
+        final Fec fec = (Fec)object;
+        final Ipv4AdjacencyCase adjacencyIp = (Ipv4AdjacencyCase) fec.getFec();
         final ByteBuf body = Unpooled.buffer();
 
         writeIpv4Address(adjacencyIp.getLocalIpAddress(), body);

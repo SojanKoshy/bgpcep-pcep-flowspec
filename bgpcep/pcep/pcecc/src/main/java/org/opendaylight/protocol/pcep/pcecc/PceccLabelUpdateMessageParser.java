@@ -28,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdates;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.PceLabelDownloadCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.PceLabelMapCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.PceLabelDownload;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.PceLabelDownloadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.pce.label.download.Label;
@@ -66,8 +68,9 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
     protected void serializeLabelUpdate(final PceLabelUpdates labelUpdate, final ByteBuf buffer) {
 
         //If label download
-        if (labelUpdate.getPceLabelUpdate() instanceof PceLabelDownload) {
-            final PceLabelDownload labelDownload = (PceLabelDownload) labelUpdate.getPceLabelUpdate();
+        if (labelUpdate.getPceLabelUpdate() instanceof PceLabelDownloadCase) {
+            final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase) labelUpdate.getPceLabelUpdate();
+            final PceLabelDownload labelDownload = labelDownloadCase.getPceLabelDownload();
 
             serializeObject(labelDownload.getSrp(), buffer);
             serializeObject(labelDownload.getLsp(), buffer);
@@ -79,8 +82,9 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
             }
         }
         //if label map
-        else if (labelUpdate.getPceLabelUpdate() instanceof PceLabelMap) {
-            final PceLabelMap labelMap = (PceLabelMap) labelUpdate.getPceLabelUpdate();
+        else if (labelUpdate.getPceLabelUpdate() instanceof PceLabelMapCase) {
+            final PceLabelMapCase labelMapCase = (PceLabelMapCase) labelUpdate.getPceLabelUpdate();
+            final PceLabelMap labelMap = labelMapCase.getPceLabelMap();
             serializeObject(labelMap.getSrp(), buffer);
             serializeObject(labelMap.getLabel(), buffer);
             serializeObject(labelMap.getFec(), buffer);

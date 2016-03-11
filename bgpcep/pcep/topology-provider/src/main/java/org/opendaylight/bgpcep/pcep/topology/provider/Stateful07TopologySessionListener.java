@@ -62,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.srp.object.SrpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.stateful.capability.tlv.Stateful;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.symbolic.path.name.tlv.SymbolicPathNameBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.add.label.input.arguments.pce.label.update.PceLabelMapCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.add.label.input.arguments.pce.label.update.pce.label.map._case.PceLabelMap;
@@ -71,6 +72,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.PceLabelUpdate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.PceLabelDownloadCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.PceLabelDownloadCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.PceLabelMapCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.PceLabelDownload;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.PceLabelDownloadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.pce.label.updates.pce.label.update.pce.label.download._case.pce.label.download.Label;
@@ -175,13 +178,23 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
         final PceLabelDownloadBuilder labelDownloadBuilder = new PceLabelDownloadBuilder();
         final PceLabelMapBuilder labelMapBuilder = new PceLabelMapBuilder();
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments1 args
-                = input.getArguments().getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments1.class);
+        final PceLabelMapCaseBuilder labelMapCaseBuilder = new PceLabelMapCaseBuilder();
+        final PceLabelDownloadCaseBuilder labelDownloadCaseBuilder = new PceLabelDownloadCaseBuilder();
+        final Arguments4 args
+                = input.getArguments().getAugmentation(Arguments4.class);
         final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
+        if (args == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
         final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.add.label.input.arguments.PceLabelUpdate labelType
                 = args.getPceLabelUpdate();
 
+        if (labelType == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
         if (labelType instanceof PceLabelDownloadCase)
         {
             final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase)labelType;
@@ -224,7 +237,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             }
 
             labelDownloadBuilder.setLabel(labelList); // This will not work need to check
-
+            labelDownloadCaseBuilder.setPceLabelDownload(labelDownloadBuilder.build());
             labelUpdatesBuilder.setPceLabelUpdate((PceLabelUpdate) labelDownloadBuilder);
 
         }
@@ -262,8 +275,8 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             }
 
             labelMapBuilder.setFec(new FecBuilder().setFec(labelMap.getFec().getFec()).build());
-
-            labelUpdatesBuilder.setPceLabelUpdate((PceLabelUpdate) labelMapBuilder);
+            labelMapCaseBuilder.setPceLabelMap(labelMapBuilder.build());
+            labelUpdatesBuilder.setPceLabelUpdate(labelMapCaseBuilder.build());
         }
 
         final PclabelupdMessageBuilder pclabelupdMessageBuilder  = new PclabelupdMessageBuilder(MESSAGE_HEADER);

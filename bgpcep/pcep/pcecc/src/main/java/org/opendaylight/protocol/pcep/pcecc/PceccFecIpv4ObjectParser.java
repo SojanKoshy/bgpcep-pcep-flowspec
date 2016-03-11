@@ -55,8 +55,9 @@ public class PceccFecIpv4ObjectParser implements ObjectParser, ObjectSerializer 
 
     @Override
     public void serializeObject(final Object object, final ByteBuf buffer) {
-        Preconditions.checkArgument(object instanceof Ipv4NodeIdCase, "Wrong instance of PCEPObject. Passed %s . Needed Fec IPv4 Object.", object.getClass());
-        final Ipv4NodeIdCase nodeId = (Ipv4NodeIdCase) object;
+        Preconditions.checkArgument(object instanceof Fec, "Wrong instance of PCEPObject. Passed %s . Needed Fec Object.", object.getClass());
+        final Fec fec = (Fec)object;
+        final Ipv4NodeIdCase nodeId = (Ipv4NodeIdCase)fec.getFec();
         final ByteBuf body = Unpooled.buffer();
 
         writeUnsignedInt(nodeId.getNodeId(), body);
