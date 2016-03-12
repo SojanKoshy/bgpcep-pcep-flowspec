@@ -40,6 +40,10 @@
       </dependency>
       <dependency>
          <groupId>${project.groupId}</groupId>
+         <artifactId>pcep-pcecc</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>${project.groupId}</groupId>
          <artifactId>pcep-api</artifactId>
       </dependency>
       <dependency>
