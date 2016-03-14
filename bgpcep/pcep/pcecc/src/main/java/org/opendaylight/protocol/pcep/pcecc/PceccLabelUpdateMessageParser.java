@@ -27,13 +27,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.PceLabelDownloadCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.PceLabelMapCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.pce.label.download._case.PceLabelDownload;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.pce.label.download._case.PceLabelDownloadBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.pce.label.download._case.pce.label.download.Label;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.pce.label.map._case.PceLabelMap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.pce.label.map._case.PceLabelMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelDownloadCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelMapCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.PceLabelDownload;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.PceLabelDownloadBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.Label;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.map._case.PceLabelMap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.map._case.PceLabelMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdates;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
@@ -69,8 +69,8 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
     protected void serializeLabelUpdate(final PceLabelUpdates labelUpdate, final ByteBuf buffer) {
 
         //If label download
-        if (labelUpdate.getPceLabelUpdate() instanceof PceLabelDownloadCase) {
-            final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase) labelUpdate.getPceLabelUpdate();
+        if (labelUpdate.getPceLabelUpdateType() instanceof PceLabelDownloadCase) {
+            final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase) labelUpdate.getPceLabelUpdateType();
             final PceLabelDownload labelDownload = labelDownloadCase.getPceLabelDownload();
 
             serializeObject(labelDownload.getSrp(), buffer);
@@ -83,8 +83,8 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
             }
         }
         //if label map
-        else if (labelUpdate.getPceLabelUpdate() instanceof PceLabelMapCase) {
-            final PceLabelMapCase labelMapCase = (PceLabelMapCase) labelUpdate.getPceLabelUpdate();
+        else if (labelUpdate.getPceLabelUpdateType() instanceof PceLabelMapCase) {
+            final PceLabelMapCase labelMapCase = (PceLabelMapCase) labelUpdate.getPceLabelUpdateType();
             final PceLabelMap labelMap = labelMapCase.getPceLabelMap();
             serializeObject(labelMap.getSrp(), buffer);
             serializeObject(labelMap.getLabel(), buffer);

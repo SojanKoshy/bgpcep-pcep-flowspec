@@ -34,7 +34,6 @@ public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
         Preconditions.checkArgument(tlv instanceof PceccCapability, "PceccCapability is mandatory.");
         final PceccCapability sct = (PceccCapability) tlv;
 
-
         TlvUtil.formatTlv(TYPE, Unpooled.wrappedBuffer(serializeFlags(sct).array()), buffer);
     }
 
@@ -51,8 +50,8 @@ public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
             return null;
         }
         if (buffer.readableBytes() < FLAGS_LENGTH / Byte.SIZE) {
-            throw new PCEPDeserializerException("Wrong length of array of bytes. Passed: " + buffer.readableBytes() + "; Expected: >= "
-                    + FLAGS_LENGTH / Byte.SIZE + ".");
+            throw new PCEPDeserializerException("Wrong length of array of bytes. Passed: " + buffer.readableBytes()
+                    + "; Expected: >= " + FLAGS_LENGTH / Byte.SIZE + ".");
         }
         final PceccCapabilityBuilder sb = new PceccCapabilityBuilder();
         parseFlags(sb, buffer);

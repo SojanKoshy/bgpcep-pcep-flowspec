@@ -62,7 +62,7 @@ module odl-pcep-pcecc {
     }
 
     grouping pce-label-update {
-        choice pce-label-update {
+        choice pce-label-update-type {
             case pce-label-download-case {
                 container pce-label-download {
 

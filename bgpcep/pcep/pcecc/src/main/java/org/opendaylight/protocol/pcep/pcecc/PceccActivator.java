@@ -43,14 +43,15 @@ public class PceccActivator extends AbstractPCEPExtensionProviderActivator {
         regs.add(context.registerTlvSerializer(PathSetupType.class, new PceccPathSetupTypeTlvParser()));
         regs.add(context.registerTlvSerializer(PceccCapability.class, new PceccCapabilityTlvParser()));
 
+        /* Objects */
         final PceccFecIpv4ObjectParser fecV4Parser = new PceccFecIpv4ObjectParser();
         final PceccFecIpv4AdjacencyObjectParser fecV4AdjParser = new PceccFecIpv4AdjacencyObjectParser();
-        regs.add(context.registerObjectParser(PceccFecIpv4ObjectParser.CLASS, PceccFecIpv4ObjectParser.TYPE, fecV4Parser));
+        regs.add(context.registerObjectParser(PceccFecIpv4ObjectParser.CLASS, PceccFecIpv4ObjectParser.TYPE,
+                fecV4Parser));
         //regs.add(context.registerObjectParser(PceccFecIpv4AdjacencyObjectParser.CLASS, PceccFecIpv4AdjacencyObjectParser.TYPE, fecV4AdjParser));
         regs.add(context.registerObjectSerializer(Fec.class, fecV4Parser));
         //regs.add(context.registerObjectSerializer(Fec.class, fecV4AdjParser)); // need to check
 
-        /* Objects */
         final TlvRegistry tlvReg = context.getTlvHandlerRegistry();
         final VendorInformationTlvRegistry viTlvRegistry = context.getVendorInformationTlvRegistry();
 
@@ -61,7 +62,9 @@ public class PceccActivator extends AbstractPCEPExtensionProviderActivator {
 
         regs.add(context.registerObjectParser(PcepOpenObjectWithPceccTlvParser.CLASS,
                 PcepOpenObjectWithPceccTlvParser.TYPE, new PcepOpenObjectWithPceccTlvParser(tlvReg, viTlvRegistry)));
-        regs.add(context.registerObjectSerializer(Open.class, new PcepOpenObjectWithPceccTlvParser(tlvReg, viTlvRegistry)));
+
+        regs.add(context.registerObjectSerializer(Open.class,
+                new PcepOpenObjectWithPceccTlvParser(tlvReg, viTlvRegistry)));
 
         regs.add(context.registerTlvParser(PceccLabelAddressIpv4TlvParser.TYPE, new PceccLabelAddressIpv4TlvParser()));
         regs.add(context.registerTlvSerializer(Address.class, new PceccLabelAddressIpv4TlvParser()));
