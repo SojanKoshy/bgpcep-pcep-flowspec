@@ -16,28 +16,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
 
 
-public class PceCCCapability implements PCEPCapability {
+public class PcepPceccCapability implements PCEPCapability {
 
-    private final boolean isccCapable;
 
-    public PceCCCapability(final boolean isccCapable){
-        this.isccCapable = isccCapable;
+    private final boolean isPceccCapable;
+
+    public PcepPceccCapability(final boolean isPceccCapable){
+        this.isPceccCapable = isPceccCapable;
     }
 
     @Override
     public void setCapabilityProposal(final InetSocketAddress address, final TlvsBuilder builder) {
-        if (this.isccCapable) {
-            builder.addAugmentation(
-                Tlvs1.class, new Tlvs1Builder().setPceccCapability(
-                            new PceccCapabilityBuilder().setGlobalLabelRangeCapability(true).setLocalLabelRangeCapability(true)
-                            .build())
-                        .build());
+        if (this.isPceccCapable) {
+            builder.addAugmentation(Tlvs1.class, new Tlvs1Builder().setPceccCapability(new PceccCapabilityBuilder().
+                            setGlobalLabelRangeCapability(true).setLocalLabelRangeCapability(true).build()).build());
         }
     }
 
-    public boolean isCCCapable() {
-        return this.isccCapable;
+    public boolean isPceccCapable() {
+        return isPceccCapable;
     }
-
 
 }

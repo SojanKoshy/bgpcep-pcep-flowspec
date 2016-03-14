@@ -61,6 +61,32 @@ module odl-pcep-pcecc {
         }
     }
 
+    grouping pce-label-update {
+        choice pce-label-update {
+            case pce-label-download-case {
+                container pce-label-download {
+
+                    uses stateful:srp-object;
+
+                    uses stateful:lsp-object;
+
+                    list label {
+                        uses label-object;
+                    }
+                }
+            }
+            case pce-label-map-case {
+                container pce-label-map {
+                    uses stateful:srp-object;
+
+                    uses label-object;
+
+                    uses fec-object;
+                }
+            }
+        }
+    }
+
     grouping pclabelupd-message {
         uses pcep:message;
 
@@ -71,29 +97,7 @@ module odl-pcep-pcecc {
             uses pcep:message-header;
 
             list pce-label-updates {
-                choice pce-label-update {
-                    case pce-label-download-case {
-                        container pce-label-download {
-
-                            uses stateful:srp-object;
-
-                            uses stateful:lsp-object;
-
-                            list label {
-                                uses label-object;
-                            }
-                        }
-                    }
-                    case pce-label-map-case {
-                        container pce-label-map {
-                            uses stateful:srp-object;
-
-                            uses label-object;
-
-                            uses fec-object;
-                        }
-                    }
-                }
+                uses pce-label-update;
             }
         }
     }
@@ -222,37 +226,12 @@ module odl-pcep-pcecc {
 
     augment "/topo:add-label/topo:input/topo:arguments" {
         ext:augment-identifier arguments-4;
-        choice pce-label-update {
-            case pce-label-download-case {
-                container pce-label-download {
-
-                    uses stateful:srp-object;
-
-                    uses stateful:lsp-object;
-
-                    list label {
-                        uses label-object;
-                        }
-                    }
-            }
-            case pce-label-map-case {
-                container pce-label-map {
-                    uses stateful:srp-object;
-
-                    uses label-object;
-
-                    uses fec-object;
-                }
-            }
-        }
+        uses pce-label-update;
     }
 
     augment "/topo:remove-label/topo:input/topo:arguments" {
         ext:augment-identifier arguments-5;
-        uses stateful:srp-object;
-        uses stateful:lsp-object;
-        uses label-object;
-        uses fec-object;
+        uses pce-label-update;
     }
 }
 
