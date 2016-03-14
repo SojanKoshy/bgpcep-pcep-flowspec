@@ -175,13 +175,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
 
-        SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
-        final PceLabelDownloadBuilder labelDownloadBuilder = new PceLabelDownloadBuilder();
-        final PceLabelMapBuilder labelMapBuilder = new PceLabelMapBuilder();
-        final PceLabelMapCaseBuilder labelMapCaseBuilder = new PceLabelMapCaseBuilder();
-        final PceLabelDownloadCaseBuilder labelDownloadCaseBuilder = new PceLabelDownloadCaseBuilder();
         final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
-        final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
         if (args == null) {
             LOG.warn("Node {} does not contain mandatory data", input.getNode());
@@ -193,89 +187,76 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             LOG.warn("Node {} does not contain mandatory data", input.getNode());
             return OperationResults.UNSENT.future();
         }
+
         if (labelType instanceof PceLabelDownloadCase)
         {
-            final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase)labelType;
-            final PceLabelDownload labelDownload = labelDownloadCase.getPceLabelDownload();
-            labelDownload.getSrp();
-            if (labelDownload.getSrp() == null) {
-                LOG.warn("Node {} does not contain SRP data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
-
-            // SRP Mandatory in label Upd, since it's present in both label download and label map
-            final SrpBuilder srpBuilder = new SrpBuilder();
-
-            // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
-            srpBuilder.setOperationId(nextRequest());
-            final Srp srp = srpBuilder.build();
-
-            srpIdNumber = srp.getOperationId();
-            labelDownloadBuilder.setSrp(srp);
-
-            if (labelDownload.getLsp() == null){
-                LOG.warn("Node {} does not contain LSP data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
-
-            labelDownloadBuilder.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
-                    labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
-
-            if (labelDownload.getLabel() == null){
-                LOG.warn("Node {} does not contain Label list data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
-
-            final List<Label> reportedLabel = labelDownload.getLabel();
-            final List<Label> labelList = new ArrayList<>();
-            while (!reportedLabel.isEmpty()) {
-                if (reportedLabel instanceof Label) {
-                    labelList.add((Label)reportedLabel);
-                }
-            }
-
-            labelDownloadBuilder.setLabel(labelList); // FIXME: This will not work need to check
-            labelDownloadCaseBuilder.setPceLabelDownload(labelDownloadBuilder.build());
-            labelUpdatesBuilder.setPceLabelUpdateType(labelDownloadCaseBuilder.build());
-
+            return downloadLabel(input);
+        } else if (labelType instanceof PceLabelMapCase) {
+            return updateLabelMap(input);
+        } else {
+            LOG.warn("Node {} contains unknown label type", input.getNode());
+            return OperationResults.UNSENT.future();
         }
-        else if (labelType instanceof PceLabelMapCase) {
+    }
 
-            final PceLabelMapCase labelMapCase = (PceLabelMapCase)labelType;
-            final PceLabelMap labelMap = labelMapCase.getPceLabelMap();
-            labelMap.getSrp();
-            if (labelMap.getSrp() == null) {
-                LOG.warn("Node {} does not contain SRP data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
+    @Override
+    public ListenableFuture<OperationResult> removeLabel(RemoveLabelArgs input) {
+        return null;
+    }
 
-            // SRP Mandatory in label Upd, since it's present in both label download and label map
-            final SrpBuilder srpBuilder = new SrpBuilder();
+    private ListenableFuture<OperationResult> downloadLabel(AddLabelArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("AddLabelArgs {}", input);
 
-            // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
-            srpBuilder.setOperationId(nextRequest());
-            final Srp srp = srpBuilder.build();
+        SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
+        final PceLabelDownloadBuilder labelDownloadBuilder = new PceLabelDownloadBuilder();
+        final PceLabelDownloadCaseBuilder labelDownloadCaseBuilder = new PceLabelDownloadCaseBuilder();
+        final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
-            srpIdNumber = srp.getOperationId();
-            labelMapBuilder.setSrp(srp);
+        final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
+        final PceLabelUpdateType labelType = args.getPceLabelUpdateType();
+        final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase)labelType;
+        final PceLabelDownload labelDownload = labelDownloadCase.getPceLabelDownload();
 
-            if (labelMap.getLabel() == null){
-                LOG.warn("Node {} does not contain Label data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
-
-            labelMapBuilder.setLabel(new LabelBuilder().setLabelNum(labelMap.getLabel().getLabelNum()).
-                    setOutLabel(labelMap.getLabel().isOutLabel()).setTlvs(labelMap.getLabel().getTlvs()).build());
-
-            if (labelMap.getFec() == null){
-                LOG.warn("Node {} does not contain Fec data", input.getNode());
-                return OperationResults.UNSENT.future();
-            }
-
-            labelMapBuilder.setFec(new FecBuilder().setFec(labelMap.getFec().getFec()).build());
-            labelMapCaseBuilder.setPceLabelMap(labelMapBuilder.build());
-            labelUpdatesBuilder.setPceLabelUpdateType(labelMapCaseBuilder.build());
+        if (labelDownload.getSrp() == null) {
+            LOG.warn("Node {} does not contain SRP data", input.getNode());
+            return OperationResults.UNSENT.future();
         }
+
+        // SRP Mandatory in label Upd, since it's present in both label download and label map
+        final SrpBuilder srpBuilder = new SrpBuilder();
+
+        // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
+        srpBuilder.setOperationId(nextRequest());
+        final Srp srp = srpBuilder.build();
+
+        srpIdNumber = srp.getOperationId();
+        labelDownloadBuilder.setSrp(srp);
+
+        if (labelDownload.getLsp() == null){
+            LOG.warn("Node {} does not contain LSP data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        labelDownloadBuilder.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
+                labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
+
+        if (labelDownload.getLabel() == null){
+            LOG.warn("Node {} does not contain Label list data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        final List<Label> reportedLabel = labelDownload.getLabel();
+        final List<Label> labelList = new ArrayList<>();
+        while (!reportedLabel.isEmpty()) {
+            if (reportedLabel instanceof Label) {
+                labelList.add((Label)reportedLabel);
+            }
+        }
+
+        labelDownloadBuilder.setLabel(labelList); // FIXME: This will not work need to check
+        labelDownloadCaseBuilder.setPceLabelDownload(labelDownloadBuilder.build());
+        labelUpdatesBuilder.setPceLabelUpdateType(labelDownloadCaseBuilder.build());
 
         final PclabelupdMessageBuilder pclabelupdMessageBuilder = new PclabelupdMessageBuilder(MESSAGE_HEADER);
         pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
@@ -283,9 +264,56 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         return sendMessage(msg, srpIdNumber, null);
     }
 
-    @Override
-    public ListenableFuture<OperationResult> removeLabel(RemoveLabelArgs input) {
-        return null;
+    private ListenableFuture<OperationResult> updateLabelMap(AddLabelArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("AddLabelArgs {}", input);
+
+        SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
+        final PceLabelMapBuilder labelMapBuilder = new PceLabelMapBuilder();
+        final PceLabelMapCaseBuilder labelMapCaseBuilder = new PceLabelMapCaseBuilder();
+        final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
+
+        final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
+        final PceLabelUpdateType labelType = args.getPceLabelUpdateType();
+        final PceLabelMapCase labelMapCase = (PceLabelMapCase)labelType;
+        final PceLabelMap labelMap = labelMapCase.getPceLabelMap();
+
+        if (labelMap.getSrp() == null) {
+            LOG.warn("Node {} does not contain SRP data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        // SRP Mandatory in label Upd, since it's present in both label download and label map
+        final SrpBuilder srpBuilder = new SrpBuilder();
+
+        // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
+        srpBuilder.setOperationId(nextRequest());
+        final Srp srp = srpBuilder.build();
+
+        srpIdNumber = srp.getOperationId();
+        labelMapBuilder.setSrp(srp);
+
+        if (labelMap.getLabel() == null){
+            LOG.warn("Node {} does not contain Label data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        labelMapBuilder.setLabel(new LabelBuilder().setLabelNum(labelMap.getLabel().getLabelNum()).
+                setOutLabel(labelMap.getLabel().isOutLabel()).setTlvs(labelMap.getLabel().getTlvs()).build());
+
+        if (labelMap.getFec() == null){
+            LOG.warn("Node {} does not contain Fec data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        labelMapBuilder.setFec(new FecBuilder().setFec(labelMap.getFec().getFec()).build());
+        labelMapCaseBuilder.setPceLabelMap(labelMapBuilder.build());
+        labelUpdatesBuilder.setPceLabelUpdateType(labelMapCaseBuilder.build());
+
+        final PclabelupdMessageBuilder pclabelupdMessageBuilder = new PclabelupdMessageBuilder(MESSAGE_HEADER);
+        pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
+        final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
+        return sendMessage(msg, srpIdNumber, null);
     }
 
     private ListenableFuture<OperationResult> triggerLspSyncronization(final TriggerSyncArgs input) {
