@@ -79,6 +79,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.PcerrMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.explicit.route.object.EroBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
@@ -246,12 +247,12 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             return OperationResults.UNSENT.future();
         }
 
-        final List<Label> reportedLabel = labelDownload.getLabel();
         final List<Label> labelList = new ArrayList<>();
-        while (!reportedLabel.isEmpty()) {
-            if (reportedLabel instanceof Label) {
-                labelList.add((Label)reportedLabel);
-            }
+
+        for (final Label label : labelDownload.getLabel()) {
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.LabelBuilder lbl
+                    = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.LabelBuilder().setLabel(label.getLabel());
+            labelList.add(lbl.build());
         }
 
         labelDownloadBuilder.setLabel(labelList); // FIXME: This will not work need to check

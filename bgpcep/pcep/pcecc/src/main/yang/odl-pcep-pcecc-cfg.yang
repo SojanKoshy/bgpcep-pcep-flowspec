@@ -37,7 +37,6 @@ module odl-pcep-pcecc-cfg {
         case pcep-parser-pcecc {
             when "/config:modules/config:module/config:type = 'pcep-parser-pcecc'";
             leaf flags {
-                // To Decide if we need to take L and G setting from the configuration
                 // To decide on the label range
                 type int32; // this is just for compilation purpose
             }
@@ -57,6 +56,14 @@ module odl-pcep-pcecc-cfg {
             leaf pcecc-capable {
                 type boolean;
                 default true;
+            }
+            leaf s-bit {
+            type boolean;
+            default true;
+            }
+            leaf ildb-bit {
+            type boolean;
+            default true;
             }
         }
     }

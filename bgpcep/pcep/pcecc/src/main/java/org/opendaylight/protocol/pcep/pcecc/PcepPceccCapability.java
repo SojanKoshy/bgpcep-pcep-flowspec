@@ -20,21 +20,33 @@ public class PcepPceccCapability implements PCEPCapability {
 
 
     private final boolean isPceccCapable;
+    private final boolean isSCapable;
+    private final boolean isILDBCapable;
 
-    public PcepPceccCapability(final boolean isPceccCapable){
+    public PcepPceccCapability(final boolean isPceccCapable, final boolean isSCapable, final boolean isILDBCapable){
         this.isPceccCapable = isPceccCapable;
+        this.isSCapable = isSCapable;
+        this.isILDBCapable = isILDBCapable;
     }
 
     @Override
     public void setCapabilityProposal(final InetSocketAddress address, final TlvsBuilder builder) {
         if (this.isPceccCapable) {
             builder.addAugmentation(Tlvs1.class, new Tlvs1Builder().setPceccCapability(new PceccCapabilityBuilder().
-                            setGlobalLabelRangeCapability(true).setLocalLabelRangeCapability(true).build()).build());
+                            setSBit(this.isSCapable).setILDBBit(this.isILDBCapable).build()).build());
         }
     }
 
     public boolean isPceccCapable() {
-        return isPceccCapable;
+        return this.isPceccCapable;
+    }
+
+    public boolean isSCapable() {
+        return this.isSCapable;
+    }
+
+    public boolean isILDBCapable() {
+        return this.isILDBCapable;
     }
 
 }

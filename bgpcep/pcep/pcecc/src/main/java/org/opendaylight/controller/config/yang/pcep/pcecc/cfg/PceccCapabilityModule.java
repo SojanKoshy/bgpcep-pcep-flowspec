@@ -31,7 +31,7 @@ public class PceccCapabilityModule extends org.opendaylight.controller.config.ya
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final PcepPceccCapability inner = new PcepPceccCapability(getPceccCapable());
+        final PcepPceccCapability inner = new PcepPceccCapability(getPceccCapable(), getSBit(), getIldbBit());
         return new PceccCapabilityModuleCloseable(inner);
     }
 

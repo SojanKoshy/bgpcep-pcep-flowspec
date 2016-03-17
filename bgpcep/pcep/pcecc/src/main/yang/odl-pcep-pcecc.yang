@@ -38,13 +38,13 @@ module odl-pcep-pcecc {
         container pcecc-capability {
             uses pcep:tlv;
 
-            leaf local-label-range-capability {
+            leaf s-bit {
                 type boolean;
-                default false;
+                default true;
             }
-            leaf global-label-range-capability {
+            leaf ILDB-bit {
                 type boolean;
-                default false;
+                default true;
             }
         }
     }
