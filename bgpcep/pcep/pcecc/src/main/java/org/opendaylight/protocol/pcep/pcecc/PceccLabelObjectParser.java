@@ -35,13 +35,14 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
 
     public static final int TYPE = 1;
 
-    protected static final int FLAGS_SIZE = 32;
+    protected static final int FLAGS_SIZE = 16;
 
-    protected static final int O_FLAG_OFFSET = 31;
+    protected static final int O_FLAG_OFFSET = 15;
     protected static final int LABEL_SIZE = 20;
     private static final int RESERVED = 2;
     private static final int RESERVED_LABEL = 12;
     private static final int MIN_SIZE =  12;
+    protected static final int MPLS_LABEL_OFFSET = 12;
 
     public PceccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
         super(tlvReg, viTlvReg);
@@ -80,10 +81,11 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         body.writeZero(RESERVED);
         final BitArray flags = new BitArray(FLAGS_SIZE);
         flags.set(O_FLAG_OFFSET, lbl.isOutLabel());
-        body.writeZero(RESERVED_LABEL/Byte.SIZE);
+        flags.toByteBuf(body);
+//        body.writeZero(RESERVED_LABEL/Byte.SIZE);
         final LabelNumber LabelNum = lbl.getLabelNum();
         Preconditions.checkArgument(LabelNum != null, "Label Number is mandatory.");
-        writeUnsignedInt(LabelNum.getValue(), body);
+        writeUnsignedInt(LabelNum.getValue() << MPLS_LABEL_OFFSET, body);
         serializeTlvs(lbl.getTlvs(), body);
         ObjectUtil.formatSubobject(TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
     }
