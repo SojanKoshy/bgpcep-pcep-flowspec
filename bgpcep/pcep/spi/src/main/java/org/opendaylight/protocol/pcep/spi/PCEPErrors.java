@@ -228,6 +228,15 @@ public enum PCEPErrors {
      */
     NON_ZERO_PLSPID(19, 8),
     /**
+     * Attempted LSP setup/download/label-range reservation if
+     PCECC capability was not advertised.
+     */
+    UPDATE_REQ_FOR_NO_CC_CAPABLE(19, 9),
+    /**
+     * stateful pce capability was not advertised.
+     */
+    STATEFUL_NOT_ADVERTISED(19, 10),
+    /**
      * A PCE indicates to a PCC that it can not process (an otherwise valid) LSP State Report. The PCEP-ERROR Object is
      * followed by the LSP Object that identifies the LSP.
      */

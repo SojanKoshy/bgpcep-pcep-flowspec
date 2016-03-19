@@ -9,6 +9,8 @@
 package org.opendaylight.protocol.pcep.pcecc;
 
 
+import static org.opendaylight.protocol.util.ByteBufWriteUtil.writeIpv4Address;
+
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -16,9 +18,12 @@ import io.netty.buffer.Unpooled;
 import org.opendaylight.protocol.pcep.spi.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4NodeIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.ObjectHeader;
+
+
 
 
 /**
@@ -46,12 +51,22 @@ public class PceccFecObjectParser implements ObjectParser, ObjectSerializer {
 
     @Override
     public void serializeObject(final Object object, final ByteBuf buffer) {
-        Preconditions.checkArgument(object instanceof Label, "Wrong instance of PCEPObject. Passed %s . Needed LabelObject.", object.getClass());
-        final Label lbl = (Label) object;
+        Preconditions.checkArgument(object instanceof Fec, "Wrong instance of PCEPObject. Passed %s . Needed Fec Object.", object.getClass());
+        final Fec fec = (Fec)object;
         final ByteBuf body = Unpooled.buffer();
+
+        if (fec.getFec() instanceof Ipv4NodeIdCase) {
+            final Ipv4NodeIdCase nodeId = (Ipv4NodeIdCase)fec.getFec();
+            writeIpv4Address(nodeId.getNodeId(), body);
+        }
+        else if (fec.getFec() instanceof Ipv4AdjacencyCase)
+        {
+            final Ipv4AdjacencyCase adjacencyIp = (Ipv4AdjacencyCase) fec.getFec();
+            writeIpv4Address(adjacencyIp.getLocalIpAddress(), body);
+            writeIpv4Address(adjacencyIp.getRemoteIpAddress(), body);
+        }
 
         ObjectUtil.formatSubobject(TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
     }
-
 
 }

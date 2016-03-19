@@ -63,9 +63,9 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         final BitArray flags = BitArray.valueOf(bytes.readByte());
         builder.setOutLabel(flags.get(O_FLAG_OFFSET));
         builder.setLabelNum(new LabelNumber(bytes.readUnsignedInt()));
-        bytes.skipBytes(RESERVED_LABEL/Byte.SIZE);
+        //bytes.skipBytes(RESERVED_LABEL/Byte.SIZE);
 
-
+        BitArray.valueOf(bytes, RESERVED_LABEL); // To Test
         final TlvsBuilder tlvsBuilder = new TlvsBuilder();
         parseTlvs(tlvsBuilder, bytes.slice());
         builder.setTlvs(tlvsBuilder.build());

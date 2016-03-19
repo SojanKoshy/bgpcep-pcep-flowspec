@@ -24,7 +24,6 @@ public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
 
     public static final int TYPE = 65287;
 
-    private static final int MSD_LENGTH = 1;
     protected static final int FLAGS_LENGTH = 32;
     protected static final int S_FLAG_OFFSET = 31;
     protected static final int ILDB_FLAG_OFFSET = 30;

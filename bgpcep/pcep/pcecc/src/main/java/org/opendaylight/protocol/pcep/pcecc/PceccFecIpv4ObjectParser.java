@@ -8,7 +8,7 @@
 
 package org.opendaylight.protocol.pcep.pcecc;
 
-import static org.opendaylight.protocol.util.ByteBufWriteUtil.writeUnsignedInt;
+import static org.opendaylight.protocol.util.ByteBufWriteUtil.writeIpv4Address;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -18,6 +18,7 @@ import org.opendaylight.protocol.pcep.spi.ObjectParser;
 import org.opendaylight.protocol.pcep.spi.ObjectSerializer;
 import org.opendaylight.protocol.pcep.spi.ObjectUtil;
 import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
+import org.opendaylight.protocol.util.Ipv4Util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4NodeIdCase;
@@ -47,8 +48,7 @@ public class PceccFecIpv4ObjectParser implements ObjectParser, ObjectSerializer 
         builder.setProcessingRule(header.isProcessingRule());
 
         final Ipv4NodeIdCaseBuilder Ipbuilder = new Ipv4NodeIdCaseBuilder();
-        Ipbuilder.setNodeId(bytes.readUnsignedInt());
-
+        Ipbuilder.setNodeId(Ipv4Util.addressForByteBuf(bytes));
         builder.setFec(Ipbuilder.build());
         return builder.build();
     }
@@ -61,7 +61,7 @@ public class PceccFecIpv4ObjectParser implements ObjectParser, ObjectSerializer 
         final Ipv4NodeIdCase nodeId = (Ipv4NodeIdCase)fec.getFec();
         final ByteBuf body = Unpooled.buffer();
 
-        writeUnsignedInt(nodeId.getNodeId(), body);
+        writeIpv4Address(nodeId.getNodeId(), body);
         ObjectUtil.formatSubobject(TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
     }
 }

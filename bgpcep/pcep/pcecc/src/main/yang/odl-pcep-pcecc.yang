@@ -184,7 +184,7 @@ module odl-pcep-pcecc {
                     when "../object-type = 1";
                     description "IPv4 Node ID";
                     leaf node-id {
-                        type uint32;
+                        type inet:ipv4-address;
                         mandatory true;
                     }
                 }

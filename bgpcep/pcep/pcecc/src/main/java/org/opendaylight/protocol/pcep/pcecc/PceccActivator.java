@@ -45,11 +45,12 @@ public class PceccActivator extends AbstractPCEPExtensionProviderActivator {
 
         /* Objects */
         final PceccFecIpv4ObjectParser fecV4Parser = new PceccFecIpv4ObjectParser();
+        final PceccFecObjectParser fecParser = new PceccFecObjectParser();
         final PceccFecIpv4AdjacencyObjectParser fecV4AdjParser = new PceccFecIpv4AdjacencyObjectParser();
         regs.add(context.registerObjectParser(PceccFecIpv4ObjectParser.CLASS, PceccFecIpv4ObjectParser.TYPE,
                 fecV4Parser));
-        //regs.add(context.registerObjectParser(PceccFecIpv4AdjacencyObjectParser.CLASS, PceccFecIpv4AdjacencyObjectParser.TYPE, fecV4AdjParser));
-        regs.add(context.registerObjectSerializer(Fec.class, fecV4Parser));
+        regs.add(context.registerObjectParser(PceccFecIpv4AdjacencyObjectParser.CLASS, PceccFecIpv4AdjacencyObjectParser.TYPE, fecV4AdjParser));
+        regs.add(context.registerObjectSerializer(Fec.class, fecParser));
         //regs.add(context.registerObjectSerializer(Fec.class, fecV4AdjParser)); // need to check
 
         final TlvRegistry tlvReg = context.getTlvHandlerRegistry();

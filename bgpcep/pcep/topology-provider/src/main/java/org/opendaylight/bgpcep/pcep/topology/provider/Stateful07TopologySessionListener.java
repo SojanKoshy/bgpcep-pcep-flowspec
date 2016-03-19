@@ -76,6 +76,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.Label;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.map._case.PceLabelMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.map._case.PceLabelMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
@@ -146,6 +147,13 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             } else {
                 LOG.debug("Peer {} does not advertise stateful TLV", peerAddress);
             }
+
+            final PceccCapability ccCapability
+                    = tlvs.getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1.class).getPceccCapability();
+            if (ccCapability != null)
+            {
+                setCCCapable(true);
+            }
         } else {
             LOG.debug("Peer {} does not advertise stateful TLV", peerAddress);
         }
@@ -174,6 +182,11 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
     public ListenableFuture<OperationResult> addLabel(AddLabelArgs input) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
+
+        // check if the peer is CC capable
+        if (!isccCapable()) {
+            return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        }
 
         final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
 
