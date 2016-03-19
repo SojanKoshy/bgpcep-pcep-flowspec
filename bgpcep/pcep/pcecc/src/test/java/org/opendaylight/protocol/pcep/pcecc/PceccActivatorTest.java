@@ -24,7 +24,7 @@ public class PceccActivatorTest {
         final PceccActivator activator = new PceccActivator();
         final PCEPExtensionProviderContext ctx = ServiceLoaderPCEPExtensionProviderContext.create();
         final List<AutoCloseable> registrations = activator.startImpl(ctx);
-        Assert.assertEquals( 14, registrations.size());
+        Assert.assertEquals( 15, registrations.size());
         activator.close();
     }
 
