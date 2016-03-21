@@ -15,8 +15,8 @@ import org.opendaylight.protocol.pcep.spi.TlvRegistry;
 import org.opendaylight.protocol.pcep.spi.VendorInformationTlvRegistry;
 
 import org.opendaylight.protocol.pcep.sync.optimizations.SyncOptimizationsOpenObjectParser;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
@@ -31,9 +31,9 @@ public class PcepOpenObjectWithPceccTlvParser extends SyncOptimizationsOpenObjec
     @Override
     public void addTlv(final TlvsBuilder tbuilder, final Tlv tlv) {
         super.addTlv(tbuilder, tlv);
-        final Tlvs1Builder tlvBuilder = new Tlvs1Builder();
-        if (tbuilder.getAugmentation(Tlvs1.class) != null) {
-            final Tlvs1 tlvs = tbuilder.getAugmentation(Tlvs1.class);
+        final Tlvs4Builder tlvBuilder = new Tlvs4Builder();
+        if (tbuilder.getAugmentation(Tlvs4.class) != null) {
+            final Tlvs4 tlvs = tbuilder.getAugmentation(Tlvs4.class);
             if (tlvs.getPceccCapability() != null) {
                 tlvBuilder.setPceccCapability(tlvs.getPceccCapability());
             }
@@ -41,7 +41,7 @@ public class PcepOpenObjectWithPceccTlvParser extends SyncOptimizationsOpenObjec
         if (tlv instanceof PceccCapability) {
             tlvBuilder.setPceccCapability((PceccCapability) tlv);
         }
-        tbuilder.addAugmentation(Tlvs1.class, tlvBuilder.build());
+        tbuilder.addAugmentation(Tlvs4.class, tlvBuilder.build());
     }
 
     @Override
@@ -50,8 +50,8 @@ public class PcepOpenObjectWithPceccTlvParser extends SyncOptimizationsOpenObjec
             return;
         }
         super.serializeTlvs(tlvs, body);
-        if (tlvs.getAugmentation(Tlvs1.class) != null) {
-            final Tlvs1 spcTlvs = tlvs.getAugmentation(Tlvs1.class);
+        if (tlvs.getAugmentation(Tlvs4.class) != null) {
+            final Tlvs4 spcTlvs = tlvs.getAugmentation(Tlvs4.class);
             if (spcTlvs.getPceccCapability() != null) {
                 serializeTlv(spcTlvs.getPceccCapability(), body);
             }

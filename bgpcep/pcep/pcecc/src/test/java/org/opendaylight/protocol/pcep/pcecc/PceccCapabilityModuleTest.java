@@ -7,6 +7,8 @@
  */
 package org.opendaylight.protocol.pcep.pcecc;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.ObjectName;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,13 +18,7 @@ import org.opendaylight.controller.config.manager.impl.factoriesresolver.Hardcod
 import org.opendaylight.controller.config.util.ConfigTransactionJMXClient;
 import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccCapabilityModuleFactory;
 import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccCapabilityModuleMXBean;
-import org.opendaylight.controller.config.yang.pcep.spi.SimplePCEPExtensionProviderContextModuleFactory;
-import org.opendaylight.controller.config.yang.pcep.spi.SimplePCEPExtensionProviderContextModuleMXBean;
-import org.opendaylight.controller.config.yang.pcep.stateful07.cfg.PCEPStatefulCapabilityModuleMXBean;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.ObjectName;
-import java.util.List;
 
 
 public class PceccCapabilityModuleTest extends AbstractConfigTest {
@@ -30,11 +26,35 @@ public class PceccCapabilityModuleTest extends AbstractConfigTest {
     private static final String FACTORY_NAME = PceccCapabilityModuleFactory.NAME;
     private static final String INSTANCE_NAME = "pcepcc-impl";
 
-    @Before
-    public void setUp() throws Exception {
-        super.initConfigTransactionManagerImpl(new HardcodedModuleFactoriesResolver(mockedContext, new PceccCapabilityModuleFactory()));
+    public static ObjectName createPCEPCCCapabilityInstance(final ConfigTransactionJMXClient
+                                                                    transaction) throws Exception {
+        return createInstance(transaction, true, true, true, true, true, true, true, true);
     }
 
+    private static ObjectName createInstance(final ConfigTransactionJMXClient transaction, final Boolean pceccCapable,
+                                             final Boolean stateful, final Boolean active, final Boolean instant,
+                                             final Boolean triggeredInitialSync, final Boolean triggeredResync,
+                                             final Boolean deltaLspSyncCapability,
+                                             final Boolean includeDbVersion) throws InstanceAlreadyExistsException {
+        final ObjectName nameCreated = transaction.createModule(FACTORY_NAME, INSTANCE_NAME);
+        final PceccCapabilityModuleMXBean mxBean = transaction.newMXBeanProxy(nameCreated,
+                PceccCapabilityModuleMXBean.class);
+        mxBean.setPceccCapable(pceccCapable);
+        mxBean.setActive(active);
+        mxBean.setInitiated(instant);
+        mxBean.setStateful(stateful);
+        mxBean.setTriggeredInitialSync(triggeredInitialSync);
+        mxBean.setTriggeredResync(triggeredResync);
+        mxBean.setDeltaLspSyncCapability(deltaLspSyncCapability);
+        mxBean.setIncludeDbVersion(includeDbVersion);
+        return nameCreated;
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.initConfigTransactionManagerImpl(new HardcodedModuleFactoriesResolver(mockedContext,
+                new PceccCapabilityModuleFactory()));
+    }
 
     @Test
     public void testCreateBean() throws Exception {
@@ -65,11 +85,13 @@ public class PceccCapabilityModuleTest extends AbstractConfigTest {
         assertStatus(status, 0, 0, 1);
     }
 
-    private CommitStatus createInstance(final Boolean pceccCapable, final Boolean stateful, final Boolean active, final Boolean instant,
-                                        final Boolean triggeredInitialSync, final Boolean triggeredResync, final Boolean deltaLspSyncCapability,
+    private CommitStatus createInstance(final Boolean pceccCapable, final Boolean stateful, final Boolean active,
+                                        final Boolean instant, final Boolean triggeredInitialSync,
+                                        final Boolean triggeredResync, final Boolean deltaLspSyncCapability,
                                         final Boolean includeDbVersion) throws Exception {
         final ConfigTransactionJMXClient transaction = this.configRegistryClient.createTransaction();
-        createInstance(transaction, pceccCapable, stateful, active, instant, triggeredInitialSync, triggeredResync, deltaLspSyncCapability, includeDbVersion);
+        createInstance(transaction, pceccCapable, stateful, active, instant, triggeredInitialSync, triggeredResync,
+                deltaLspSyncCapability, includeDbVersion);
         return transaction.commit();
     }
 
@@ -77,27 +99,6 @@ public class PceccCapabilityModuleTest extends AbstractConfigTest {
         final ConfigTransactionJMXClient transaction = this.configRegistryClient.createTransaction();
         createPCEPCCCapabilityInstance(transaction);
         return transaction.commit();
-    }
-
-
-    public static ObjectName createPCEPCCCapabilityInstance(final ConfigTransactionJMXClient transaction) throws Exception {
-        return createInstance(transaction, true, true, true, true, true, true, true, true);
-    }
-
-    private static ObjectName createInstance(final ConfigTransactionJMXClient transaction, final Boolean pceccCapable, final Boolean stateful, final Boolean active, final Boolean instant,
-                                             final Boolean triggeredInitialSync, final Boolean triggeredResync, final Boolean deltaLspSyncCapability, final Boolean includeDbVersion) throws InstanceAlreadyExistsException {
-        final ObjectName nameCreated = transaction.createModule(FACTORY_NAME, INSTANCE_NAME);
-        final PceccCapabilityModuleMXBean mxBean = transaction.newMXBeanProxy(nameCreated,
-                PceccCapabilityModuleMXBean.class);
-        mxBean.setPceccCapable(pceccCapable);
-        mxBean.setActive(active);
-        mxBean.setInitiated(instant);
-        mxBean.setStateful(stateful);
-        mxBean.setTriggeredInitialSync(triggeredInitialSync);
-        mxBean.setTriggeredResync(triggeredResync);
-        mxBean.setDeltaLspSyncCapability(deltaLspSyncCapability);
-        mxBean.setIncludeDbVersion(includeDbVersion);
-        return nameCreated;
     }
 
 }

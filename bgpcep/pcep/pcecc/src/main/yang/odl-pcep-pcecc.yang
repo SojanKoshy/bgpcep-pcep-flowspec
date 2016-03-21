@@ -42,7 +42,7 @@ module odl-pcep-pcecc {
                 type boolean;
                 default true;
             }
-            leaf ILDB-bit {
+            leaf ildb-bit {
                 type boolean;
                 default true;
             }
@@ -51,6 +51,7 @@ module odl-pcep-pcecc {
 
     augment "/msg:open/msg:open-message/msg:open/msg:tlvs" {
         reference "http://tools.ietf.org/html/draft-zhao-pce-pcep-extension-for-pce-controller-03#section-7.1";
+        ext:augment-identifier tlvs-4;
 
         uses pcecc-capability-tlv;
     }

@@ -10,8 +10,8 @@ package org.opendaylight.protocol.pcep.pcecc;
 
 import java.net.InetSocketAddress;
 import org.opendaylight.protocol.pcep.PCEPCapability;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
 
@@ -21,19 +21,19 @@ public class PcepPceccCapability implements PCEPCapability {
 
     private final boolean isPceccCapable;
     private final boolean isSCapable;
-    private final boolean isILDBCapable;
+    private final boolean isIldbCapable;
 
-    public PcepPceccCapability(final boolean isPceccCapable, final boolean isSCapable, final boolean isILDBCapable){
+    public PcepPceccCapability(final boolean isPceccCapable, final boolean isSCapable, final boolean isIldbCapable){
         this.isPceccCapable = isPceccCapable;
         this.isSCapable = isSCapable;
-        this.isILDBCapable = isILDBCapable;
+        this.isIldbCapable = isIldbCapable;
     }
 
     @Override
     public void setCapabilityProposal(final InetSocketAddress address, final TlvsBuilder builder) {
         if (this.isPceccCapable) {
-            builder.addAugmentation(Tlvs1.class, new Tlvs1Builder().setPceccCapability(new PceccCapabilityBuilder().
-                            setSBit(this.isSCapable).setILDBBit(this.isILDBCapable).build()).build());
+            builder.addAugmentation(Tlvs4.class, new Tlvs4Builder().setPceccCapability(new PceccCapabilityBuilder().
+                            setSBit(this.isSCapable).setIldbBit(this.isIldbCapable).build()).build());
         }
     }
 
@@ -46,7 +46,7 @@ public class PcepPceccCapability implements PCEPCapability {
     }
 
     public boolean isILDBCapable() {
-        return this.isILDBCapable;
+        return this.isIldbCapable;
     }
 
 }

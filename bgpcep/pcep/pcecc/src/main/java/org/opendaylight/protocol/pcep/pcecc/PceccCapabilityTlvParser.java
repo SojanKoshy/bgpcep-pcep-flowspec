@@ -40,7 +40,7 @@ public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
         final BitArray flags = new BitArray(FLAGS_LENGTH);
 
         flags.set(S_FLAG_OFFSET, sct.isSBit());
-        flags.set(ILDB_FLAG_OFFSET, sct.isILDBBit());
+        flags.set(ILDB_FLAG_OFFSET, sct.isIldbBit());
         return flags;
     }
 
@@ -61,7 +61,7 @@ public class PceccCapabilityTlvParser implements TlvParser, TlvSerializer {
     protected void parseFlags(final PceccCapabilityBuilder sb, final ByteBuf buffer) {
         final BitArray flags = BitArray.valueOf(buffer, FLAGS_LENGTH);
         sb.setSBit(flags.get(S_FLAG_OFFSET));
-        sb.setILDBBit(flags.get(ILDB_FLAG_OFFSET));
+        sb.setIldbBit(flags.get(ILDB_FLAG_OFFSET));
     }
 
 }

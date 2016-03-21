@@ -64,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.symbolic.path.name.tlv.SymbolicPathNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.PceLabelUpdateType;
@@ -148,14 +149,18 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                 LOG.debug("Peer {} does not advertise stateful TLV", peerAddress);
             }
 
-            final PceccCapability ccCapability
-                    = tlvs.getAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs1.class).getPceccCapability();
-            if (ccCapability != null)
-            {
-                setCCCapable(true);
-            }
         } else {
             LOG.debug("Peer {} does not advertise stateful TLV", peerAddress);
+        }
+        if (tlvs != null && tlvs.getAugmentation(Tlvs4.class) != null) {
+            final PceccCapability pceccCapability = tlvs.getAugmentation(Tlvs4.class).getPceccCapability();
+            if (pceccCapability != null) {
+                setPceccCapable(true);
+            } else {
+                LOG.debug("Peer {} does not advertise PCECC capability TLV", peerAddress);
+            }
+        } else {
+            LOG.debug("Peer {} does not advertise PCECC capability TLV", peerAddress);
         }
     }
 
@@ -183,8 +188,8 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
 
-        // check if the peer is CC capable
-        if (!isccCapable()) {
+        // check if the peer is PCECC capable
+        if (!isPceccCapable()) {
             return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
         }
 

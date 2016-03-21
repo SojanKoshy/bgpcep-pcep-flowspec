@@ -121,7 +121,7 @@ public abstract class AbstractTopologySessionListener<S, L> implements PCEPSessi
     private SyncOptimization syncOptimization;
     private boolean triggeredResyncInProcess;
 
-    private boolean ccCapable;
+    private boolean pceccCapable;
 
     private ListenerStateRuntimeRegistration registration;
     private final SessionListenerState listenerState;
@@ -539,12 +539,12 @@ public abstract class AbstractTopologySessionListener<S, L> implements PCEPSessi
         return false;
     }
 
-    protected final boolean isccCapable() {
-        return this.ccCapable;
+    protected final boolean isPceccCapable() {
+        return this.pceccCapable;
     }
 
-    protected final void setCCCapable(boolean ccCapable){
-        this.ccCapable = ccCapable;
+    protected final void setPceccCapable(boolean pceccCapable){
+        this.pceccCapable = pceccCapable;
     }
 
     /**

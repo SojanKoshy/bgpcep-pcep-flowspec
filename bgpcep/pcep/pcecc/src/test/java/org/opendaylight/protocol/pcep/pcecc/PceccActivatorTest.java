@@ -8,14 +8,12 @@
 package org.opendaylight.protocol.pcep.pcecc;
 
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.protocol.pcep.pcecc.PceccActivator;
 import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.protocol.pcep.spi.PCEPExtensionProviderContext;
 import org.opendaylight.protocol.pcep.spi.pojo.ServiceLoaderPCEPExtensionProviderContext;
-
-import java.util.List;
 
 
 public class PceccActivatorTest {
@@ -24,8 +22,7 @@ public class PceccActivatorTest {
         final PceccActivator activator = new PceccActivator();
         final PCEPExtensionProviderContext ctx = ServiceLoaderPCEPExtensionProviderContext.create();
         final List<AutoCloseable> registrations = activator.startImpl(ctx);
-        Assert.assertEquals( 15, registrations.size());
+        Assert.assertEquals(15, registrations.size());
         activator.close();
     }
-
 }

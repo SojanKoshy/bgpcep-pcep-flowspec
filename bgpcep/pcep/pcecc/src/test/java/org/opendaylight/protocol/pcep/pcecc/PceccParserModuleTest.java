@@ -22,7 +22,8 @@ public class PceccParserModuleTest extends AbstractConfigTest {
 
     @Before
     public void setUp() throws Exception {
-        super.initConfigTransactionManagerImpl(new HardcodedModuleFactoriesResolver(this.mockedContext, new PceccParserModuleFactory()));
+        super.initConfigTransactionManagerImpl(new HardcodedModuleFactoriesResolver(this.mockedContext,
+                new PceccParserModuleFactory()));
     }
 
     @Test
