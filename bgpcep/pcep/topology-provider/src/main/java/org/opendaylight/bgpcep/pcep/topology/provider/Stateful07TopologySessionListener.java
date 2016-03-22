@@ -63,6 +63,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.stateful.capability.tlv.Stateful;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.symbolic.path.name.tlv.SymbolicPathNameBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments4;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Arguments5;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
@@ -85,14 +86,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.explicit.route.object.EroBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.path.setup.type.tlv.PathSetupType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LspId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.Node1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.PccSyncState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.TriggerSyncArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.UpdateLspArgs;
@@ -184,7 +184,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
     }
 
     @Override
-    public ListenableFuture<OperationResult> addLabel(AddLabelArgs input) {
+    public ListenableFuture<OperationResult> addLabel(LabelArgs input) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
 
@@ -208,9 +208,9 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
 
         if (labelType instanceof PceLabelDownloadCase)
         {
-            return downloadLabel(input);
+            return downloadLabel(input, false);
         } else if (labelType instanceof PceLabelMapCase) {
-            return updateLabelMap(input);
+            return updateLabelMap(input, false);
         } else {
             LOG.warn("Node {} contains unknown label type", input.getNode());
             return OperationResults.UNSENT.future();
@@ -218,11 +218,40 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
     }
 
     @Override
-    public ListenableFuture<OperationResult> removeLabel(RemoveLabelArgs input) {
-        return null;
+    public ListenableFuture<OperationResult> removeLabel(LabelArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("AddLabelArgs {}", input);
+
+        // check if the peer is PCECC capable
+        if (!isPceccCapable()) {
+            return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        }
+
+        final Arguments5 args = input.getArguments().getAugmentation(Arguments5.class);
+
+        if (args == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+        final PceLabelUpdateType labelType = args.getPceLabelUpdateType();
+
+        if (labelType == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        if (labelType instanceof PceLabelDownloadCase)
+        {
+            return downloadLabel(input, true);
+        } else if (labelType instanceof PceLabelMapCase) {
+            return updateLabelMap(input, true);
+        } else {
+            LOG.warn("Node {} contains unknown label type", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
     }
 
-    private ListenableFuture<OperationResult> downloadLabel(AddLabelArgs input) {
+    private ListenableFuture<OperationResult> downloadLabel(LabelArgs input, boolean removeFlag) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddLabelArgs {}", input);
 
@@ -241,11 +270,10 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             return OperationResults.UNSENT.future();
         }
 
-        // SRP Mandatory in label Upd, since it's present in both label download and label map
-        final SrpBuilder srpBuilder = new SrpBuilder();
+        final SrpBuilder srpBuilder = new SrpBuilder().addAugmentation(Srp1.class, new Srp1Builder()
+                .setRemove(removeFlag).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE)
+                .setTlvs(labelDownload.getSrp().getTlvs()); // Need to test the TLV
 
-        // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
-        srpBuilder.setOperationId(nextRequest());
         final Srp srp = srpBuilder.build();
 
         srpIdNumber = srp.getOperationId();
@@ -256,7 +284,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             return OperationResults.UNSENT.future();
         }
 
-        labelDownloadBuilder.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(
+        labelDownloadBuilder.setLsp(new LspBuilder().setRemove(removeFlag).setPlspId(
                 labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
 
         if (labelDownload.getLabel() == null){
@@ -282,9 +310,9 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         return sendMessage(msg, srpIdNumber, null);
     }
 
-    private ListenableFuture<OperationResult> updateLabelMap(AddLabelArgs input) {
+    private ListenableFuture<OperationResult> updateLabelMap(LabelArgs input, boolean removeFlag) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
-        LOG.trace("AddLabelArgs {}", input);
+        LOG.trace("LabelArgs {}", input);
 
         SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
         final PceLabelMapBuilder labelMapBuilder = new PceLabelMapBuilder();
@@ -302,10 +330,9 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         }
 
         // SRP Mandatory in label Upd, since it's present in both label download and label map
-        final SrpBuilder srpBuilder = new SrpBuilder();
+        final SrpBuilder srpBuilder = new SrpBuilder().addAugmentation(Srp1.class, new Srp1Builder()
+                .setRemove(removeFlag).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE);
 
-        // FIXME: Not sure whether use 0 instead of nextRequest() or do not insert srp == SRP-ID-number = 0
-        srpBuilder.setOperationId(nextRequest());
         final Srp srp = srpBuilder.build();
 
         srpIdNumber = srp.getOperationId();
