@@ -36,12 +36,12 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
     public static final int TYPE = 1;
 
     protected static final int FLAGS_SIZE = 16;
-
-    protected static final int O_FLAG_OFFSET = 15;
+    protected static final int SKIP_BYTE = 1;
+    protected static final int O_FLAG_OFFSET = 7;
     protected static final int LABEL_SIZE = 20;
     private static final int RESERVED = 2;
     private static final int RESERVED_LABEL = 12;
-    private static final int MIN_SIZE =  12;
+    private static final int MIN_SIZE =  8;
     protected static final int MPLS_LABEL_OFFSET = 12;
 
     public PceccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
@@ -58,16 +58,16 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         builder.setIgnore(header.isIgnore());
         builder.setProcessingRule(header.isProcessingRule());
 
-        bytes.skipBytes(RESERVED);
+        bytes.skipBytes(RESERVED + SKIP_BYTE);
+        builder.setOutLabel(bytes.getBoolean(O_FLAG_OFFSET));
+        bytes.skipBytes(SKIP_BYTE);
 
-        final BitArray flags = BitArray.valueOf(bytes.readByte());
-        builder.setOutLabel(flags.get(O_FLAG_OFFSET));
-        builder.setLabelNum(new LabelNumber(bytes.readUnsignedInt()));
-        //bytes.skipBytes(RESERVED_LABEL/Byte.SIZE);
+        ByteBuf lableBuff = bytes.readBytes((LABEL_SIZE + RESERVED_LABEL) / Byte.SIZE);
 
-        BitArray.valueOf(bytes, RESERVED_LABEL); // To Test
+        builder.setLabelNum(new LabelNumber(lableBuff.readUnsignedInt() >> RESERVED_LABEL));
         final TlvsBuilder tlvsBuilder = new TlvsBuilder();
-        parseTlvs(tlvsBuilder, bytes.slice());
+        ByteBuf tlvBytes = bytes.slice();
+        parseTlvs(tlvsBuilder, tlvBytes);
         builder.setTlvs(tlvsBuilder.build());
         return builder.build();
     }

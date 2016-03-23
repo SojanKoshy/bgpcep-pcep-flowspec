@@ -24,8 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controll
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.Tlvs3Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Tlvs1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Tlvs1Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.LabelNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.ProtocolVersion;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.OpenBuilder;
@@ -39,6 +41,12 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         /* pcecc-capability-tlv */
         (byte) 0xff, 0x07, 0x00, 0x04,
         0x00, 0x00, 0x00, 0x03
+    };
+
+    private static final byte[] PceccLabelObjectBytes = {
+        (byte) 0xe1, 0x10, 0x00, 0x0c,
+        0x00, 0x00, 0x00, 0x00,
+        (byte) 0x01, 0x38, (byte) 0x90, 0x00,
     };
 
     private TlvRegistry tlvRegistry;
@@ -88,6 +96,28 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         parser.serializeObject(builder.build(), buffer);
         assertArrayEquals(openObjectBytes, ByteArray.getAllBytes(buffer));
     }
+
+
+    @Test
+    public void testPceccLabelObjectWithoutLableTlv() throws PCEPDeserializerException {
+        final PceccLabelObjectParser parser =
+                new PceccLabelObjectParser(this.tlvRegistry, this.viTlvRegistry);
+
+        final LabelBuilder builder = new LabelBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+        builder.setLabelNum(new LabelNumber(5001L));
+        builder.setOutLabel(false);
+        builder.setTlvs(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder()
+                .build());
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccLabelObjectBytes);
+        assertEquals(builder.build(),
+                parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccLabelObjectBytes, ByteArray.getAllBytes(buffer));
+    }
+
 
 }
 
