@@ -101,6 +101,7 @@
     <feature name='odl-bgpcep-pcep-topology-provider' version='${project.version}'>
         <feature version='${project.version}'>odl-bgpcep-programming-impl</feature>
         <feature version='${project.version}'>odl-bgpcep-pcep-stateful07</feature>
+        <feature version='${project.version}'>odl-bgpcep-pcep-pcecc</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
         <bundle>mvn:org.opendaylight.bgpcep/pcep-topology-provider/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/39-pcep-provider.xml">mvn:org.opendaylight.bgpcep/pcep-controller-config/{{VERSION}}/xml/config-provider</configfile>
@@ -113,6 +114,7 @@
 
     <feature name='odl-bgpcep-pcep-segment-routing' version='${project.version}'>
         <feature version='${project.version}'>odl-bgpcep-pcep-stateful07</feature>
+        <feature version='${project.version}'>odl-bgpcep-pcep-pcecc</feature>
         <bundle>mvn:org.opendaylight.bgpcep/pcep-segment-routing/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/33-pcep-segment-routing.xml">mvn:org.opendaylight.bgpcep/pcep-controller-config/{{VERSION}}/xml/config-segment</configfile>
     </feature>

@@ -220,7 +220,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
     @Override
     public ListenableFuture<OperationResult> removeLabel(LabelArgs input) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
-        LOG.trace("AddLabelArgs {}", input);
+        LOG.trace("RemoveLabelArgs {}", input);
 
         // check if the peer is PCECC capable
         if (!isPceccCapable()) {
@@ -260,8 +260,19 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final PceLabelDownloadCaseBuilder labelDownloadCaseBuilder = new PceLabelDownloadCaseBuilder();
         final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
-        final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
-        final PceLabelUpdateType labelType = args.getPceLabelUpdateType();
+        PceLabelUpdateType labelType;
+        if (removeFlag == false)
+        {
+            final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
+            labelType = args.getPceLabelUpdateType();
+        }
+        else
+        {
+            final Arguments5 args = input.getArguments().getAugmentation(Arguments5.class);
+            labelType = args.getPceLabelUpdateType();
+        }
+
+
         final PceLabelDownloadCase labelDownloadCase = (PceLabelDownloadCase)labelType;
         final PceLabelDownload labelDownload = labelDownloadCase.getPceLabelDownload();
 
@@ -284,7 +295,10 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             return OperationResults.UNSENT.future();
         }
 
-        labelDownloadBuilder.setLsp(new LspBuilder().setRemove(removeFlag).setPlspId(
+        //labelDownloadBuilder.setLsp(new LspBuilder().setRemove(removeFlag).setPlspId(
+          //      labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
+
+        labelDownloadBuilder.setLsp(new LspBuilder().setPlspId(
                 labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
 
         if (labelDownload.getLabel() == null){
@@ -319,8 +333,18 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final PceLabelMapCaseBuilder labelMapCaseBuilder = new PceLabelMapCaseBuilder();
         final PceLabelUpdatesBuilder labelUpdatesBuilder = new PceLabelUpdatesBuilder();
 
-        final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
-        final PceLabelUpdateType labelType = args.getPceLabelUpdateType();
+        PceLabelUpdateType labelType;
+        if (removeFlag == false)
+        {
+            final Arguments4 args = input.getArguments().getAugmentation(Arguments4.class);
+            labelType = args.getPceLabelUpdateType();
+        }
+        else
+        {
+            final Arguments5 args = input.getArguments().getAugmentation(Arguments5.class);
+            labelType = args.getPceLabelUpdateType();
+        }
+
         final PceLabelMapCase labelMapCase = (PceLabelMapCase)labelType;
         final PceLabelMap labelMap = labelMapCase.getPceLabelMap();
 
