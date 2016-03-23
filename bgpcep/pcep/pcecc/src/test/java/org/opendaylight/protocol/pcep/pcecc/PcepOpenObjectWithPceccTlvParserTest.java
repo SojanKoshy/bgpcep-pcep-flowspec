@@ -20,6 +20,7 @@ import org.opendaylight.protocol.pcep.spi.TlvRegistry;
 import org.opendaylight.protocol.pcep.spi.VendorInformationTlvRegistry;
 import org.opendaylight.protocol.pcep.spi.pojo.SimplePCEPExtensionProviderContext;
 import org.opendaylight.protocol.util.ByteArray;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.Tlvs3;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.Tlvs3Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Tlvs1;
@@ -27,6 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.LabelNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4NodeIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pcecc.capability.tlv.PceccCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.ProtocolVersion;
@@ -46,7 +50,18 @@ public class PcepOpenObjectWithPceccTlvParserTest {
     private static final byte[] PceccLabelObjectBytes = {
         (byte) 0xe1, 0x10, 0x00, 0x0c,
         0x00, 0x00, 0x00, 0x00,
-        (byte) 0x01, 0x38, (byte) 0x90, 0x00,
+        (byte) 0x01, 0x38, (byte) 0x90, 0x00
+    };
+
+    private static final byte[] PceccFecObjectBytes = {
+        (byte) 0xe2, 0x10, 0x00, 0x08,
+        (byte) 0xff,(byte) 0x90, 0x00, 0x00
+    };
+
+    private static final byte[] PceccFecAdjacencyObjectBytes = {
+        (byte) 0xe2, 0x30, 0x00, 0x0c,
+        (byte) 0xfe,(byte) 0x90, 0x00, 0x00,
+        (byte) 0xfe,(byte) 0x90, 0x00, 0x00
     };
 
     private TlvRegistry tlvRegistry;
@@ -99,7 +114,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
 
 
     @Test
-    public void testPceccLabelObjectWithoutLableTlv() throws PCEPDeserializerException {
+    public void testPceccLabelObjectParserWithoutLableTlv() throws PCEPDeserializerException {
         final PceccLabelObjectParser parser =
                 new PceccLabelObjectParser(this.tlvRegistry, this.viTlvRegistry);
 
@@ -118,6 +133,43 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         assertArrayEquals(PceccLabelObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
+
+    @Test
+    public void testPceccFecIpv4ObjectParser() throws PCEPDeserializerException {
+        final PceccFecIpv4ObjectParser parser =
+                new PceccFecIpv4ObjectParser();
+
+        final FecBuilder builder = new FecBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+
+        builder.setFec(new Ipv4NodeIdCaseBuilder().setNodeId(new Ipv4Address("255.144.0.0")).build());
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccFecObjectBytes);
+        assertEquals(builder.build(),
+                parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccFecObjectBytes, ByteArray.getAllBytes(buffer));
+    }
+
+    @Test
+    public void testPceccFecIpv4AdjacencyObjectParser() throws PCEPDeserializerException {
+        final PceccFecIpv4AdjacencyObjectParser parser =
+                new PceccFecIpv4AdjacencyObjectParser();
+
+        final FecBuilder builder = new FecBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+        builder.setFec(new Ipv4AdjacencyCaseBuilder().setLocalIpAddress(new Ipv4Address("254.144.0.0"))
+                .setRemoteIpAddress(new Ipv4Address("254.144.0.0")).build()).build();
+
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccFecAdjacencyObjectBytes);
+        assertEquals(builder.build(),
+                parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccFecAdjacencyObjectBytes, ByteArray.getAllBytes(buffer));
+    }
 
 }
 
