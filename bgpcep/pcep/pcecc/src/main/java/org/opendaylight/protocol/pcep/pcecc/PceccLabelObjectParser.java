@@ -37,7 +37,7 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
 
     protected static final int FLAGS_SIZE = 16;
     protected static final int SKIP_BYTE = 1;
-    protected static final int O_FLAG_OFFSET = 7;
+    protected static final int O_FLAG_OFFSET = 15;
     protected static final int LABEL_SIZE = 20;
     private static final int RESERVED = 2;
     private static final int RESERVED_LABEL = 12;
@@ -59,7 +59,7 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         builder.setProcessingRule(header.isProcessingRule());
 
         bytes.skipBytes(RESERVED + SKIP_BYTE);
-        builder.setOutLabel(bytes.getBoolean(O_FLAG_OFFSET));
+        builder.setOutLabel(bytes.getBoolean(O_FLAG_OFFSET - Byte.SIZE));
         bytes.skipBytes(SKIP_BYTE);
 
         ByteBuf lableBuff = bytes.readBytes((LABEL_SIZE + RESERVED_LABEL) / Byte.SIZE);
