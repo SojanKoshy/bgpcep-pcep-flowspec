@@ -31,9 +31,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
  */
 public class PceccFecObjectParser implements ObjectParser, ObjectSerializer {
 
-    public static final int CLASS = 54; //TODO: Use value same as SVRP
+    public static final int CLASS = 226; //TODO: Use value same as SVRP
 
-    public static final int TYPE = 1;
+    public static final int IPV4_NODEID_CASE_TYPE = 1;
+    public static final int IPV4_ADJACENCY_CASE_TYPE = 3;
     public static final int MIN_SIZE = 8;
 
     @Override
@@ -44,7 +45,6 @@ public class PceccFecObjectParser implements ObjectParser, ObjectSerializer {
                     + MIN_SIZE + ".");
         }
         final FecBuilder builder = new FecBuilder();
-
         return builder.build();
     }
 
@@ -58,15 +58,16 @@ public class PceccFecObjectParser implements ObjectParser, ObjectSerializer {
         if (fec.getFec() instanceof Ipv4NodeIdCase) {
             final Ipv4NodeIdCase nodeId = (Ipv4NodeIdCase)fec.getFec();
             writeIpv4Address(nodeId.getNodeId(), body);
+            ObjectUtil.formatSubobject(IPV4_NODEID_CASE_TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
         }
         else if (fec.getFec() instanceof Ipv4AdjacencyCase)
         {
             final Ipv4AdjacencyCase adjacencyIp = (Ipv4AdjacencyCase) fec.getFec();
             writeIpv4Address(adjacencyIp.getLocalIpAddress(), body);
             writeIpv4Address(adjacencyIp.getRemoteIpAddress(), body);
+            ObjectUtil.formatSubobject(IPV4_ADJACENCY_CASE_TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
         }
 
-        ObjectUtil.formatSubobject(TYPE, CLASS, object.isProcessingRule(), object.isIgnore(), body, buffer);
     }
 
 }
