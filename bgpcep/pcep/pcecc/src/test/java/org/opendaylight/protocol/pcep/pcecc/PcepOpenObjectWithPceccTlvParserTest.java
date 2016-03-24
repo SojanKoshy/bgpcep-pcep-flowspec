@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.protocol.pcep.pcecc;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -28,6 +29,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.LabelNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Tlvs4Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.AddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.Ipv4CaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.ipv4._case.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.FecBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4AdjacencyCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.fec.fec.Ipv4NodeIdCaseBuilder;
@@ -55,7 +59,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
 
     private static final byte[] PceccFecObjectBytes = {
         (byte) 0xe2, 0x10, 0x00, 0x08,
-        (byte) 0xff,(byte) 0x90, 0x00, 0x00
+        (byte) 0xff,(byte) 0x90, 0x00, 0x01
     };
 
     private static final byte[] PceccFecAdjacencyObjectBytes = {
@@ -64,6 +68,21 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         (byte) 0xfe,(byte) 0x90, 0x00, 0x00
     };
 
+
+    private static final byte[] PceccLabelObjectwithTlvBytes = {
+        (byte) 0xe1, 0x10, 0x00, (byte) 0x14,
+        0x00, 0x00, 0x00, 0x00,
+        (byte) 0x01, 0x38, (byte) 0x90, 0x00,
+        (byte)  0xff, 0x09, 0x00, 0x04,
+        0x01, 0x01, 0x01, 0x01
+
+
+    };
+
+    private static final byte[] PceccAddressObjectBytes = {
+        (byte)  0xff, 0x09, 0x00, 0x08,
+        0x01, 0x01, 0x01, 0x01
+    };
     private TlvRegistry tlvRegistry;
     private VendorInformationTlvRegistry viTlvRegistry;
 
@@ -143,13 +162,44 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         builder.setProcessingRule(false);
         builder.setIgnore(false);
 
-        builder.setFec(new Ipv4NodeIdCaseBuilder().setNodeId(new Ipv4Address("255.144.0.0")).build());
+        builder.setFec(new Ipv4NodeIdCaseBuilder().setNodeId(new Ipv4Address("255.144.0.1")).build());
         final ByteBuf result = Unpooled.wrappedBuffer(PceccFecObjectBytes);
         assertEquals(builder.build(),
                 parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
         final ByteBuf buffer = Unpooled.buffer();
         parser.serializeObject(builder.build(), buffer);
         assertArrayEquals(PceccFecObjectBytes, ByteArray.getAllBytes(buffer));
+    }
+
+    @Test
+    public void testPceccFecObjectParserIpv4NodeId() throws PCEPDeserializerException {
+        final PceccFecObjectParser parser =
+                new PceccFecObjectParser();
+
+        final FecBuilder builder = new FecBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+        builder.setFec(new Ipv4NodeIdCaseBuilder().setNodeId(new Ipv4Address("255.144.0.1")).build());
+
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccFecObjectBytes, ByteArray.getAllBytes(buffer));
+    }
+
+    @Test
+    public void testPceccFecObjectParserIpv4Adjacency() throws PCEPDeserializerException {
+        final PceccFecObjectParser parser =
+                new PceccFecObjectParser();
+
+        final FecBuilder builder = new FecBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+        builder.setFec(new Ipv4AdjacencyCaseBuilder().setLocalIpAddress(new Ipv4Address("254.144.0.0"))
+                .setRemoteIpAddress(new Ipv4Address("254.144.0.0")).build()).build();
+
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccFecAdjacencyObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
     @Test
@@ -169,6 +219,37 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         final ByteBuf buffer = Unpooled.buffer();
         parser.serializeObject(builder.build(), buffer);
         assertArrayEquals(PceccFecAdjacencyObjectBytes, ByteArray.getAllBytes(buffer));
+    }
+
+    @Test
+    public void testPceccLabelObjectParserWithLableTLV() throws PCEPDeserializerException {
+        final PceccLabelObjectParser parser =
+                new PceccLabelObjectParser(this.tlvRegistry, this.viTlvRegistry);
+
+        final LabelBuilder builder = new LabelBuilder();
+        builder.setProcessingRule(false);
+        builder.setIgnore(false);
+        builder.setLabelNum(new LabelNumber(5001L));
+        builder.setOutLabel(false);
+
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder tlvBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder();
+
+        AddressBuilder addressBuilder =  new AddressBuilder();
+        Ipv4Builder ipv4 =  new Ipv4Builder();
+        ipv4.setIpv4Address(new Ipv4Address("1.1.1.1")).build();
+        addressBuilder.setAddressFamily(new Ipv4CaseBuilder().setIpv4(ipv4.build()).build());
+
+        builder.setTlvs(tlvBuilder.setAddress(addressBuilder.build()).build());
+
+
+
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccLabelObjectwithTlvBytes);
+        assertEquals(builder.build(),
+                parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
+        final ByteBuf buffer = Unpooled.buffer();
+        parser.serializeObject(builder.build(), buffer);
+        assertArrayEquals(PceccLabelObjectwithTlvBytes, ByteArray.getAllBytes(buffer));
     }
 
 }
