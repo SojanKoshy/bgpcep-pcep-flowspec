@@ -19,7 +19,9 @@ import org.opendaylight.protocol.pcep.spi.TlvSerializer;
 import org.opendaylight.protocol.pcep.spi.TlvUtil;
 import org.opendaylight.protocol.util.Ipv4Util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.AddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.Ipv4Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.Ipv4CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.ipv4._case.Ipv4;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.address.address.family.ipv4._case.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
@@ -44,9 +46,9 @@ public class PceccLabelAddressIpv4TlvParser implements TlvParser, TlvSerializer 
         Preconditions.checkArgument(buffer.readableBytes() == V4_LENGTH, "Length %s does not match Label Ipv4 tlv length.", buffer.readableBytes());
         final Ipv4Builder builder = new Ipv4Builder();
         builder.setIpv4Address(Ipv4Util.addressForByteBuf(buffer));
-        //final Address add = new Ipv4CaseBuilder().setIpv4(builder.build()).build();
-        //return new AddressBuilder().setAddress(add.getAddress()).build();
-        return null;
+        final Ipv4CaseBuilder ipv4 = new Ipv4CaseBuilder().setIpv4(builder.build());
+        final AddressBuilder address = new AddressBuilder().setAddressFamily(ipv4.build());
+        return address.build();
     }
 
     @Override
