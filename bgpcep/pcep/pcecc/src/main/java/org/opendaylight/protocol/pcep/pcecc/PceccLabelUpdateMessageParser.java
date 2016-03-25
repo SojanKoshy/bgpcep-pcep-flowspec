@@ -129,17 +129,22 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
 
         if (objects.get(0) instanceof Srp) {
 
-            if (objects.get(1) instanceof Lsp) {
+            if (objects.get(1) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.object.Lsp) {
                 pceLabelDownloadBuilder.setSrp((Srp) objects.get(0));
                 objects.remove(0);
 
                 pceLabelDownloadBuilder.setLsp((Lsp) objects.get(0));
                 objects.remove(0);
 
-                final List<Label> lbl = parseLabels(objects, errors);
-                if (!lbl.isEmpty()) {
-                    pceLabelDownloadBuilder.setLabel(lbl);
+                if (objects.get(0) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.
+                        pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.Label){
+                    final List<Label> lbl = parseLabels(objects, errors);
+                    if (!lbl.isEmpty()) {
+                        pceLabelDownloadBuilder.setLabel(lbl);
+                    }
+                    objects.remove(0);
                 }
+
             } else if (objects.get(1) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) {
 
                 pceLabelMapBuilder.setSrp((Srp) objects.get(0));
