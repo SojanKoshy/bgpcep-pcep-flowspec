@@ -28,7 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.PclabelupdMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelDownloadCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelDownloadCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelMapCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.PceLabelMapCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.PceLabelDownload;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.PceLabelDownloadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.Label;
@@ -36,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.map._case.PceLabelMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.PclabelupdMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdates;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Object;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.rp.object.Rp;
@@ -119,30 +122,34 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
     protected PceLabelUpdates getValidUpdates(final List<Object> objects, final List<Message> errors) {
 
         boolean isValid = true;
-        final PceLabelDownloadBuilder labelDownloadBuilder = new PceLabelDownloadBuilder();
-        final PceLabelMapBuilder labelMapbuilder = new PceLabelMapBuilder();
+        final PceLabelDownloadBuilder pceLabelDownloadBuilder = new PceLabelDownloadBuilder();
+        final PceLabelMapBuilder pceLabelMapBuilder = new PceLabelMapBuilder();
+
+        final PceLabelUpdatesBuilder pceLabelUpdatesBuilder = new PceLabelUpdatesBuilder();
+
         if (objects.get(0) instanceof Srp) {
 
             if (objects.get(1) instanceof Lsp) {
-                labelDownloadBuilder.setSrp((Srp) objects.get(0));
+                pceLabelDownloadBuilder.setSrp((Srp) objects.get(0));
                 objects.remove(0);
 
-                labelDownloadBuilder.setLsp((Lsp) objects.get(0));
+                pceLabelDownloadBuilder.setLsp((Lsp) objects.get(0));
                 objects.remove(0);
 
                 final List<Label> lbl = parseLabels(objects, errors);
                 if (!lbl.isEmpty()) {
-                    labelDownloadBuilder.setLabel(lbl);
+                    pceLabelDownloadBuilder.setLabel(lbl);
                 }
-            } else if (objects.get(1) instanceof Label) {
-                labelMapbuilder.setSrp((Srp) objects.get(0));
+            } else if (objects.get(1) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) {
+
+                pceLabelMapBuilder.setSrp((Srp) objects.get(0));
                 objects.remove(0);
 
-                labelMapbuilder.setLabel((org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) objects.get(0));
+                pceLabelMapBuilder.setLabel((org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) objects.get(0));
                 objects.remove(0);
                 if (objects.get(0) instanceof Fec)
                 {
-                    labelMapbuilder.setFec((Fec) objects.get(0));
+                    pceLabelMapBuilder.setFec((Fec) objects.get(0));
                     objects.remove(0);
                 }
             } else {
@@ -152,6 +159,14 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
         } else {
             errors.add(createErrorMsg(PCEPErrors.SRP_MISSING, Optional.<Rp>absent())); //to check
             isValid = false;
+        }
+        if(isValid) {
+            if (pceLabelMapBuilder != null) {
+                pceLabelUpdatesBuilder.setPceLabelUpdateType(new PceLabelMapCaseBuilder().setPceLabelMap(pceLabelMapBuilder.build()).build()).build();
+            } else if (pceLabelDownloadBuilder != null){
+                pceLabelUpdatesBuilder.setPceLabelUpdateType(new PceLabelDownloadCaseBuilder().setPceLabelDownload(pceLabelDownloadBuilder.build()).build()).build();
+            }
+            return pceLabelUpdatesBuilder.build();
         }
         return null;
     }
