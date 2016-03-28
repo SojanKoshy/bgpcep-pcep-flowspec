@@ -20,7 +20,7 @@ To auto install the dependent libraties and run test:
 
 Steps:
 
-    # After start ODL and routers with basic config for PCE test
+    # After starting ODL and routers with basic config for PCE test
 
     cd bgpcep-pcecc/test
     python setup.py pytest

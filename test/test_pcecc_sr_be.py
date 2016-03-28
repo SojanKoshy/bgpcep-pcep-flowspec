@@ -11,9 +11,11 @@ __license__ = "Eclipse Public License v1.0"
 __email__ = "sojan.koshy@huawei.com"
 
 import time
+
 from test.library.odl import Odl
 from test.library.svrp import Router
 from test.variables import variables as v
+
 
 def setup_module(module):
     """Setup before test case execution"""
@@ -21,7 +23,7 @@ def setup_module(module):
     global odl, rt1
     odl = Odl()
     rt1 = Router()
-    
+
 def teardown_module(module):
     """Tear down after test case execution"""
     print "\nTear down"
@@ -35,17 +37,16 @@ def test_pcecc_sr_be():
     rt1.set_pce()
     time.sleep(1)
     assert rt1.check_pce_up()
-    
+
     status, resp = odl.get_pcep_topology()
     assert status == 200 and (resp['topology'][0]['node'][0]["node-id"] ==
-                              "pcc://" + v.pcc1_node_id)
+                              "pcc://" + v.rt1_node_id)
 
-    params = {'pcc_node_id': v.pcc1_node_id}
+    params = {'pcc_node_id': v.rt1_node_id}
     status, resp = odl.post_add_lsp(params)
     assert status == 200 and resp['output'] == {}
- 
+
     status, resp = odl.post_add_label()
     assert status == 200 and resp['output'] == {}
- 
+
     resp = odl.post_remove_lsp()
-    

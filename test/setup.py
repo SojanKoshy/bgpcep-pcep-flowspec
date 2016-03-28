@@ -15,6 +15,7 @@ __email__ = "sojan.koshy@huawei.com"
 
 from setuptools import setup
 
+
 setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest', 'python-rest-client'],

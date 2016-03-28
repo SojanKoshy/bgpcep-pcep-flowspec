@@ -1,6 +1,6 @@
 {
   "input": {
-    "node": "pcc://$pcc_node_id",
+    "node": "pcc://$node_id",
     "name": "PceTunnel",
     "arguments": {
       "lsp": {

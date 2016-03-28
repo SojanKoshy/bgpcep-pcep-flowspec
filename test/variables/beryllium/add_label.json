@@ -1,1 +1,26 @@
-{"input":{"node":"pcc://3.3.3.5","arguments":{"odl-pcep-pcecc:pce-label-map":{"label":{"labelNum":"1500","out-label":"false","processing-rule":"false","ignore":"false"},"srp":{"operation-id":"11","processing-rule":"false","ignore":"false"},"fec":{"node-id":"3.3.3.5","processing-rule":"false","ignore":"false"}}},"network-topology-ref":"/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"}}
+{
+  "input": {
+    "node": "pcc://$node_id",
+    "arguments": {
+      "odl-pcep-pcecc:pce-label-map": {
+        "label": {
+          "labelNum": "1500",
+          "out-label": "false",
+          "processing-rule": "false",
+          "ignore": "false"
+        },
+        "srp": {
+          "operation-id": "11",
+          "processing-rule": "false",
+          "ignore": "false"
+        },
+        "fec": {
+          "node-id": "$node_id",
+          "processing-rule": "false",
+          "ignore": "false"
+        }
+      }
+    },
+    "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"
+  }
+}

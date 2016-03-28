@@ -16,16 +16,31 @@ from os.path import dirname
 logging.basicConfig(level=logging.DEBUG)
 cur_dir = dirname(__file__)
 
-#ODL RESTconf
+# ODL RESTconf
 base_url = "http://127.0.0.1:8181/restconf"
 username = "admin"
 password = "admin"
 
-#PCE variables
+# PCE variables
 odl_pce_server_ip = "172.16.0.13"
-pcc1_node_id = "3.3.3.5"
 
-#REST Transactions
+rt1_telnet_ip = "172.16.3.15"
+rt1_username = ""
+rt1_password = "Root@123"
+
+rt2_telnet_ip = "172.16.3.16"
+rt2_username = ""
+rt2_password = "Root@123"
+
+rt1_node_id = "3.3.3.5"
+rt1_to_rt2_intf = "Ethernet3/0/0"
+rt1_to_rt2_ip = "10.1.1.1"
+
+rt2_node_id = "3.3.3.6"
+rt2_to_rt1_intf = "Ethernet3/0/0"
+rt2_to_rt1_ip = "10.1.1.2"
+
+# REST Transactions
 odl_version = "beryllium"
 rest_file_path = cur_dir + "/" + odl_version + "/"
 
