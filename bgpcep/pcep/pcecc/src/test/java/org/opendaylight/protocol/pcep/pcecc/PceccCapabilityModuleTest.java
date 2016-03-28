@@ -24,7 +24,7 @@ import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccCapabilityMod
 public class PceccCapabilityModuleTest extends AbstractConfigTest {
 
     private static final String FACTORY_NAME = PceccCapabilityModuleFactory.NAME;
-    private static final String INSTANCE_NAME = "pcepcc-impl";
+    private static final String INSTANCE_NAME = "pcecc-impl";
 
     public static ObjectName createPCEPCCCapabilityInstance(final ConfigTransactionJMXClient
                                                                     transaction) throws Exception {
