@@ -53,7 +53,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
 
     private static final byte[] PceccLabelObjectBytes = {
         (byte) 0xe1, 0x10, 0x00, 0x0c,
-        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x01,
         (byte) 0x01, 0x38, (byte) 0x90, 0x00
     };
 
@@ -69,14 +69,12 @@ public class PcepOpenObjectWithPceccTlvParserTest {
     };
 
 
-    private static final byte[] PceccLabelObjectwithTlvBytes = {
+    private static final byte[] PceccLabelObjectwithAddressTlvBytes = {
         (byte) 0xe1, 0x10, 0x00, (byte) 0x14,
         0x00, 0x00, 0x00, 0x00,
         (byte) 0x01, 0x38, (byte) 0x90, 0x00,
         (byte)  0xff, 0x09, 0x00, 0x04,
         0x01, 0x01, 0x01, 0x01
-
-
     };
 
     private static final byte[] PceccAddressObjectBytes = {
@@ -133,7 +131,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
 
 
     @Test
-    public void testPceccLabelObjectParserWithoutLableTlv() throws PCEPDeserializerException {
+    public void testPceccLabelObjectParserWithoutAddressTlv() throws PCEPDeserializerException {
         final PceccLabelObjectParser parser =
                 new PceccLabelObjectParser(this.tlvRegistry, this.viTlvRegistry);
 
@@ -141,7 +139,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         builder.setProcessingRule(false);
         builder.setIgnore(false);
         builder.setLabelNum(new LabelNumber(5001L));
-        builder.setOutLabel(false);
+        builder.setOutLabel(true);
         builder.setTlvs(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.label.TlvsBuilder()
                 .build());
         final ByteBuf result = Unpooled.wrappedBuffer(PceccLabelObjectBytes);
@@ -180,6 +178,9 @@ public class PcepOpenObjectWithPceccTlvParserTest {
         builder.setProcessingRule(false);
         builder.setIgnore(false);
         builder.setFec(new Ipv4NodeIdCaseBuilder().setNodeId(new Ipv4Address("255.144.0.1")).build());
+        /*only for parser coverage*/
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccFecObjectBytes);
+        parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4));
 
         final ByteBuf buffer = Unpooled.buffer();
         parser.serializeObject(builder.build(), buffer);
@@ -222,7 +223,7 @@ public class PcepOpenObjectWithPceccTlvParserTest {
     }
 
     @Test
-    public void testPceccLabelObjectParserWithLableTLV() throws PCEPDeserializerException {
+    public void testPceccLabelObjectParserWithAddressLabelTLV() throws PCEPDeserializerException {
         final PceccLabelObjectParser parser =
                 new PceccLabelObjectParser(this.tlvRegistry, this.viTlvRegistry);
 
@@ -242,14 +243,12 @@ public class PcepOpenObjectWithPceccTlvParserTest {
 
         builder.setTlvs(tlvBuilder.setAddress(addressBuilder.build()).build());
 
-
-
-        final ByteBuf result = Unpooled.wrappedBuffer(PceccLabelObjectwithTlvBytes);
+        final ByteBuf result = Unpooled.wrappedBuffer(PceccLabelObjectwithAddressTlvBytes);
         assertEquals(builder.build(),
                 parser.parseObject(new ObjectHeaderImpl(false, false), result.slice(4, result.readableBytes() - 4)));
         final ByteBuf buffer = Unpooled.buffer();
         parser.serializeObject(builder.build(), buffer);
-        assertArrayEquals(PceccLabelObjectwithTlvBytes, ByteArray.getAllBytes(buffer));
+        assertArrayEquals(PceccLabelObjectwithAddressTlvBytes, ByteArray.getAllBytes(buffer));
     }
 
 }
