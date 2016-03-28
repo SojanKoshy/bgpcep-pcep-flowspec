@@ -1,0 +1,33 @@
+{
+  "input": {
+    "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id="pcep-topology"]",
+    "node": "pcc://3.3.3.5",
+    "arguments": {
+      "odl-pcep-pcecc:pce-label-map": {
+          "labelNum": "1500",
+          "out-label": "false",
+          "processing-rule": "false",
+          "ignore": "false"
+        },
+        "srp": {
+          "tlvs": {
+            "symbolic-path-name": {
+              "path-name": "PCECCTunnel"
+            },
+            "path-setup-type": {
+              "pst": "2"
+            }
+          },
+          "operation-id": "1",
+          "processing-rule": "false",
+          "ignore": "false"
+        },
+        "fec": {
+          "node-id": "1",
+          "processing-rule": "false",
+          "ignore": "false"
+        }
+      }
+    }
+  }
+}
