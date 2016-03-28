@@ -136,13 +136,11 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
                 pceLabelDownloadBuilder.setLsp((Lsp) objects.get(0));
                 objects.remove(0);
 
-                if (objects.get(0) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.
-                        pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.Label){
+                if (objects.get(0) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label){
                     final List<Label> lbl = parseLabels(objects, errors);
                     if (!lbl.isEmpty()) {
                         pceLabelDownloadBuilder.setLabel(lbl);
                     }
-                    objects.remove(0);
                 }
 
             } else if (objects.get(1) instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) {
@@ -166,9 +164,9 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
             isValid = false;
         }
         if(isValid) {
-            if (pceLabelMapBuilder != null) {
+            if (pceLabelMapBuilder.getLabel() != null) {
                 pceLabelUpdatesBuilder.setPceLabelUpdateType(new PceLabelMapCaseBuilder().setPceLabelMap(pceLabelMapBuilder.build()).build()).build();
-            } else if (pceLabelDownloadBuilder != null){
+            } else if (pceLabelDownloadBuilder.getLabel() != null){
                 pceLabelUpdatesBuilder.setPceLabelUpdateType(new PceLabelDownloadCaseBuilder().setPceLabelDownload(pceLabelDownloadBuilder.build()).build()).build();
             }
             return pceLabelUpdatesBuilder.build();
@@ -179,10 +177,35 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
     protected List<Label> parseLabels(final List<Object> objects, final List<Message> errors) {
 
         final List<Label> labelList = new ArrayList<>();
-        while (!objects.isEmpty()) {
-            if (objects instanceof Label) {
-                labelList.add((Label)objects);
-            }
+
+        int labelProcessed =  0;
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder labelBuilder
+                = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.LabelBuilder();
+
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.LabelBuilder downloadLabel
+                = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pce.label.update.pce.label.update.type.pce.label.download._case.pce.label.download.LabelBuilder();
+        for (Object object:objects) {
+
+            labelBuilder.setLabelNum(null);
+            labelBuilder.setTlvs(null);
+            labelBuilder.setOutLabel(false);
+            labelBuilder.setIgnore(false);
+            labelBuilder.setProcessingRule(false);
+
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label label = (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.label.object.Label) object;
+            labelBuilder.setLabelNum(label.getLabelNum());
+            labelBuilder.setTlvs(label.getTlvs());
+            labelBuilder.setOutLabel(label.isOutLabel());
+            labelBuilder.setIgnore(label.isIgnore());
+            labelBuilder.setProcessingRule(label.isProcessingRule());
+            downloadLabel.setLabel(labelBuilder.build());
+            labelList.add(downloadLabel.build());
+            labelProcessed = labelProcessed + 1;
+
+        }
+        while(labelProcessed > 0){
+            objects.remove(0);
+            labelProcessed = labelProcessed -1;
         }
         return labelList;
     }
