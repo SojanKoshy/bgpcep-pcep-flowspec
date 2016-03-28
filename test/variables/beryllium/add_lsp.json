@@ -1,0 +1,31 @@
+{
+  "input": {
+    "node": "pcc://$node_id",
+    "name": "PceTunnel",
+    "arguments": {
+      "lsp": {
+        "delegate": "true",
+        "administrative": "true"
+      },
+      "endpoints-obj": {
+        "ipv4": {
+          "source-ipv4-address": "3.3.3.5",
+          "destination-ipv4-address": "3.3.3.6"
+        }
+      },
+      "ero": {
+        "subobject": [
+          {
+            "loose": "false",
+            "ip-prefix": { "ip-prefix": "10.1.1.1/24" }
+          },
+          {
+            "loose": "false",
+            "ip-prefix": { "ip-prefix": "10.1.1.2/24" }
+          }
+        ]
+      }
+    },
+    "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"
+  }
+}
