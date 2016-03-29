@@ -35,7 +35,7 @@ public class PceccFecObjectParser implements ObjectParser, ObjectSerializer {
 
     public static final int IPV4_NODEID_CASE_TYPE = 1;
     public static final int IPV4_ADJACENCY_CASE_TYPE = 3;
-    public static final int MIN_SIZE = 8;
+    public static final int MIN_SIZE = 4;
 
     @Override
     public Fec parseObject(final ObjectHeader header, final ByteBuf bytes) throws PCEPDeserializerException {

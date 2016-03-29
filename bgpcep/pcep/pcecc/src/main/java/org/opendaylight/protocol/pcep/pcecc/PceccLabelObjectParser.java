@@ -45,6 +45,7 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
     private static final int RESERVED_LABEL = 12;
     private static final int MIN_SIZE =  8;
     protected static final int MPLS_LABEL_OFFSET = 12;
+    protected static final int OUT_LABEL_BYTE = 1;
 
     public PceccLabelObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
         super(tlvReg, viTlvReg);
@@ -59,13 +60,15 @@ public class PceccLabelObjectParser extends AbstractObjectWithTlvsParser<TlvsBui
         final LabelBuilder builder = new LabelBuilder();
         builder.setIgnore(header.isIgnore());
         builder.setProcessingRule(header.isProcessingRule());
-
         bytes.skipBytes(RESERVED + SKIP_BYTE);
-        builder.setOutLabel(bytes.getBoolean(O_FLAG_OFFSET - Byte.SIZE));
-        bytes.skipBytes(SKIP_BYTE);
-
+        byte outLabel = bytes.readByte();
+        if((byte)(outLabel & OUT_LABEL_BYTE) == OUT_LABEL_BYTE){
+            builder.setOutLabel(true);
+        }else
+        {
+            builder.setOutLabel(false);
+        }
         ByteBuf lableBuff = bytes.readBytes((LABEL_SIZE + RESERVED_LABEL) / Byte.SIZE);
-
         builder.setLabelNum(new LabelNumber(lableBuff.readUnsignedInt() >> RESERVED_LABEL));
         final TlvsBuilder tlvsBuilder = new TlvsBuilder();
         ByteBuf tlvBytes = bytes.slice();

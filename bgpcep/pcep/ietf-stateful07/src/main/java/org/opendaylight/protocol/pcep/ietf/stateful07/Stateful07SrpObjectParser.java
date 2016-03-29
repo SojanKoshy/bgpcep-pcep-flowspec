@@ -45,7 +45,7 @@ public class Stateful07SrpObjectParser extends AbstractObjectWithTlvsParser<Tlvs
 
     protected static final int MIN_SIZE = FLAGS_SIZE / Byte.SIZE + SRP_ID_SIZE;
 
-    protected Stateful07SrpObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
+    public Stateful07SrpObjectParser(final TlvRegistry tlvReg, final VendorInformationTlvRegistry viTlvReg) {
         super(tlvReg, viTlvReg);
     }
 
