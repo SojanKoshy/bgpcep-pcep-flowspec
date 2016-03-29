@@ -9,8 +9,8 @@
       },
       "endpoints-obj": {
         "ipv4": {
-          "source-ipv4-address": "3.3.3.5",
-          "destination-ipv4-address": "3.3.3.6"
+          "source-ipv4-address": "$source",
+          "destination-ipv4-address": "$destination"
         }
       },
       "odl-pcep-ietf-stateful07:path-setup-type": {
@@ -20,11 +20,19 @@
         "subobject": [
           {
             "loose": "false",
+            "ip-prefix": { "ip-prefix": "$source/32" }
+          },
+          {
+            "loose": "false",
             "ip-prefix": { "ip-prefix": "10.1.1.1/24" }
           },
           {
             "loose": "false",
             "ip-prefix": { "ip-prefix": "10.1.1.2/24" }
+          },
+          {
+            "loose": "false",
+            "ip-prefix": { "ip-prefix": "$destination/32" }
           }
         ]
       }
