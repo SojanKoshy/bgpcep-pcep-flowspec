@@ -13,6 +13,9 @@
           "destination-ipv4-address": "3.3.3.6"
         }
       },
+      "odl-pcep-ietf-stateful07:path-setup-type": {
+        "pst": "2"
+      },
       "ero": {
         "subobject": [
           {

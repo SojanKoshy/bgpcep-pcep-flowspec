@@ -29,9 +29,9 @@ class Odl:
 
     def clean_up(self):
         """Clean up ODL configuration."""
-        return
+        self.post_remove_lsp()
 
-    def read_file(self, filename, params={}):
+    def read_file(self, filename, params=None):
         """Return the file contents after substituting the params if any."""
         f = open(filename, 'r')
         contents = f.read()
@@ -79,26 +79,34 @@ class Odl:
 
         return status, response_body
 
-    def get_pcep_topology(self, params={}):
+    def get_pcep_topology(self, params=None):
         """Return the content of PCEP topology response."""
         return self.get("/operational/network-topology:network-topology/topology/pcep-topology")
 
-    def post_add_lsp(self, params={}):
+    def post_add_lsp(self, params=None):
         """Add LSP and return the content of the response."""
+        self.node_id = params['node_id']    # Required for auto undo
         body = self.read_file(v.add_lsp_file, params)
         return self.post("/operations/network-topology-pcep:add-lsp", body)
 
-    def post_remove_lsp(self, params={}):
+    def post_remove_lsp(self, params=None):
         """Remove LSP and return the content of the response."""
-        body = self.read_file(v.remove_lsp_file, params)
-        return self.post("/operations/network-topology-pcep:remove-lsp", body)
+        if params is None:
+            # Auto undo
+            params = {}
+            self._move_attr_to_param(params, 'node_id')
 
-    def post_add_label(self, params={}):
+        if params.has_key("node_id"):
+            body = self.read_file(v.remove_lsp_file, params)
+            return self.post("/operations/network-topology-pcep:remove-lsp", body)
+
+    def post_add_label(self, params=None):
         """Add label and return the content of the response."""
         body = self.read_file(v.add_label_file, params)
+
         return self.post("/operations/network-topology-pcep:add-label", body)
 
-    def post_remove_label(self, params={}):
+    def post_remove_label(self, params=None):
         """Remove label and return the content of the response."""
         body = self.read_file(v.remove_label_file, params)
         return self.post("/operations/network-topology-pcep:remove-label", body)
@@ -126,3 +134,9 @@ class Odl:
             signal.alarm(0)
 
         return result
+
+    def _move_attr_to_param(self, param, *attrs):
+        for attr in attrs:
+            if hasattr(self, attr):
+                param[attr] = self.__dict__[attr]
+                delattr(self, attr)

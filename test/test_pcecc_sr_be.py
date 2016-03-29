@@ -20,9 +20,11 @@ from test.variables import variables as v
 def setup_module(module):
     """Setup before test case execution"""
     print "\nSetup"
-    global odl, rt1
-    odl = Odl()
-    rt1 = Router()
+    global odl, rt1, rt2, rt3
+    odl = Odl(v.base_url)
+    rt1 = Router('RT1', v.rt1_telnet_ip)
+    rt2 = Router('RT2', v.rt2_telnet_ip)
+    rt3 = Router('RT3', v.rt3_telnet_ip)
 
 def teardown_module(module):
     """Tear down after test case execution"""

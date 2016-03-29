@@ -2,20 +2,37 @@
   "input": {
     "node": "pcc://$node_id",
     "arguments": {
-      "odl-pcep-pcecc:pce-label-map": {
-        "label": {
-          "labelNum": "1500",
-          "out-label": "false",
+      "odl-pcep-pcecc:pce-label-download": {
+        "label": [
+          {
+            "label": {
+              "labelNum": "$in_label",
+              "out-label": "false",
+              "processing-rule": "false",
+              "ignore": "false"
+            }
+          },
+          {
+            "label": {
+              "labelNum": "$out_label",
+              "out-label": "true",
+              "processing-rule": "false",
+              "ignore": "false"
+            }
+          }
+        ],
+        "lsp": {
+          "plsp-id": "1",
+          "delegate": "false",
+          "sync": "false",
+          "remove": "false",
+          "administrative": "false",
+          "operational": "up",
           "processing-rule": "false",
           "ignore": "false"
         },
         "srp": {
-          "operation-id": "11",
-          "processing-rule": "false",
-          "ignore": "false"
-        },
-        "fec": {
-          "node-id": "$node_id",
+          "operation-id": "1",
           "processing-rule": "false",
           "ignore": "false"
         }

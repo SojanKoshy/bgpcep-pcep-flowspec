@@ -18,18 +18,16 @@ from test.variables import variables as v
 
 
 class Router:
-    def __init__(self, sysname, ip, username, password):
+    def __init__(self, sysname, ip):
         self.ip = ip
-        self.username = username
-        self.password = password
+        self.username = v.rtr_username
+        self.password = v.rtr_password
         self.log = logging.getLogger(sysname)
         self.login()
-        return
 
     def clean_up(self):
-        self.unset_pce()
+        self.unset_basic_pce()
         self.logout()
-        return
 
     def send_cmd(self, command, prompt=""):
         if prompt:
@@ -65,27 +63,74 @@ class Router:
         self.tn.close()
         self.tn = None
 
-    def init_basic_pce(self, param={}):
-        self.send_cmd("mpls lsr-id " + param['node_id'])
-        self.send_cmd("mpls")
-        self.send_cmd("mpls te")
-        self.send_cmd("mpls te pce delegate")
-        self.send_cmd("mpls ldp")
-        self.send_cmd("pce-client")
-        self.send_cmd("capability initiated-lsp")
-        self.send_cmd("connect-server " + param['pce_server_ip'])
-        self.send_cmd("interface " + param['intf'])
-        self.send_cmd("ip address " + param['ip'] + ' 24')
-        self.send_cmd("mpls")
-        self.send_cmd("mpls te")
-        self.send_cmd("interface loopback0")
-        self.send_cmd("ip address " + param['node_id'] + ' 32')
-        self.send_cmd("quit")
+    def set_basic_pce(self, params=None):
+        if params.has_key("pce_server_ip"):
+            self.pce_server_ip = params['pce_server_ip'] # Required for auto undo
+            self.send_cmd("mpls lsr-id " + params['node_id'])
+            self.send_cmd("mpls")
+            self.send_cmd("mpls te")
+            self.send_cmd("mpls te pce delegate")
+            self.send_cmd("mpls ldp")
+            self.send_cmd("interface loopback0")
+            self.send_cmd("ip address " + params['node_id'] + ' 32')
+            self.send_cmd("quit")
+            self.send_cmd("pce-client")
+            self.send_cmd("capability initiated-lsp")
+            self.send_cmd("connect-server " + params['pce_server_ip'])
+            self.send_cmd("quit")
+            self.send_cmd("quit")
 
-    def unset_pce(self, param={}):
-#         self.send_cmd("undo mpls")
-        self.send_cmd("undo pce-client")
+        if params.has_key("intf"):
+            self.intf = params['intf']   # Required for auto undo
+            self.send_cmd("interface " + params['intf'])
+            self.send_cmd("ip address " + params['ip'] + ' 24')
+            self.send_cmd("mpls")
+            self.send_cmd("mpls te")
+            self.send_cmd("quit")
 
-    def check_pce_up(self, param={}):
+        if params.has_key("intf2"):
+            self.intf2 = params['intf2'] # Required for auto undo
+            self.send_cmd("interface " + params['intf2'])
+            self.send_cmd("ip address " + params['ip2'] + ' 24')
+            self.send_cmd("mpls")
+            self.send_cmd("mpls te")
+            self.send_cmd("quit")
+
+    def unset_basic_pce(self, params=None):
+        if params is None:
+            # Auto undo
+            params = {}
+            self._move_attr_to_params(params, 'pce_server_ip', 'intf', 'intf2')
+
+        if params.has_key("pce_server_ip"):
+            self.send_cmd("undo mpls")
+            self.send_cmd("y")
+            self.send_cmd("undo mpls lsr-id")
+            self.send_cmd("undo interface loopback0")
+            self.send_cmd("pce-client")
+            self.send_cmd("undo connect-server " + params['pce_server_ip'])
+            self.send_cmd("quit")
+            # self.send_cmd("undo pce-client")
+
+        if params.has_key("intf"):
+            self.send_cmd("interface " + params['intf'])
+            self.send_cmd("undo ip address")
+            self.send_cmd("undo mpls")
+            self.send_cmd("quit")
+
+        if params.has_key("intf2"):
+            self.send_cmd("interface " + params['intf2'])
+            self.send_cmd("undo ip address")
+            self.send_cmd("undo mpls")
+            self.send_cmd("quit")
+
+    def check_pce_up(self, params=None):
         ret = self.send_cmd("display pce protocol session")
-        return re.search(v.odl_pce_server_ip + "\s*UP", ret)
+        return re.search(params['pce_server_ip'] + "\s*UP", ret)
+
+    def _move_attr_to_params(self, params, *attrs):
+        for attr in attrs:
+            if hasattr(self, attr):
+                params[attr] = self.__dict__[attr]
+                print  self.__dict__[attr]
+                delattr(self, attr)
