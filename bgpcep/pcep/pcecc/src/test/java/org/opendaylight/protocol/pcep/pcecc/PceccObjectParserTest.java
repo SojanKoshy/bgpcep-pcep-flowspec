@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.OpenBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
 
-public class PcepccObjectParserTest {
+public class PceccObjectParserTest {
 
     private static final byte[] openObjectBytes = {
         0x01, 0x10, 0x00, 0x10,
@@ -77,10 +77,6 @@ public class PcepccObjectParserTest {
         0x01, 0x01, 0x01, 0x01
     };
 
-    private static final byte[] PceccAddressObjectBytes = {
-        (byte)  0xff, 0x09, 0x00, 0x08,
-        0x01, 0x01, 0x01, 0x01
-    };
     private TlvRegistry tlvRegistry;
     private VendorInformationTlvRegistry viTlvRegistry;
 
