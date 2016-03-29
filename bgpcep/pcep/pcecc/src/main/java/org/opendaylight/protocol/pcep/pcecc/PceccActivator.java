@@ -11,11 +11,15 @@ package org.opendaylight.protocol.pcep.pcecc;
 import com.google.common.collect.Lists;
 import java.util.List;
 
+import org.opendaylight.protocol.pcep.ietf.stateful07.Stateful07LspObjectParser;
+import org.opendaylight.protocol.pcep.ietf.stateful07.Stateful07SrpObjectParser;
 import org.opendaylight.protocol.pcep.spi.ObjectRegistry;
 import org.opendaylight.protocol.pcep.spi.PCEPExtensionProviderContext;
 import org.opendaylight.protocol.pcep.spi.TlvRegistry;
 import org.opendaylight.protocol.pcep.spi.VendorInformationTlvRegistry;
 import org.opendaylight.protocol.pcep.spi.pojo.AbstractPCEPExtensionProviderActivator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.object.Lsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.srp.object.Srp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.Pclabelupd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.address.tlv.Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.fec.object.Fec;
@@ -69,6 +73,13 @@ public class PceccActivator extends AbstractPCEPExtensionProviderActivator {
 
         regs.add(context.registerTlvParser(PceccLabelAddressIpv4TlvParser.TYPE, new PceccLabelAddressIpv4TlvParser()));
         regs.add(context.registerTlvSerializer(Address.class, new PceccLabelAddressIpv4TlvParser()));
+        regs.add(context.registerObjectParser(Stateful07LspObjectParser.CLASS, Stateful07LspObjectParser.TYPE,
+                new Stateful07LspObjectParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectSerializer(Lsp.class, new Stateful07LspObjectParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectParser(Stateful07SrpObjectParser.CLASS, Stateful07SrpObjectParser.TYPE,
+                new Stateful07SrpObjectParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectSerializer(Srp.class, new Stateful07SrpObjectParser(tlvReg, viTlvRegistry)));
+
         return regs;
     }
 }
