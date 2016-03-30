@@ -124,7 +124,10 @@ def verify_egress_in_pcep_topology():
 
 def add_lsp():
     """Add an LSP to ingress router."""
-    params = {'node_id': v.rt1_node_id}
+    params = {'node_id': v.rt1_node_id,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
+              }
     status, resp = odl.post_add_lsp(params)
     assert status == 200
     assert resp['output'] == {}

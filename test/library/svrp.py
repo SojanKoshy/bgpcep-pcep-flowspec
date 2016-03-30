@@ -132,5 +132,4 @@ class Router:
         for attr in attrs:
             if hasattr(self, attr):
                 params[attr] = self.__dict__[attr]
-                print  self.__dict__[attr]
                 delattr(self, attr)
