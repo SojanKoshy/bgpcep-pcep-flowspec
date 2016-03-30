@@ -194,8 +194,6 @@ public class PceccLabelUpdateMessageParserTest {
         builder.setPceLabelUpdates(updates);
 
         ByteBuf result = Unpooled.wrappedBuffer(PceccLabelDownloadWithMultiElementList);
-        parser.parseMessage(result.slice(4,
-                result.readableBytes() - 4), Collections.<Message> emptyList());
 
         assertEquals(new PclabelupdBuilder().setPclabelupdMessage(builder.build()).build(), parser.parseMessage(result.slice(4,
                 result.readableBytes() - 4), Collections.<Message> emptyList()));
@@ -266,8 +264,6 @@ public class PceccLabelUpdateMessageParserTest {
         builder.setPceLabelUpdates(updates);
 
         ByteBuf result = Unpooled.wrappedBuffer(PceccLabelDownloadWithSingleElementList);
-        parser.parseMessage(result.slice(4,
-                result.readableBytes() - 4), Collections.<Message> emptyList());
 
         assertEquals(new PclabelupdBuilder().setPclabelupdMessage(builder.build()).build(), parser.parseMessage(result.slice(4,
                 result.readableBytes() - 4), Collections.<Message> emptyList()));
@@ -321,8 +317,6 @@ public class PceccLabelUpdateMessageParserTest {
         builder.setPceLabelUpdates(updates);
 
         ByteBuf result = Unpooled.wrappedBuffer(PceccLabelMapObjectWithAddressTlvBytes);
-        parser.parseMessage(result.slice(4,
-                result.readableBytes() - 4), Collections.<Message> emptyList());
 
         assertEquals(new PclabelupdBuilder().setPclabelupdMessage(builder.build()).build(), parser.parseMessage(result.slice(4,
                 result.readableBytes() - 4), Collections.<Message> emptyList()));
@@ -368,8 +362,6 @@ public class PceccLabelUpdateMessageParserTest {
         builder.setPceLabelUpdates(updates);
 
         ByteBuf result = Unpooled.wrappedBuffer(PceccLabelMapObjectWithoutAddressTlvBytes);
-        parser.parseMessage(result.slice(4,
-                result.readableBytes() - 4), Collections.<Message> emptyList());
 
         assertEquals(new PclabelupdBuilder().setPclabelupdMessage(builder.build()).build(), parser.parseMessage(result.slice(4,
                 result.readableBytes() - 4), Collections.<Message> emptyList()));
