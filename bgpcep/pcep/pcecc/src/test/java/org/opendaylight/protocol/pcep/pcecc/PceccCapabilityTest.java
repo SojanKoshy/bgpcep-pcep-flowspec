@@ -38,40 +38,40 @@ public class PceccCapabilityTest {
             new TlvsBuilder().build();
 
     @Test
-    public void testPCEPPceccCapability() {
-        final PcepPceccCapability sspf;
-        sspf = new PcepPceccCapability(true, true, true);
-        Assert.assertTrue(sspf.isPceccCapable());
+    public void testPCEPPceccCapabilityWithPceccCapability() {
+        final PcepPceccCapability pceccCapability;
+        pceccCapability = new PcepPceccCapability(true, true, true);
+        Assert.assertTrue(pceccCapability.isPceccCapable());
         final TlvsBuilder builder = new TlvsBuilder();
-        sspf.setCapabilityProposal(null, builder);
+        pceccCapability.setCapabilityProposal(null, builder);
         Assert.assertEquals(EXPECTED_TLVS, builder.build());
     }
 
     @Test
-    public void testPCEPPceccCapability1() {
-        final PcepPceccCapability sspf;
-        sspf = new PcepPceccCapability(true, false, true);
-        Assert.assertTrue(sspf.isPceccCapable());
+    public void testPCEPPceccCapabilityWithFalseSbit() {
+        final PcepPceccCapability pceccCapability;
+        pceccCapability = new PcepPceccCapability(true, false, true);
+        Assert.assertTrue(pceccCapability.isPceccCapable());
         final TlvsBuilder builder = new TlvsBuilder();
-        sspf.setCapabilityProposal(null, builder);
+        pceccCapability.setCapabilityProposal(null, builder);
         Assert.assertEquals(EXPECTED_TLVS_FALSE_SBIT, builder.build());
     }
 
     @Test
-    public void testPCEPPceccCapability2() {
-        final PcepPceccCapability sspf;
-        sspf = new PcepPceccCapability(true, true, false);
-        Assert.assertTrue(sspf.isPceccCapable());
-        Assert.assertTrue(sspf.isSCapable());
-        Assert.assertFalse(sspf.isILDBCapable());
+    public void testPCEPPceccCapabilityWithFalseLbit() {
+        final PcepPceccCapability pceccCapability;
+        pceccCapability = new PcepPceccCapability(true, true, false);
+        Assert.assertTrue(pceccCapability.isPceccCapable());
+        Assert.assertTrue(pceccCapability.isSCapable());
+        Assert.assertFalse(pceccCapability.isILDBCapable());
         final TlvsBuilder builder = new TlvsBuilder();
-        sspf.setCapabilityProposal(null, builder);
+        pceccCapability.setCapabilityProposal(null, builder);
         Assert.assertEquals(EXPECTED_TLVS_FALSE_LBIT, builder.build());
     }
 
 
     @Test
-    public void testPCEPPceccCapability5() {
+    public void testPCEPPceccCapabilityWithoutPceccCapability() {
         final PcepPceccCapability sspf;
         sspf = new PcepPceccCapability(false, true, true);
         Assert.assertFalse(sspf.isPceccCapable());
@@ -81,4 +81,5 @@ public class PceccCapabilityTest {
         sspf.setCapabilityProposal(null, builder);
         Assert.assertEquals(EXPECTED_TLVS_WITHOUT_PCECC_TLV, builder.build());
     }
+
 }
