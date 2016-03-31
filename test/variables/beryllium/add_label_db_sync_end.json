@@ -1,0 +1,46 @@
+{
+  "input": {
+    "node": "pcc://$node_id",
+    "arguments": {
+      "odl-pcep-pcecc:pce-label-download": {
+        "label": [
+          {
+            "label": {
+              "labelNum": "0",
+              "out-label": "false",
+              "processing-rule": "false",
+              "ignore": "false"
+            }
+          }
+        ],
+        "lsp": {
+          "tlvs": {
+            "lsp-identifiers": {
+              "lsp-id": "0",
+              "tunnel-id": "0",
+              "ipv4": {
+                "ipv4-tunnel-sender-address": "0.0.0.0",
+                "ipv4-extended-tunnel-id": "0.0.0.0",
+                "ipv4-tunnel-endpint-address": "0.0.0.0"
+              }
+            }
+          },
+          "plsp-id": "0",
+          "delegate": "true",
+          "sync": "false",
+          "remove": "false",
+          "administrative": "true",
+          "operational": "down",
+          "processing-rule": "false",
+          "ignore": "false"
+        },
+        "srp": {
+          "operation-id": "1",
+          "processing-rule": "false",
+          "ignore": "false"
+        }
+      }
+    },
+    "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"
+  }
+}

@@ -128,6 +128,10 @@ class Router:
         ret = self.send_cmd("display pce protocol session")
         return re.search(params['pce_server_ip'] + "\s*UP", ret)
 
+    def check_ping(self, params=None):
+        ret = self.send_cmd("ping lsp -c 4 te auto-tunnel " + params['name'])
+        return re.search("4 packet(s) received", ret)
+
     def _move_attr_to_params(self, params, *attrs):
         for attr in attrs:
             if hasattr(self, attr):
