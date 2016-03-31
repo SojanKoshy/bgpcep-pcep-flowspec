@@ -25,6 +25,7 @@ import javax.annotation.concurrent.GuardedBy;
 import org.opendaylight.controller.config.yang.pcep.topology.provider.PeerCapabilities;
 import org.opendaylight.protocol.pcep.PCEPSession;
 import org.opendaylight.protocol.pcep.spi.PCEPErrors;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.PathComputationClient1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.PathComputationClient1Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.controller.pcep.sync.optimizations.rev150714.lsp.db.version.tlv.LspDbVersion;
@@ -49,6 +50,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.iet
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.StatefulTlv1Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.SymbolicPathName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Tlvs1;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.identifiers.tlv.LspIdentifiersBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.identifiers.tlv.lsp.identifiers.address.family.Ipv4Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.identifiers.tlv.lsp.identifiers.address.family.Ipv4CaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.identifiers.tlv.lsp.identifiers.address.family.ipv4._case.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.object.Lsp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.object.LspBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.lsp.object.lsp.TlvsBuilder;
@@ -86,6 +91,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.explicit.route.object.EroBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.Tlvs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.path.setup.type.tlv.PathSetupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev150820.Ipv4ExtendedTunnelId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev150820.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelArgs;
@@ -295,11 +302,25 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             return OperationResults.UNSENT.future();
         }
 
-        //labelDownloadBuilder.setLsp(new LspBuilder().setRemove(removeFlag).setPlspId(
-          //      labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
+        Ipv4Case ipv4Case = (Ipv4Case) labelDownload.getLsp().getTlvs().getLspIdentifiers().getAddressFamily();
 
-        labelDownloadBuilder.setLsp(new LspBuilder().setPlspId(
-                labelDownload.getLsp().getPlspId()).setDelegate(labelDownload.getLsp().isDelegate()).build());
+        final TlvsBuilder lspTlvBuilder = new TlvsBuilder().setLspIdentifiers(new LspIdentifiersBuilder()
+                .setLspId(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev150820.LspId(
+                        labelDownload.getLsp().getPlspId().getValue()))
+                .setTunnelId(new TunnelId(
+                        labelDownload.getLsp().getTlvs().getLspIdentifiers().getTunnelId().getValue()))
+                .setAddressFamily(new Ipv4CaseBuilder().setIpv4(new Ipv4Builder()
+                        .setIpv4TunnelEndpointAddress(new Ipv4Address(ipv4Case.getIpv4().getIpv4TunnelEndpointAddress()))
+                        .setIpv4TunnelSenderAddress(new Ipv4Address(ipv4Case.getIpv4().getIpv4TunnelSenderAddress()))
+                        .setIpv4ExtendedTunnelId(new Ipv4ExtendedTunnelId(ipv4Case.getIpv4().getIpv4ExtendedTunnelId()))
+                        .build()).build()).build());
+
+        labelDownloadBuilder.setLsp(new LspBuilder()
+                .setPlspId(labelDownload.getLsp().getPlspId())
+                .setDelegate(labelDownload.getLsp().isDelegate())
+                .setAdministrative(labelDownload.getLsp().isAdministrative())
+                .setOperational(labelDownload.getLsp().getOperational())
+                .setTlvs(lspTlvBuilder.build()).build());
 
         if (labelDownload.getLabel() == null){
             LOG.warn("Node {} does not contain Label list data", input.getNode());
@@ -321,7 +342,8 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final PclabelupdMessageBuilder pclabelupdMessageBuilder = new PclabelupdMessageBuilder(MESSAGE_HEADER);
         pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
         final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
-        return sendMessage(msg, srpIdNumber, null);
+        sendLabelMessage(msg, srpIdNumber, null);
+        return OperationResults.SUCCESS.future();
     }
 
     private ListenableFuture<OperationResult> updateLabelMap(LabelArgs input, boolean removeFlag) {
@@ -382,7 +404,8 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final PclabelupdMessageBuilder pclabelupdMessageBuilder = new PclabelupdMessageBuilder(MESSAGE_HEADER);
         pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
         final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
-        return sendMessage(msg, srpIdNumber, null);
+        sendLabelMessage(msg, srpIdNumber, null);
+        return OperationResults.SUCCESS.future();
     }
 
     private ListenableFuture<OperationResult> triggerLspSyncronization(final TriggerSyncArgs input) {
@@ -542,8 +565,22 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             break;
         case GoingDown:
         case GoingUp:
-            // These are transitive states, so we don't have to do anything, as they will be followed
-            // up...
+            final short pathSetupType;
+            final PathSetupType pst;
+            if (srp != null && srp.getTlvs() != null && srp.getTlvs().getPathSetupType() != null) {
+                pst = srp.getTlvs().getPathSetupType();
+                pathSetupType = pst.getPst();
+
+                if (2 == pathSetupType)
+                {
+                    final PCEPRequest req = removeRequest(id);
+                    if (req != null) {
+                        LOG.debug("Request {} resulted in LSP operational state for label case {}", id, lsp.getOperational());
+                        rlb.setMetadata(req.getMetadata());
+                        ctx.resolveRequest(req);
+                    }
+                }
+            }
             break;
         default:
             break;
