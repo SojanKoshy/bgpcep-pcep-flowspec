@@ -14,9 +14,9 @@ In order to run the test it's required to have Python 2.6+ and pytest, python-re
 
 To auto install the dependent libraties and run test:
 
-1) Run ODL and routers with basic config for PCE test
-2) Run "python setup.py pytest" in test folder for installing dependencies and to execute test cases
-3) Run "py.test" in test folder to execute test cases
+1. Run ODL and routers with basic config for PCE test
+2. Run "python setup.py pytest" in test folder for installing dependencies and to execute test cases
+3. Run "py.test" in test folder to execute test cases
 
 Steps:
 
