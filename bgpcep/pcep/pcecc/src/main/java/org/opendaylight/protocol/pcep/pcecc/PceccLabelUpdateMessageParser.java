@@ -105,7 +105,7 @@ public class PceccLabelUpdateMessageParser extends AbstractMessageParser {
 
         final List<PceLabelUpdates> labelUpdates = Lists.newArrayList();
 
-        while (!objects.isEmpty()) {
+        if (!objects.isEmpty()) {
             final PceLabelUpdates pceLabelUpdates = getValidUpdates(objects, errors);
             if (pceLabelUpdates != null) {
                 labelUpdates.add(pceLabelUpdates);
