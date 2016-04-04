@@ -1,6 +1,6 @@
 {
   "input": {
-    "node": "pcc://3.3.3.5",
+    "node": "pcc://$node_id",
     "name": "PceTunnel",
     "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"
   }
