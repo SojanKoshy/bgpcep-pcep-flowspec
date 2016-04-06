@@ -306,7 +306,7 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
 
         final TlvsBuilder lspTlvBuilder = new TlvsBuilder().setLspIdentifiers(new LspIdentifiersBuilder()
                 .setLspId(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev150820.LspId(
-                        labelDownload.getLsp().getPlspId().getValue()))
+                        labelDownload.getLsp().getTlvs().getLspIdentifiers().getLspId().getValue()))
                 .setTunnelId(new TunnelId(
                         labelDownload.getLsp().getTlvs().getLspIdentifiers().getTunnelId().getValue()))
                 .setAddressFamily(new Ipv4CaseBuilder().setIpv4(new Ipv4Builder()
