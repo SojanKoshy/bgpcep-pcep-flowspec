@@ -73,9 +73,9 @@ class Router:
             self.send_cmd("mpls ldp")
             self.send_cmd("interface loopback0")
             self.send_cmd("ip address " + params['node_id'] + ' 32')
+            self.send_cmd("ospf enable area 1")
             self.send_cmd("quit")
             self.send_cmd("pce-client")
-            self.send_cmd("capability initiated-lsp")
             self.send_cmd("connect-server " + params['pce_server_ip'])
             self.send_cmd("quit")
             self.send_cmd("quit")
@@ -86,6 +86,7 @@ class Router:
             self.send_cmd("ip address " + params['ip'] + ' 24')
             self.send_cmd("mpls")
             self.send_cmd("mpls te")
+            self.send_cmd("ospf enable area 1")
             self.send_cmd("quit")
 
         if params.has_key("intf2"):
@@ -94,7 +95,12 @@ class Router:
             self.send_cmd("ip address " + params['ip2'] + ' 24')
             self.send_cmd("mpls")
             self.send_cmd("mpls te")
+            self.send_cmd("ospf enable area 1")
             self.send_cmd("quit")
+
+        self.send_cmd("ospf 1 router-id " + params['node-id'])
+        self.send_cmd("area 1")
+        self.send_cmd("quit")
 
     def unset_basic_pce(self, params=None):
         if params is None:
@@ -129,8 +135,11 @@ class Router:
         return re.search(params['pce_server_ip'] + "\s*UP", ret)
 
     def check_ping(self, params=None):
-        ret = self.send_cmd("ping lsp -c 4 te auto-tunnel " + params['name'])
-        return re.search("4 packet(s) received", ret)
+        if params.has_key('name'):
+            ret = self.send_cmd("ping lsp -c 4 te auto-tunnel " + params['name'])
+        elif params.has_key('ip'):
+            ret = self.send_cmd("ping lsp -c 4 ip " + params['ip'] + " 32")
+        return re.search("4 packet\(s\) received", ret)
 
     def _move_attr_to_params(self, params, *attrs):
         for attr in attrs:

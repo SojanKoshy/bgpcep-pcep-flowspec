@@ -1,0 +1,63 @@
+{
+  "input": {
+    "node": "pcc://$node_id",
+    "name": "PceTunnel",
+    "arguments": {
+      "odl-pcep-ietf-stateful07:lsp": {
+        "tlvs": {
+          "lsp-identifiers": {
+            "lsp-id": "1",
+            "tunnel-id": "0",
+            "ipv4": {
+              "ipv4-tunnel-sender-address": "$source",
+              "ipv4-extended-tunnel-id": "0.0.0.0",
+              "ipv4-tunnel-endpoint-address": "$destination"
+            }
+          }
+        },
+        "plsp-id": "0",
+        "delegate": "true",
+        "sync": "false",
+        "remove": "false",
+        "administrative": "true",
+        "operational": "down",
+        "processing-rule": "false",
+        "ignore": "false"
+      },
+      "endpoints-obj": {
+        "ipv4": {
+          "source-ipv4-address": "$source",
+          "destination-ipv4-address": "$destination"
+        }
+      },
+      "odl-pcep-ietf-stateful07:path-setup-type": {
+        "pst": "1"
+      },
+      "ero": {
+        "subobject": [
+          {
+            "loose": "false",
+            "odl-pcep-segment-routing:c-flag": "false",
+            "odl-pcep-segment-routing:m-flag": "true",
+            "odl-pcep-segment-routing:sid-type": "ipv4-adjacency",
+            "odl-pcep-segment-routing:sid": "7001",
+            "odl-pcep-segment-routing:local-ip-address": "10.1.1.1",
+            "odl-pcep-segment-routing:remote-ip-address": "10.1.1.2"
+          },
+          {
+            "loose": "false",
+            "odl-pcep-segment-routing:c-flag": "false",
+            "odl-pcep-segment-routing:m-flag": "true",
+            "odl-pcep-segment-routing:sid-type": "ipv4-adjacency",
+            "odl-pcep-segment-routing:sid": "7002",
+            "odl-pcep-segment-routing:local-ip-address": "11.1.1.1",
+            "odl-pcep-segment-routing:remote-ip-address": "11.1.1.2"
+          }
+        ],
+        "processing-rule": "false",
+        "ignore": "false"
+      }
+    },
+    "network-topology-ref": "/network-topology:network-topology/network-topology:topology[network-topology:topology-id=\"pcep-topology\"]"
+  }
+}

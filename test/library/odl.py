@@ -81,18 +81,23 @@ class Odl:
 
     def get_pcep_topology(self, params=None):
         """Return the content of PCEP topology response."""
-        return self.get(
-)
+        return self.get("/operational/network-topology:network-topology/topology/pcep-topology")
 
     def post_add_lsp(self, params=None):
         """Add LSP and return the content of the response."""
         self.node_id = params['node_id']    # Required for auto undo
-        body = self.read_file(v.add_lsp_file, params)
+        if params.has_key('sid'):
+            body = self.read_file(v.add_lsp_sr_file, params)
+        else:
+            body = self.read_file(v.add_lsp_file, params)
         return self.post("/operations/network-topology-pcep:add-lsp", body)
 
     def post_update_lsp(self, params=None):
         """Update LSP and return the content of the response."""
-        body = self.read_file(v.update_lsp_file, params)
+        if params.has_key('sid'):
+            body = self.read_file(v.update_lsp_sr_file, params)
+        else:
+            body = self.read_file(v.update_lsp_file, params)
         return self.post("/operations/network-topology-pcep:update-lsp", body)
 
     def post_remove_lsp(self, params=None):
@@ -114,6 +119,10 @@ class Odl:
             body = self.read_file(v.add_label_in_file, params)
         elif params.has_key('out_label'):
             body = self.read_file(v.add_label_out_file, params)
+        elif params.has_key('node_label'):
+            body = self.read_file(v.add_label_map_node_file, params)
+        elif params.has_key('adj_label'):
+            body = self.read_file(v.add_label_map_adj_file, params)
         else:
             body = self.read_file(v.add_label_db_sync_end_file, params)
 
@@ -153,3 +162,10 @@ class Odl:
             if hasattr(self, attr):
                 param[attr] = self.__dict__[attr]
                 delattr(self, attr)
+
+    def get_matching_index(self, kvlist, key, values):
+        for i, kv in enumerate(kvlist):
+            if hasattr(kv, key):
+                if kv[key] == values:
+                    return i
+        return -1

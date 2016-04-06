@@ -43,7 +43,7 @@
               "ipv4": {
                 "ipv4-tunnel-sender-address": "1.1.1.1",
                 "ipv4-extended-tunnel-id": "1.1.1.1",
-                "ipv4-tunnel-endpint-address": "3.3.3.3"
+                "ipv4-tunnel-endpoint-address": "3.3.3.3"
               }
             }
           },

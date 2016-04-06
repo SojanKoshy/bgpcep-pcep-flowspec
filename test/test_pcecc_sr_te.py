@@ -53,13 +53,30 @@ def test_pcecc_sr_be():
     download_node_labels_on_transit()
     download_node_labels_on_ingress()
 
-    # Verify LSP IP ping
+    # Download adjacency labels on all PCCs
+    download_adj_labels_on_egress()
+    download_adj_labels_on_transit()
+    download_adj_labels_on_ingress()
+
+    # Initiate PCECC SR-TE LSP on ingress
+    add_lsp()
+
+    # Get reported-lsp and store all required fields
+    get_reported_lsp()
+
+    # Send PcUpdate Message to ingress
+    update_lsp()
+
+    # Verify LSP ping
     verify_lsp_ping()
 
     # Remove labels
 #     remove_labels_on_ingress()
 #     remove_labels_on_transit()
 #     remove_labels_on_egress()
+
+    # Remove LSP
+    remove_lsp()
 
 
 def config_pce_on_ingress():
@@ -184,7 +201,90 @@ def download_node_labels_on_ingress():
     assert status == 200
     assert resp['output'] == {}
 
+def download_adj_labels_on_egress():
+    """Add adjacency labels to egress router."""
+    params = {'node_id': v.rt3_node_id,
+              'adj_label': v.rt3_to_rt2_adj_label,
+              'local_ip': v.rt3_to_rt2_ip,
+              'remote_ip': v.rt2_to_rt3_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+def download_adj_labels_on_transit():
+    """Add adjacency labels to transit router."""
+    params = {'node_id': v.rt2_node_id,
+              'adj_label': v.rt2_to_rt1_adj_label,
+              'local_ip': v.rt2_to_rt1_ip,
+              'remote_ip': v.rt1_to_rt2_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+    params = {'node_id': v.rt2_node_id,
+              'adj_label': v.rt2_to_rt3_adj_label,
+              'local_ip': v.rt2_to_rt3_ip,
+              'remote_ip': v.rt3_to_rt2_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+def download_adj_labels_on_ingress():
+    """Add adjacency labels to ingress router."""
+    params = {'node_id': v.rt1_node_id,
+              'adj_label': v.rt1_to_rt2_adj_label,
+              'local_ip': v.rt1_to_rt2_ip,
+              'remote_ip': v.rt2_to_rt1_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+def add_lsp():
+    """Add an LSP to ingress router."""
+    params = {'node_id': v.rt1_node_id,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
+              'sid': 1} #FIXME: SID not used
+    status, resp = odl.post_add_lsp(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+def get_reported_lsp():
+    """Verify ingress router in the pcep topology in ODL."""
+    params = {'node_id': v.rt1_node_id}
+    status, resp = odl.get_pcep_topology()
+    assert status == 200
+
+    index = odl.get_matching_index(resp['topology'][0]['node'], "pcc://" + params['node_id'])
+    assert index != -1
+
+    node = resp['topology'][0]['node'][index]
+
+    global plsp_id, tunnel_id
+    lsp = node["network-topology-pcep:path-computation-client"]["reported-lsp"][0]["path"][0]["odl-pcep-ietf-stateful07:lsp"]
+    plsp_id = lsp["plsp-id"]
+    tunnel_id = lsp["tlvs"]["lsp-identifiers"]["tunnel-id"]
+
+def update_lsp():
+    """Update LSP to ingress router to make it Active."""
+    params = {'node_id': v.rt1_node_id,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
+              'plsp_id': plsp_id,
+              'tunnel_id': tunnel_id,
+              'sid': 1}
+    status, resp = odl.post_update_lsp(params)
+    assert status == 200
+    assert resp['output'] == {}
+
 def verify_lsp_ping():
     """Verify ping is successful."""
     params = {'ip': v.rt3_node_id}
     assert rt1.check_ping(params)
+
+def remove_lsp():
+    """Remove the LSP from ingress router."""
+    params = {'node_id': v.rt1_node_id}
+    status, resp = odl.post_remove_lsp(params)
+    assert status == 200
+    assert resp['output'] == {}

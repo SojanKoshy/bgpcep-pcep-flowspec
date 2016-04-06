@@ -21,7 +21,7 @@
               "ipv4": {
                 "ipv4-tunnel-sender-address": "0.0.0.0",
                 "ipv4-extended-tunnel-id": "0.0.0.0",
-                "ipv4-tunnel-endpint-address": "0.0.0.0"
+                "ipv4-tunnel-endpoint-address": "0.0.0.0"
               }
             }
           },

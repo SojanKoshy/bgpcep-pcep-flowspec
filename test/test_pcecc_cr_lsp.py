@@ -66,9 +66,9 @@ def test_pcecc_cr_lsp():
     verify_lsp_ping()
 
     # Remove labels
-    remove_labels_on_ingress()
-    remove_labels_on_transit()
-    remove_labels_on_egress()
+#     remove_labels_on_ingress()
+#     remove_labels_on_transit()
+#     remove_labels_on_egress()
 
     # Remove LSP
     remove_lsp()
@@ -114,14 +114,14 @@ def send_label_db_sync_end_to_egress():
     assert resp['output'] == {}
 
 def send_label_db_sync_end_to_transit():
-    """Send label DB sync end to egress using add-label"""
+    """Send label DB sync end to transit using add-label"""
     params = {'node_id': v.rt2_node_id}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
-def send_label_db_sync_end_to_inress():
-    """Send label DB sync end to egress using add-label"""
+def send_label_db_sync_end_to_ingress():
+    """Send label DB sync end to ingress using add-label"""
     params = {'node_id': v.rt1_node_id}
     status, resp = odl.post_add_label(params)
     assert status == 200
@@ -143,27 +143,33 @@ def get_reported_lsp():
     status, resp = odl.get_pcep_topology()
     assert status == 200
 
-    node = resp['topology'][0]['node'][0] #FIXME: Node index can be 0, 1 or 2
-    assert node["node-id"] == "pcc://" + params['node_id']
+    index = odl.get_matching_index(resp['topology'][0]['node'], "pcc://" + params['node_id'])
+    assert index != -1
+
+    node = resp['topology'][0]['node'][index]
 
     global plsp_id, tunnel_id
     lsp = node["network-topology-pcep:path-computation-client"]["reported-lsp"][0]["path"][0]["odl-pcep-ietf-stateful07:lsp"]
     plsp_id = lsp["plsp-id"]
     tunnel_id = lsp["tlvs"]["lsp-identifiers"]["tunnel-id"]
 
-def download_labels_on_transit():
-    """Add label to transit router."""
-    params = {'node_id': v.rt2_node_id,
-              'in_label': v.rt2_in_label,
-              'out_label': v.rt2_out_label}
+def download_labels_on_egress():
+    """Add label to egress router."""
+    params = {'node_id': v.rt3_node_id,
+              'in_label': v.rt3_in_label,
+              'plsp_id': plsp_id,
+              'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
-def download_labels_on_egress():
-    """Add label to egress router."""
-    params = {'node_id': v.rt3_node_id,
-              'in_label': v.rt3_in_label}
+def download_labels_on_transit():
+    """Add label to transit router."""
+    params = {'node_id': v.rt2_node_id,
+              'in_label': v.rt2_in_label,
+              'out_label': v.rt2_out_label,
+              'plsp_id': plsp_id,
+              'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
@@ -171,7 +177,9 @@ def download_labels_on_egress():
 def download_labels_on_ingress():
     """Add label to ingress router."""
     params = {'node_id': v.rt1_node_id,
-              'out_label': v.rt1_out_label}
+              'out_label': v.rt1_out_label,
+              'plsp_id': plsp_id,
+              'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
@@ -188,12 +196,12 @@ def update_lsp():
     assert resp['output'] == {}
 
 def verify_lsp_ping():
-    """Verify ping to be successful"""
-    params = {'name': "PceTunnel"}
+    """Verify ping is successful."""
+    params = {'name': v.auto_tunnel_name}
     assert rt1.check_ping(params)
 
 def remove_lsp():
-    """Remove the LSP from ingress router"""
+    """Remove the LSP from ingress router."""
     params = {'node_id': v.rt1_node_id}
     status, resp = odl.post_remove_lsp(params)
     assert status == 200
