@@ -58,7 +58,7 @@
           },
           {
             "loose": "false",
-            "ip-prefix": { "ip-prefix": "2.2.2.2/32" }
+            "ip-prefix": { "ip-prefix": "$transit/32" }
           },
           {
             "loose": "false",

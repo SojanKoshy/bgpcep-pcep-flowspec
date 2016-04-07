@@ -41,9 +41,9 @@
               "lsp-id": "1",
               "tunnel-id": "$tunnel_id",
               "ipv4": {
-                "ipv4-tunnel-sender-address": "1.1.1.1",
-                "ipv4-extended-tunnel-id": "1.1.1.1",
-                "ipv4-tunnel-endpoint-address": "3.3.3.3"
+                "ipv4-tunnel-sender-address": "$source",
+                "ipv4-extended-tunnel-id": "$source",
+                "ipv4-tunnel-endpoint-address": "$destination"
               }
             }
           },

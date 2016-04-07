@@ -127,6 +127,7 @@ def add_lsp():
     """Add an LSP to ingress router."""
     params = {'node_id': v.rt1_node_id,
               'source': v.rt1_node_id,
+              'transit': v.rt2_node_id,
               'destination': v.rt3_node_id,
               'name': v.auto_tunnel_name}
     status, resp = odl.post_add_lsp(params)
@@ -153,6 +154,8 @@ def download_labels_on_egress():
     """Add label to egress router."""
     params = {'node_id': v.rt3_node_id,
               'in_label': v.rt3_in_label,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
               'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
@@ -164,6 +167,8 @@ def download_labels_on_transit():
     params = {'node_id': v.rt2_node_id,
               'in_label': v.rt2_in_label,
               'out_label': v.rt2_out_label,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
               'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
@@ -174,6 +179,8 @@ def download_labels_on_ingress():
     """Add label to ingress router."""
     params = {'node_id': v.rt1_node_id,
               'out_label': v.rt1_out_label,
+              'source': v.rt1_node_id,
+              'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
               'tunnel_id': tunnel_id}
     status, resp = odl.post_add_label(params)
@@ -184,6 +191,7 @@ def update_lsp():
     """Update LSP to ingress router to make it Active."""
     params = {'node_id': v.rt1_node_id,
               'source': v.rt1_node_id,
+              'transit': v.rt2_node_id,
               'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
               'tunnel_id': tunnel_id,
