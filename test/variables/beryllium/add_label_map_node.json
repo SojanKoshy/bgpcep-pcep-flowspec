@@ -15,7 +15,7 @@
           "ignore": "false"
         },
         "fec": {
-          "node-id": "$node_id1",
+          "node-id": "$fec_node_id",
           "processing-rule": "false",
           "ignore": "false"
         }

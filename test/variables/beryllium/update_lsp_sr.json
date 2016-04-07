@@ -7,15 +7,15 @@
         "tlvs": {
           "lsp-identifiers": {
             "lsp-id": "1",
-            "tunnel-id": "0",
+            "tunnel-id": "$tunnel_id",
             "ipv4": {
               "ipv4-tunnel-sender-address": "$source",
-              "ipv4-extended-tunnel-id": "0.0.0.0",
+              "ipv4-extended-tunnel-id": "$source",
               "ipv4-tunnel-endpoint-address": "$destination"
             }
           }
         },
-        "plsp-id": "0",
+        "plsp-id": "$plsp_id",
         "delegate": "true",
         "sync": "false",
         "remove": "false",
@@ -23,12 +23,6 @@
         "operational": "down",
         "processing-rule": "false",
         "ignore": "false"
-      },
-      "endpoints-obj": {
-        "ipv4": {
-          "source-ipv4-address": "$source",
-          "destination-ipv4-address": "$destination"
-        }
       },
       "odl-pcep-ietf-stateful07:path-setup-type": {
         "pst": "1"

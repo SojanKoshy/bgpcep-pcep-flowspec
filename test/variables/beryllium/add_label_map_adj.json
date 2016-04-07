@@ -15,8 +15,8 @@
           "ignore": "false"
         },
         "fec": {
-          "local-ip-address": "$local_ip",
-          "remote-ip-address": "$remote_ip",
+          "local-ip-address": "$fec_local_ip",
+          "remote-ip-address": "$fec_remote_ip",
           "processing-rule": "false",
           "ignore": "false"
         }

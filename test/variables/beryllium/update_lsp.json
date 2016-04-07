@@ -1,7 +1,7 @@
 {
   "input": {
     "node": "pcc://$node_id",
-    "name": "PceTunnel",
+    "name": "$name",
     "arguments": {
       "odl-pcep-ietf-stateful07:lsp": {
         "tlvs": {

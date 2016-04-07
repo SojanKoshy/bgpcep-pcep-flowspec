@@ -10,8 +10,6 @@ __copyright__ = "Copyright(c) 2016 Huawei Technologies Co., Ltd."
 __license__ = "Eclipse Public License v1.0"
 __email__ = "sojan.koshy@huawei.com"
 
-import time
-
 from test.library.odl import Odl
 from test.library.svrp import Router
 from test.variables import variables as v
@@ -84,9 +82,10 @@ def config_pce_on_ingress():
     params = {'node_id': v.rt1_node_id,
               'pce_server_ip': v.odl_pce_server_ip,
               'intf': v.rt1_to_rt2_intf,
-              'ip': v.rt1_to_rt2_ip}
+              'ip': v.rt1_to_rt2_ip,
+              'intf2': v.rt1_to_rt3_intf,
+              'ip2': v.rt1_to_rt3_ip}
     rt1.set_basic_pce(params)
-    time.sleep(1)
     assert rt1.check_pce_up(params)
 
 def config_pce_on_transit():
@@ -98,7 +97,6 @@ def config_pce_on_transit():
               'intf2': v.rt2_to_rt3_intf,
               'ip2': v.rt2_to_rt3_ip}
     rt2.set_basic_pce(params)
-    time.sleep(1)
     assert rt2.check_pce_up(params)
 
 def config_pce_on_egress():
@@ -106,10 +104,12 @@ def config_pce_on_egress():
     params = {'node_id': v.rt3_node_id,
               'pce_server_ip': v.odl_pce_server_ip,
               'intf': v.rt3_to_rt2_intf,
-              'ip': v.rt3_to_rt2_ip}
+              'ip': v.rt3_to_rt2_ip,
+              'intf2': v.rt3_to_rt1_intf,
+              'ip2': v.rt3_to_rt1_ip}
     rt3.set_basic_pce(params)
-    time.sleep(1)
     assert rt3.check_pce_up(params)
+    rt3.wait_for_ospf_peer_full()
 
 def send_label_db_sync_end_to_egress():
     """Send label DB sync end to egress using add-label"""
@@ -135,21 +135,21 @@ def send_label_db_sync_end_to_ingress():
 def download_node_labels_on_egress():
     """Add node label to egress router."""
     params = {'node_id': v.rt3_node_id,
-              'node_id1': v.rt3_node_id,
+              'fec_node_id': v.rt3_node_id,
               'node_label': v.rt3_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt3_node_id,
-              'node_id1': v.rt1_node_id,
+              'fec_node_id': v.rt1_node_id,
               'node_label': v.rt1_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt3_node_id,
-              'node_id1': v.rt2_node_id,
+              'fec_node_id': v.rt2_node_id,
               'node_label': v.rt2_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
@@ -158,21 +158,21 @@ def download_node_labels_on_egress():
 def download_node_labels_on_transit():
     """Add node label to transit router."""
     params = {'node_id': v.rt2_node_id,
-              'node_id1': v.rt2_node_id,
+              'fec_node_id': v.rt2_node_id,
               'node_label': v.rt2_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt2_node_id,
-              'node_id1': v.rt1_node_id,
+              'fec_node_id': v.rt1_node_id,
               'node_label': v.rt1_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt2_node_id,
-              'node_id1': v.rt3_node_id,
+              'fec_node_id': v.rt3_node_id,
               'node_label': v.rt3_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
@@ -181,21 +181,21 @@ def download_node_labels_on_transit():
 def download_node_labels_on_ingress():
     """Add node label to ingress router."""
     params = {'node_id': v.rt1_node_id,
-              'node_id1': v.rt1_node_id,
+              'fec_node_id': v.rt1_node_id,
               'node_label': v.rt1_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt1_node_id,
-              'node_id1': v.rt2_node_id,
+              'fec_node_id': v.rt2_node_id,
               'node_label': v.rt2_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
-    params = {'node_id': v.rt2_node_id,
-              'node_id1': v.rt3_node_id,
+    params = {'node_id': v.rt1_node_id,
+              'fec_node_id': v.rt3_node_id,
               'node_label': v.rt3_global_label}
     status, resp = odl.post_add_label(params)
     assert status == 200
@@ -205,8 +205,16 @@ def download_adj_labels_on_egress():
     """Add adjacency labels to egress router."""
     params = {'node_id': v.rt3_node_id,
               'adj_label': v.rt3_to_rt2_adj_label,
-              'local_ip': v.rt3_to_rt2_ip,
-              'remote_ip': v.rt2_to_rt3_ip}
+              'fec_local_ip': v.rt3_to_rt2_ip,
+              'fec_remote_ip': v.rt2_to_rt3_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+    params = {'node_id': v.rt3_node_id,
+              'adj_label': v.rt3_to_rt1_adj_label,
+              'fec_local_ip': v.rt3_to_rt1_ip,
+              'fec_remote_ip': v.rt1_to_rt3_ip}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
@@ -215,16 +223,16 @@ def download_adj_labels_on_transit():
     """Add adjacency labels to transit router."""
     params = {'node_id': v.rt2_node_id,
               'adj_label': v.rt2_to_rt1_adj_label,
-              'local_ip': v.rt2_to_rt1_ip,
-              'remote_ip': v.rt1_to_rt2_ip}
+              'fec_local_ip': v.rt2_to_rt1_ip,
+              'fec_remote_ip': v.rt1_to_rt2_ip}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
 
     params = {'node_id': v.rt2_node_id,
               'adj_label': v.rt2_to_rt3_adj_label,
-              'local_ip': v.rt2_to_rt3_ip,
-              'remote_ip': v.rt3_to_rt2_ip}
+              'fec_local_ip': v.rt2_to_rt3_ip,
+              'fec_remote_ip': v.rt3_to_rt2_ip}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
@@ -233,8 +241,17 @@ def download_adj_labels_on_ingress():
     """Add adjacency labels to ingress router."""
     params = {'node_id': v.rt1_node_id,
               'adj_label': v.rt1_to_rt2_adj_label,
-              'local_ip': v.rt1_to_rt2_ip,
-              'remote_ip': v.rt2_to_rt1_ip}
+              'fec_local_ip': v.rt1_to_rt2_ip,
+              'fec_remote_ip': v.rt2_to_rt1_ip}
+    status, resp = odl.post_add_label(params)
+    assert status == 200
+    assert resp['output'] == {}
+
+    """Add adjacency labels to ingress router."""
+    params = {'node_id': v.rt1_node_id,
+              'adj_label': v.rt1_to_rt3_adj_label,
+              'fec_local_ip': v.rt1_to_rt3_ip,
+              'fec_remote_ip': v.rt3_to_rt1_ip}
     status, resp = odl.post_add_label(params)
     assert status == 200
     assert resp['output'] == {}
@@ -244,6 +261,7 @@ def add_lsp():
     params = {'node_id': v.rt1_node_id,
               'source': v.rt1_node_id,
               'destination': v.rt3_node_id,
+              'name': v.auto_tunnel_name,
               'sid': 1} #FIXME: SID not used
     status, resp = odl.post_add_lsp(params)
     assert status == 200
@@ -255,7 +273,7 @@ def get_reported_lsp():
     status, resp = odl.get_pcep_topology()
     assert status == 200
 
-    index = odl.get_matching_index(resp['topology'][0]['node'], "pcc://" + params['node_id'])
+    index = odl.get_matching_index(resp['topology'][0]['node'], 'node-id', "pcc://" + params['node_id'])
     assert index != -1
 
     node = resp['topology'][0]['node'][index]
@@ -272,19 +290,21 @@ def update_lsp():
               'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
               'tunnel_id': tunnel_id,
-              'sid': 1}
+              'name': v.auto_tunnel_name,
+              'sid': 1} #FIXME: SID not used
     status, resp = odl.post_update_lsp(params)
     assert status == 200
     assert resp['output'] == {}
 
 def verify_lsp_ping():
     """Verify ping is successful."""
-    params = {'ip': v.rt3_node_id}
+    params = {'name': v.auto_tunnel_name}
     assert rt1.check_ping(params)
 
 def remove_lsp():
     """Remove the LSP from ingress router."""
-    params = {'node_id': v.rt1_node_id}
+    params = {'node_id': v.rt1_node_id,
+              'name': v.auto_tunnel_name}
     status, resp = odl.post_remove_lsp(params)
     assert status == 200
     assert resp['output'] == {}

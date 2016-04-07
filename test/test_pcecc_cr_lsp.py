@@ -10,8 +10,6 @@ __copyright__ = "Copyright(c) 2016 Huawei Technologies Co., Ltd."
 __license__ = "Eclipse Public License v1.0"
 __email__ = "sojan.koshy@huawei.com"
 
-import time
-
 from test.library.odl import Odl
 from test.library.svrp import Router
 from test.variables import variables as v
@@ -81,7 +79,6 @@ def config_pce_on_ingress():
               'intf': v.rt1_to_rt2_intf,
               'ip': v.rt1_to_rt2_ip}
     rt1.set_basic_pce(params)
-    time.sleep(1)
     assert rt1.check_pce_up(params)
 
 def config_pce_on_transit():
@@ -93,7 +90,6 @@ def config_pce_on_transit():
               'intf2': v.rt2_to_rt3_intf,
               'ip2': v.rt2_to_rt3_ip}
     rt2.set_basic_pce(params)
-    time.sleep(1)
     assert rt2.check_pce_up(params)
 
 def config_pce_on_egress():
@@ -103,8 +99,8 @@ def config_pce_on_egress():
               'intf': v.rt3_to_rt2_intf,
               'ip': v.rt3_to_rt2_ip}
     rt3.set_basic_pce(params)
-    time.sleep(1)
     assert rt3.check_pce_up(params)
+    rt3.wait_for_ospf_peer_full()
 
 def send_label_db_sync_end_to_egress():
     """Send label DB sync end to egress using add-label"""
@@ -132,7 +128,7 @@ def add_lsp():
     params = {'node_id': v.rt1_node_id,
               'source': v.rt1_node_id,
               'destination': v.rt3_node_id,
-              }
+              'name': v.auto_tunnel_name}
     status, resp = odl.post_add_lsp(params)
     assert status == 200
     assert resp['output'] == {}
@@ -143,7 +139,7 @@ def get_reported_lsp():
     status, resp = odl.get_pcep_topology()
     assert status == 200
 
-    index = odl.get_matching_index(resp['topology'][0]['node'], "pcc://" + params['node_id'])
+    index = odl.get_matching_index(resp['topology'][0]['node'], u'node-id', "pcc://" + params['node_id'])
     assert index != -1
 
     node = resp['topology'][0]['node'][index]
@@ -190,7 +186,8 @@ def update_lsp():
               'source': v.rt1_node_id,
               'destination': v.rt3_node_id,
               'plsp_id': plsp_id,
-              'tunnel_id': tunnel_id}
+              'tunnel_id': tunnel_id,
+              'name': v.auto_tunnel_name}
     status, resp = odl.post_update_lsp(params)
     assert status == 200
     assert resp['output'] == {}
@@ -202,7 +199,8 @@ def verify_lsp_ping():
 
 def remove_lsp():
     """Remove the LSP from ingress router."""
-    params = {'node_id': v.rt1_node_id}
+    params = {'node_id': v.rt1_node_id,
+              'name': v.auto_tunnel_name}
     status, resp = odl.post_remove_lsp(params)
     assert status == 200
     assert resp['output'] == {}

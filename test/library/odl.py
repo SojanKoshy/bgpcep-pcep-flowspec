@@ -29,7 +29,9 @@ class Odl:
 
     def clean_up(self):
         """Clean up ODL configuration."""
-        self.post_remove_lsp()
+        params = {'node_id': v.rt1_node_id,
+                  'name': v.auto_tunnel_name}
+        self.post_remove_lsp(params)
 
     def read_file(self, filename, params=None):
         """Return the file contents after substituting the params if any."""
@@ -114,11 +116,11 @@ class Odl:
     def post_add_label(self, params=None):
         """Add label and return the content of the response."""
         if params.has_key('in_label') and params.has_key('out_label'):
-            body = self.read_file(v.add_label_in_out_file, params)
+            body = self.read_file(v.add_label_dwnld_in_out_file, params)
         elif params.has_key('in_label'):
-            body = self.read_file(v.add_label_in_file, params)
+            body = self.read_file(v.add_label_dwnld_in_file, params)
         elif params.has_key('out_label'):
-            body = self.read_file(v.add_label_out_file, params)
+            body = self.read_file(v.add_label_dwnld_out_file, params)
         elif params.has_key('node_label'):
             body = self.read_file(v.add_label_map_node_file, params)
         elif params.has_key('adj_label'):
@@ -165,7 +167,7 @@ class Odl:
 
     def get_matching_index(self, kvlist, key, values):
         for i, kv in enumerate(kvlist):
-            if hasattr(kv, key):
+            if kv.has_key(key):
                 if kv[key] == values:
                     return i
         return -1

@@ -13,6 +13,7 @@ __email__ = "sojan.koshy@huawei.com"
 import logging
 import re
 import telnetlib
+import time
 
 from test.variables import variables as v
 
@@ -87,6 +88,7 @@ class Router:
             self.send_cmd("mpls")
             self.send_cmd("mpls te")
             self.send_cmd("ospf enable area 1")
+            self.send_cmd("ospf timer hello 1")
             self.send_cmd("quit")
 
         if params.has_key("intf2"):
@@ -96,10 +98,12 @@ class Router:
             self.send_cmd("mpls")
             self.send_cmd("mpls te")
             self.send_cmd("ospf enable area 1")
+            self.send_cmd("ospf timer hello 1")
             self.send_cmd("quit")
 
-        self.send_cmd("ospf 1 router-id " + params['node-id'])
+        self.send_cmd("ospf 1 router-id " + params['node_id'])
         self.send_cmd("area 1")
+        self.send_cmd("quit")
         self.send_cmd("quit")
 
     def unset_basic_pce(self, params=None):
@@ -109,14 +113,14 @@ class Router:
             self._move_attr_to_params(params, 'pce_server_ip', 'intf', 'intf2')
 
         if params.has_key("pce_server_ip"):
+            self.send_cmd("pce-client")
+            self.send_cmd("undo connect-server " + params['pce_server_ip'])
+            self.send_cmd("quit")
+            self.send_cmd("undo pce-client")
             self.send_cmd("undo mpls")
             self.send_cmd("y")
             self.send_cmd("undo mpls lsr-id")
             self.send_cmd("undo interface loopback0")
-            self.send_cmd("pce-client")
-            self.send_cmd("undo connect-server " + params['pce_server_ip'])
-            self.send_cmd("quit")
-            # self.send_cmd("undo pce-client")
 
         if params.has_key("intf"):
             self.send_cmd("interface " + params['intf'])
@@ -130,16 +134,38 @@ class Router:
             self.send_cmd("undo mpls")
             self.send_cmd("quit")
 
+        self.send_cmd("undo ospf 1")
+        self.send_cmd("y")
+
+    def wait_for_ospf_peer_full(self, params=None):
+        self.log.info("Waiting 10 seconds for OSPF peer FULL...")
+        time.sleep(12)
+
     def check_pce_up(self, params=None):
-        ret = self.send_cmd("display pce protocol session")
-        return re.search(params['pce_server_ip'] + "\s*UP", ret)
+        result = False
+        times = 0
+        while not result and times < 10:
+            ret = self.send_cmd("display pce protocol session")
+            result = re.search(params['pce_server_ip'] + "\s*UP", ret)
+            if not result:
+                self.log.info("Waiting for PCEP session to be UP...")
+                times = times + 1
+                time.sleep(3)
+        return result
 
     def check_ping(self, params=None):
+        self.log.info("Verifying ping...")
         if params.has_key('name'):
             ret = self.send_cmd("ping lsp -c 4 te auto-tunnel " + params['name'])
         elif params.has_key('ip'):
             ret = self.send_cmd("ping lsp -c 4 ip " + params['ip'] + " 32")
-        return re.search("4 packet\(s\) received", ret)
+
+        raw_input("Paused!")
+
+        if re.search("Error", ret):
+            return False
+
+        return re.search("0 packet\(s\) received", ret) == None
 
     def _move_attr_to_params(self, params, *attrs):
         for attr in attrs:

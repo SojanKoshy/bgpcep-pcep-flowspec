@@ -16,22 +16,27 @@ from os.path import dirname
 logging.basicConfig(level=logging.DEBUG)
 cur_dir = dirname(__file__)
 
+# TOPOLOGY
+#             ODL
+#              |
+#      +-------+-------+
+#      |       |       |
+#     RT1-----RT2-----RT3
+
 # ODL RESTconf
 base_url = "http://127.0.0.1:8181/restconf"
 username = "admin"
 password = "admin"
 
+# Variables for ODL connection
+odl_pce_server_ip = "172.16.0.13"
+
 # Variables for RTR Telnet login
-rt1_telnet_ip = "172.16.3.15"
-rt2_telnet_ip = "172.16.3.16"
-rt3_telnet_ip = "172.16.3.14"
+rt1_telnet_ip = "172.16.3.117"
+rt2_telnet_ip = "172.16.3.118"
+rt3_telnet_ip = "172.16.3.119"
 rtr_username = ""
 rtr_password = "Root@123"
-
-# Variables for PCEP topology
-odl_pce_server_ip = "172.16.0.15"
-
-auto_tunnel_name = "PceTunnel"
 
 rt1_node_id = "1.1.1.1"
 rt2_node_id = "2.2.2.2"
@@ -54,6 +59,9 @@ rt3_to_rt2_ip   = "11.1.1.2"
 
 rt3_to_rt1_intf = "Ethernet3/0/2"
 rt3_to_rt1_ip   = "12.1.1.2"
+
+# Variables for PCEP topology
+auto_tunnel_name = "PceTunnel"
 
 # SVRP label range 5122-9217
 rt1_out_label = "6001"
@@ -82,10 +90,10 @@ add_lsp_sr_file             = rest_file_path + "add_lsp_sr.json"
 update_lsp_file             = rest_file_path + "update_lsp.json"
 update_lsp_sr_file          = rest_file_path + "update_lsp_sr.json"
 remove_lsp_file             = rest_file_path + "remove_lsp.json"
-add_label_in_out_file       = rest_file_path + "add_label_in_out.json"
-add_label_in_file           = rest_file_path + "add_label_in.json"
-add_label_out_file          = rest_file_path + "add_label_out.json"
-add_label_db_sync_end_file  = rest_file_path + "add_label_db_sync_end.json"
+add_label_dwnld_in_out_file = rest_file_path + "add_label_dwnld_in_out.json"
+add_label_dwnld_in_file     = rest_file_path + "add_label_dwnld_in.json"
+add_label_dwnld_out_file    = rest_file_path + "add_label_dwnld_out.json"
 add_label_map_node_file     = rest_file_path + "add_label_map_node.json"
 add_label_map_adj_file      = rest_file_path + "add_label_map_adj.json"
+add_label_db_sync_end_file  = rest_file_path + "add_label_db_sync_end.json"
 remove_label_file           = rest_file_path + "remove_label.json"
