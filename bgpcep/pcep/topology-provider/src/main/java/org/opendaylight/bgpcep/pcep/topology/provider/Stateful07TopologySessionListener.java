@@ -571,14 +571,11 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                 pst = srp.getTlvs().getPathSetupType();
                 pathSetupType = pst.getPst();
 
-                if (2 == pathSetupType)
-                {
-                    final PCEPRequest req = removeRequest(id);
-                    if (req != null) {
-                        LOG.debug("Request {} resulted in LSP operational state for label case {}", id, lsp.getOperational());
-                        rlb.setMetadata(req.getMetadata());
-                        ctx.resolveRequest(req);
-                    }
+                final PCEPRequest req = removeRequest(id);
+                if (req != null) {
+                    LOG.debug("Request {} resulted in LSP operational state for label case {}", id, lsp.getOperational());
+                    rlb.setMetadata(req.getMetadata());
+                    ctx.resolveRequest(req);
                 }
             }
             break;
@@ -806,8 +803,22 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                 .setPathSetupType(maybePST.get())
                 .build());
         }
+
+        final TlvsBuilder tlvsBuilder;
+        if (reportedLsp.getTlvs() != null) {
+            tlvsBuilder = new TlvsBuilder(reportedLsp.getTlvs());
+        }
+        else {
+            tlvsBuilder = new TlvsBuilder();
+        }
+
+        tlvsBuilder.setSymbolicPathName(
+                new SymbolicPathNameBuilder().setPathName(new
+                        SymbolicPathName(reportedLsp.getTlvs().getSymbolicPathName().getPathName())).build());
+
         rb.setSrp(srpBuilder.build());
-        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId()).setDelegate(reportedLsp.isDelegate()).build());
+        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId())
+                .setDelegate(reportedLsp.isDelegate()).setTlvs(tlvsBuilder.build()).build());
         return rb.build();
     }
 
