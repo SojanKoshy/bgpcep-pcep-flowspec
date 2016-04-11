@@ -13,13 +13,15 @@ __email__ = "sojan.koshy@huawei.com"
 import logging
 import re
 import telnetlib
-import time
 
+from test.library.common import *  # @UnusedWildImport
 from test.variables import variables as v
 
 
 class Router:
+    """Connect to SVRP and do Telnet send and receive operations."""
     def __init__(self, sysname, ip):
+        """Connect to SVRP."""
         self.ip = ip
         self.username = v.rtr_username
         self.password = v.rtr_password
@@ -27,10 +29,12 @@ class Router:
         self.login()
 
     def clean_up(self):
+        """Clean up SVRP configuration."""
         self.unset_basic_pce()
         self.logout()
 
     def send_cmd(self, command, prompt=""):
+        """Write a command and read until next prompt."""
         if prompt:
             self.prompt = prompt
 
@@ -38,19 +42,23 @@ class Router:
         return self.read_until(self.prompt)
 
     def write(self, command):
+        """Write a command to Telnet session."""
         self.tn.write(command + "\n")
 
     def read_until(self, expect):
+        """Read buffer on Telnet session."""
         ret = self.tn.read_until(expect)
         self.log.debug(" " + ret + "\n")
         return ret
 
     def read_all(self):
+        """Read buffer on Telnet session before closing."""
         ret = self.tn.read_all()
         self.log.debug(" " + ret + "\n")
         return ret
 
     def login(self):
+        """Login to SVRP with credentials."""
         self.log.info("Login to router")
         self.tn = telnetlib.Telnet(self.ip, timeout=5)
         self.read_until("Password:")
@@ -58,6 +66,7 @@ class Router:
         self.send_cmd("system-view immediate", "]")
 
     def logout(self):
+        """Gracefully logout SVRP Telnet session."""
         self.send_cmd("return", ">")
         self.write("quit")
         self.read_all()
@@ -65,8 +74,9 @@ class Router:
         self.tn = None
 
     def set_basic_pce(self, params=None):
+        """Configure the basic commands required for pce session."""
         if params.has_key("pce_server_ip"):
-            self.pce_server_ip = params['pce_server_ip'] # Required for auto undo
+            self.pce_server_ip = params['pce_server_ip']  # Required for auto undo
             self.send_cmd("mpls lsr-id " + params['node_id'])
             self.send_cmd("mpls")
             self.send_cmd("mpls te")
@@ -82,7 +92,7 @@ class Router:
             self.send_cmd("quit")
 
         if params.has_key("intf"):
-            self.intf = params['intf']   # Required for auto undo
+            self.intf = params['intf']  # Required for auto undo
             self.send_cmd("interface " + params['intf'])
             self.send_cmd("ip address " + params['ip'] + ' 24')
             self.send_cmd("mpls")
@@ -92,7 +102,7 @@ class Router:
             self.send_cmd("quit")
 
         if params.has_key("intf2"):
-            self.intf2 = params['intf2'] # Required for auto undo
+            self.intf2 = params['intf2']  # Required for auto undo
             self.send_cmd("interface " + params['intf2'])
             self.send_cmd("ip address " + params['ip2'] + ' 24')
             self.send_cmd("mpls")
@@ -107,10 +117,11 @@ class Router:
         self.send_cmd("quit")
 
     def unset_basic_pce(self, params=None):
+        """Undo the configured commands of pce session and also support auto tear down."""
         if params is None:
             # Auto undo
             params = {}
-            self._move_attr_to_params(params, 'pce_server_ip', 'intf', 'intf2')
+            move_attr_to_params(self, params, 'pce_server_ip', 'intf', 'intf2')
 
         if params.has_key("pce_server_ip"):
             self.send_cmd("pce-client")
@@ -138,20 +149,14 @@ class Router:
         self.send_cmd("y")
 
     def wait_for_ospf_peer_full(self, params=None):
-        self.log.info("Waiting 10 seconds for OSPF peer FULL...")
+        """Wait for OSPF peer to become full. Wait Time = Hello Time * 4."""
+        self.log.info("Waiting 12 seconds for OSPF peer FULL...")
         time.sleep(12)
 
+    @assert_multi(message="Waiting for PCEP session to be UP")
     def check_pce_up(self, params=None):
-        result = False
-        times = 0
-        while not result and times < 10:
-            ret = self.send_cmd("display pce protocol session")
-            result = re.search(params['pce_server_ip'] + "\s*UP", ret)
-            if not result:
-                self.log.info("Waiting for PCEP session to be UP...")
-                times = times + 1
-                time.sleep(3)
-        return result
+        ret = self.send_cmd("display pce protocol session")
+        return re.search(params['pce_server_ip'] + "\s*UP", ret)
 
     def check_ping(self, params=None):
         self.log.info("Verifying ping...")
@@ -166,9 +171,3 @@ class Router:
             return False
 
         return re.search("0 packet\(s\) received", ret) == None
-
-    def _move_attr_to_params(self, params, *attrs):
-        for attr in attrs:
-            if hasattr(self, attr):
-                params[attr] = self.__dict__[attr]
-                delattr(self, attr)

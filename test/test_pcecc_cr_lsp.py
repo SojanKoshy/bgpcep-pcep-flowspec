@@ -10,32 +10,32 @@ __copyright__ = "Copyright(c) 2016 Huawei Technologies Co., Ltd."
 __license__ = "Eclipse Public License v1.0"
 __email__ = "sojan.koshy@huawei.com"
 
+from test.library.common import *  # @UnusedWildImport
 from test.library.odl import Odl
 from test.library.svrp import Router
 from test.variables import variables as v
 
 
+@tc_fixture
 def setup_module(module):
     """Setup connections before test execution."""
-    print "\nSetup"
     global odl, rt1, rt2, rt3
     odl = Odl(v.base_url)
     rt1 = Router('RT1', v.rt1_telnet_ip)
     rt2 = Router('RT2', v.rt2_telnet_ip)
     rt3 = Router('RT3', v.rt3_telnet_ip)
 
+@tc_fixture
 def teardown_module(module):
     """Tear down connections and pcep operations after test execution."""
-    print "\nTear down"
     odl.clean_up()
     rt1.clean_up()
     rt2.clean_up()
     rt3.clean_up()
 
+@tc
 def test_pcecc_cr_lsp():
     """Test PCECC CR LSP."""
-    print "Test PCECC CR LSP"
-
     # Create PCEP session with all PCCs
     config_pce_on_ingress()
     config_pce_on_transit()
@@ -71,7 +71,7 @@ def test_pcecc_cr_lsp():
     # Remove LSP
     remove_lsp()
 
-
+@tc_step
 def config_pce_on_ingress():
     """Configure PCE on ingress router and verify the pcep session."""
     params = {'node_id': v.rt1_node_id,
@@ -81,6 +81,7 @@ def config_pce_on_ingress():
     rt1.set_basic_pce(params)
     assert rt1.check_pce_up(params)
 
+@tc_step
 def config_pce_on_transit():
     """Configure PCE on egress router and verify the pcep session."""
     params = {'node_id': v.rt2_node_id,
@@ -92,6 +93,7 @@ def config_pce_on_transit():
     rt2.set_basic_pce(params)
     assert rt2.check_pce_up(params)
 
+@tc_step
 def config_pce_on_egress():
     """Configure PCE on egress router and verify the pcep session."""
     params = {'node_id': v.rt3_node_id,
@@ -102,6 +104,7 @@ def config_pce_on_egress():
     assert rt3.check_pce_up(params)
     rt3.wait_for_ospf_peer_full()
 
+@tc_step
 def send_label_db_sync_end_to_egress():
     """Send label DB sync end to egress using add-label"""
     params = {'node_id': v.rt3_node_id}
@@ -109,6 +112,7 @@ def send_label_db_sync_end_to_egress():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def send_label_db_sync_end_to_transit():
     """Send label DB sync end to transit using add-label"""
     params = {'node_id': v.rt2_node_id}
@@ -116,6 +120,7 @@ def send_label_db_sync_end_to_transit():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def send_label_db_sync_end_to_ingress():
     """Send label DB sync end to ingress using add-label"""
     params = {'node_id': v.rt1_node_id}
@@ -123,6 +128,7 @@ def send_label_db_sync_end_to_ingress():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def add_lsp():
     """Add an LSP to ingress router."""
     params = {'node_id': v.rt1_node_id,
@@ -134,13 +140,14 @@ def add_lsp():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def get_reported_lsp():
     """Verify ingress router in the pcep topology in ODL."""
     params = {'node_id': v.rt1_node_id}
     status, resp = odl.get_pcep_topology()
     assert status == 200
 
-    index = odl.get_matching_index(resp['topology'][0]['node'], u'node-id', "pcc://" + params['node_id'])
+    index = get_matching_index(resp['topology'][0]['node'], u'node-id', "pcc://" + params['node_id'])
     assert index != -1
 
     node = resp['topology'][0]['node'][index]
@@ -150,6 +157,7 @@ def get_reported_lsp():
     plsp_id = lsp["plsp-id"]
     tunnel_id = lsp["tlvs"]["lsp-identifiers"]["tunnel-id"]
 
+@tc_step
 def download_labels_on_egress():
     """Add label to egress router."""
     params = {'node_id': v.rt3_node_id,
@@ -162,6 +170,7 @@ def download_labels_on_egress():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def download_labels_on_transit():
     """Add label to transit router."""
     params = {'node_id': v.rt2_node_id,
@@ -175,6 +184,7 @@ def download_labels_on_transit():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def download_labels_on_ingress():
     """Add label to ingress router."""
     params = {'node_id': v.rt1_node_id,
@@ -187,6 +197,7 @@ def download_labels_on_ingress():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def update_lsp():
     """Update LSP to ingress router to make it Active."""
     params = {'node_id': v.rt1_node_id,
@@ -200,11 +211,13 @@ def update_lsp():
     assert status == 200
     assert resp['output'] == {}
 
+@tc_step
 def verify_lsp_ping():
     """Verify ping is successful."""
     params = {'name': v.auto_tunnel_name}
     assert rt1.check_ping(params)
 
+@tc_step
 def remove_lsp():
     """Remove the LSP from ingress router."""
     params = {'node_id': v.rt1_node_id,

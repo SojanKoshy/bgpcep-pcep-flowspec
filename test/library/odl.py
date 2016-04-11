@@ -16,6 +16,7 @@ import logging
 from restful_lib import Connection
 from string import Template
 
+from test.library.common import *  # @UnusedWildImport
 from test.variables import variables as v
 
 
@@ -46,15 +47,15 @@ class Odl:
 
     def get(self, path):
         """Request REST GET transaction with timeout."""
-        return self.timeout(self.request, ('GET', path, {}))
+        return timeout(self, self.request, ('GET', path, {}))
 
     def post(self, path, body):
         """Request REST POST transaction with timeout."""
-        return self.timeout(self.request, ('POST', path, body))
+        return timeout(self, self.request, ('POST', path, body))
 
     def put(self, path, body):
         """Request REST PUT transaction with timeout."""
-        return self.timeout(self.request, ('PUT', path, body))
+        return timeout(self, self.request, ('PUT', path, body))
 
     def request(self, operation, path, body):
         """Request REST transactions."""
@@ -87,7 +88,7 @@ class Odl:
 
     def post_add_lsp(self, params=None):
         """Add LSP and return the content of the response."""
-        self.node_id = params['node_id']    # Required for auto undo
+        self.node_id = params['node_id']  # Required for auto undo
         if params.has_key('sid'):
             body = self.read_file(v.add_lsp_sr_file, params)
         else:
@@ -107,7 +108,7 @@ class Odl:
         if params is None:
             # Auto undo
             params = {}
-            self._move_attr_to_param(params, 'node_id')
+            move_attr_to_params(self, params, 'node_id')
 
         if params.has_key("node_id"):
             body = self.read_file(v.remove_lsp_file, params)
@@ -134,40 +135,3 @@ class Odl:
         """Remove label and return the content of the response."""
         body = self.read_file(v.remove_label_file, params)
         return self.post("/operations/network-topology-pcep:remove-label", body)
-
-    def timeout(self, func, args=(), kwargs={}, timeout_duration=1, default=None):
-        """Terminate the function execution when timeout happens."""
-        import signal
-
-        class TimeoutError(Exception):
-            pass
-
-        def handler(signum, frame):
-            raise TimeoutError()
-
-        # set the timeout handler
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(timeout_duration)
-        try:
-            result = func(*args, **kwargs)
-        except TimeoutError:
-            self.log.warn("Timeout: %s seconds expired in %s(%s %s)",
-                     timeout_duration, func.__name__, args, kwargs)
-            result = default
-        finally:
-            signal.alarm(0)
-
-        return result
-
-    def _move_attr_to_param(self, param, *attrs):
-        for attr in attrs:
-            if hasattr(self, attr):
-                param[attr] = self.__dict__[attr]
-                delattr(self, attr)
-
-    def get_matching_index(self, kvlist, key, values):
-        for i, kv in enumerate(kvlist):
-            if kv.has_key(key):
-                if kv[key] == values:
-                    return i
-        return -1
