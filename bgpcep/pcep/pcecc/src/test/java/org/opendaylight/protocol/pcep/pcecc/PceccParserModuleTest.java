@@ -15,6 +15,10 @@ import org.opendaylight.controller.config.manager.impl.factoriesresolver.Hardcod
 import org.opendaylight.controller.config.util.ConfigTransactionJMXClient;
 import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccParserModuleFactory;
 
+/*
+* PceccParserModuleTest
+* Description :- Test PceccParserModule and PceccParserModuleFactory create transaction,commit.
+*/
 public class PceccParserModuleTest extends AbstractConfigTest {
 
     private static final String INSTANCE_NAME = "Pcecc-parser-instance";

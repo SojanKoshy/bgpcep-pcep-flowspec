@@ -43,6 +43,29 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 
 public class PceccObjectParserTest {
 
+    /*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | Ver |   Flags |   Keepalive   |  DeadTimer    |      SID      |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                       Optional TLVs                         //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      OPEN Object Format
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               Type=[TBD]      |            Length=4           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                             Flags                         |G|L|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      PCECC Capability TLV
+    */
     private static final byte[] openObjectBytes = {
         0x01, 0x10, 0x00, 0x10,
         0x20, 0x1e, 0x78, 0x01,
@@ -83,6 +106,9 @@ public class PceccObjectParserTest {
     private SimplePCEPExtensionProviderContext ctx;
     private PceccActivator act;
 
+    /*
+    * Description :- Registering the handler.
+    */
     @Before
     public void setUp() {
         this.ctx = new SimplePCEPExtensionProviderContext();
@@ -91,6 +117,11 @@ public class PceccObjectParserTest {
         this.tlvRegistry = this.ctx.getTlvHandlerRegistry();
         this.viTlvRegistry = this.ctx.getVendorInformationTlvRegistry();
     }
+
+    /*
+    * testOpenObjectWithPceccTlv
+    * Description :- Test Open Object with Pcecc Tlv in PcepOpenObjectWithPceccTlvParser.
+    */
 
     @Test
     public void testOpenObjectWithPceccTlv() throws PCEPDeserializerException {
@@ -125,7 +156,10 @@ public class PceccObjectParserTest {
         assertArrayEquals(openObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
-
+    /*
+    * testPceccLabelObjectParserWithoutAddressTlv
+    * Description :- Test Pcecc Label Object without Address Tlv in PceccLabelObjectParser.
+    */
     @Test
     public void testPceccLabelObjectParserWithoutAddressTlv() throws PCEPDeserializerException {
         final PceccLabelObjectParser parser =
@@ -146,7 +180,10 @@ public class PceccObjectParserTest {
         assertArrayEquals(PceccLabelObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
-
+    /*
+    * testPceccFecIpv4ObjectParser
+    * Description :- Test Pcecc Fec Label Object with Ipv4 Node Id in PceccFecIpv4ObjectParser.
+    */
     @Test
     public void testPceccFecIpv4ObjectParser() throws PCEPDeserializerException {
         final PceccFecIpv4ObjectParser parser =
@@ -165,6 +202,10 @@ public class PceccObjectParserTest {
         assertArrayEquals(PceccFecObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
+    /*
+    * testPceccFecObjectParserIpv4NodeId
+    * Description :- Test the Fec Object with Ipv4 Node ID length check in PceccFecObjectParser.
+    */
     @Test
     public void testPceccFecObjectParserIpv4NodeId() throws PCEPDeserializerException {
         final PceccFecObjectParser parser =
@@ -183,8 +224,12 @@ public class PceccObjectParserTest {
         assertArrayEquals(PceccFecObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
+    /*
+    * testPceccFecObjectParserIpv4
+    * Description :- Test the Fec Object with Ipv4 Address length check in PceccFecObjectParser.
+    */
     @Test
-    public void testPceccFecObjectParserIpv4Adjacency() throws PCEPDeserializerException {
+    public void testPceccFecObjectParserIpv4() throws PCEPDeserializerException {
         final PceccFecObjectParser parser =
                 new PceccFecObjectParser();
 
@@ -199,6 +244,10 @@ public class PceccObjectParserTest {
         assertArrayEquals(PceccFecAdjacencyObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
+    /*
+    * testPceccFecIpv4AdjacencyObjectParser
+    * Description :- Test FecIpv4Adjacency Object in testPceccFecIpv4AdjacencyObjectParser.
+    */
     @Test
     public void testPceccFecIpv4AdjacencyObjectParser() throws PCEPDeserializerException {
         final PceccFecIpv4AdjacencyObjectParser parser =
@@ -218,6 +267,10 @@ public class PceccObjectParserTest {
         assertArrayEquals(PceccFecAdjacencyObjectBytes, ByteArray.getAllBytes(buffer));
     }
 
+    /*
+    * testPceccLabelObjectParserWithAddressLabelTLV
+    * Description :- Test Pcecc Label Object with Address Tlv in PceccLabelObjectParser.
+    */
     @Test
     public void testPceccLabelObjectParserWithAddressLabelTLV() throws PCEPDeserializerException {
         final PceccLabelObjectParser parser =
