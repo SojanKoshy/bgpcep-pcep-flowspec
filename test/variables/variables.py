@@ -13,15 +13,21 @@ __email__ = "sojan.koshy@huawei.com"
 import logging
 from os.path import dirname
 
+
 logging.basicConfig(level=logging.DEBUG)
 cur_dir = dirname(__file__)
 
 # TOPOLOGY
-#             ODL
-#              |
-#      +-------+-------+
-#      |       |       |
-#     RT1-----RT2-----RT3
+#                +-----+
+#                | RT1 |
+#                +-----+
+#        E3/0/0 /       \7
+#              /         \
+#             /           \
+#     E3/0/0 /             \7
+#     +-----+               +-----+
+#     | RT2 |---------------| RT3 |
+#     +-----+ 8           8 +-----+
 
 # ODL RESTconf
 base_url = "http://127.0.0.1:8181/restconf"
@@ -45,19 +51,19 @@ rt3_node_id = "3.3.3.3"
 rt1_to_rt2_intf = "Ethernet3/0/0"
 rt1_to_rt2_ip   = "10.1.1.1"
 
-rt1_to_rt3_intf = "Ethernet3/0/2"
+rt1_to_rt3_intf = "Ethernet3/0/7"
 rt1_to_rt3_ip   = "12.1.1.1"
 
 rt2_to_rt1_intf = "Ethernet3/0/0"
 rt2_to_rt1_ip   = "10.1.1.2"
 
-rt2_to_rt3_intf = "Ethernet3/0/1"
+rt2_to_rt3_intf = "Ethernet3/0/8"
 rt2_to_rt3_ip   = "11.1.1.1"
 
-rt3_to_rt2_intf = "Ethernet3/0/1"
+rt3_to_rt2_intf = "Ethernet3/0/8"
 rt3_to_rt2_ip   = "11.1.1.2"
 
-rt3_to_rt1_intf = "Ethernet3/0/2"
+rt3_to_rt1_intf = "Ethernet3/0/7"
 rt3_to_rt1_ip   = "12.1.1.2"
 
 # Variables for PCEP topology
