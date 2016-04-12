@@ -34,8 +34,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.pcerr.message.PcerrMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.pcerr.message.pcerr.message.ErrorsBuilder;
 
-
+/* Test: PceccNegativeScenarioTest is to test the boundary check and error scenario's */
 public class PceccNegativeScenarioTest {
+
+    /*
+          0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                      IPv4 Node ID = 1.1.1.1                   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      FEC Object-Class is 226.
+
+      FEC Object-Type is 1 'IPv4 Node ID'.
+      Fec Ipv4 Adjacency Object TYPE = 3;
+
+     */
     private static final byte[] PceccFecAdjacencyObjectBytes = {
         (byte) 0xe2, 0x30, 0x00, 0x1c,
         (byte) 0xfe,(byte) 0x90, 0x00, 0x00,
@@ -46,16 +60,56 @@ public class PceccNegativeScenarioTest {
         (byte) 0xff,(byte) 0x90,
     };
 
+    /*
+          0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Reserved            |              Flags           |O|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                 Label = 5001          |     Reserved          |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                        Optional TLV                         //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      Label Object
+      LABEL Object-Class is 225.
+      LABEL Object-Type is 1.
+
+     */
     private static final byte[] PceccLabelObjectBytes = {
         (byte) 0xe1, 0x10, 0x00, 0x0c,
         0x00, 0x00, 0x00, 0x01,
     };
 
-    private static final byte[] PceccLabelObjectwithAddressTlvBytes = {
-        (byte) 0xe1, 0x10, 0x00, (byte) 0x14,
-        0x00, 0x00, 0x00, 0x00,
-        (byte) 0x01, 0x38, (byte) 0x90, 0x00,
-    };
+    /*
+          0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | Object-Class  |   OT  |Res|P|I|   Object Length (bytes)       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                        (Object body)                        //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      PCEP Common Object Header
+      PCEP Open Object-Class is 1
+      TYPE = 1
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               Type=[TBD]      |            Length=4           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                             Flags                         |G|L|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      PCECC Capability TLV
+      Type of the TLV is 65287
+
+     */
 
     private static final byte[] openObjectBytes = {
         0x01, 0x10, 0x00, 0x10,
@@ -65,6 +119,37 @@ public class PceccNegativeScenarioTest {
         0x00, 0x00, 0x00, 0x03
     };
 
+    /*
+          0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          Flags                                |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                        SRP-ID-number = 1L                     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                      Optional TLVs                          //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      SRP Object format
+      SRP Object-Class is 33
+      TYPE = 1
+
+            0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                PLSP-ID = 0L           |    Flag |    O|A|R|S|D|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //                        TLVs                                 //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      LSP Object format
+      LSP Object-Class is 32
+      TYPE = 1
+
+     */
     private static final byte[] PceccLabelUpdateMessageParserError = {
         (byte) 0x20, (byte)0xe2,0x00, 0x20,
         (byte) 0xe1, 0x10, 0x00, (byte) 0x14,
@@ -76,6 +161,24 @@ public class PceccNegativeScenarioTest {
         (byte) 0xff,(byte) 0x90, 0x00, 0x01
     };
 
+    /*
+          0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Reserved            |              Flags           |O|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                 Label = 5001          |     Reserved          |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                        Optional TLV                         //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      Label Object
+      LABEL Object-Class is 225.
+      LABEL Object-Type is 1.
+
+     */
     private static final byte[] PceccLabelTlvBytes = {
         (byte) 0x20, (byte)0xe2,0x00, 0x2c,
     };
@@ -86,6 +189,7 @@ public class PceccNegativeScenarioTest {
     private SimplePCEPExtensionProviderContext ctx;
     private PceccActivator act;
 
+    // Registering the handler
     @Before
     public void setUp() {
         this.ctx = new SimplePCEPExtensionProviderContext();
@@ -223,8 +327,8 @@ public class PceccNegativeScenarioTest {
     }
 
     /**
-     * Srp Object missing for a path in an LSP Update Request where TE-LSP setup is requested.
-     * SRP_MISSING(6, 10)
+     * Srp Object missing
+     * error type SRP_MISSING(6, 10)
      */
     @Test
     public void testPceccLabelUpdateMessageParserError() throws IOException, PCEPDeserializerException {
