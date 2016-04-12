@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.typ
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.pcerr.message.PcerrMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.pcerr.message.pcerr.message.ErrorsBuilder;
 
-/* Test: PceccNegativeScenarioTest is to test the boundary check and error scenario's */
+/* Test: PceccNegativeScenarioTest is to Test boundary check and error scenario's */
 public class PceccNegativeScenarioTest {
 
     /*
@@ -189,7 +189,10 @@ public class PceccNegativeScenarioTest {
     private SimplePCEPExtensionProviderContext ctx;
     private PceccActivator act;
 
-    // Registering the handler
+
+    /*
+    * Description :- Registering the handler.
+    */
     @Before
     public void setUp() {
         this.ctx = new SimplePCEPExtensionProviderContext();
@@ -198,6 +201,11 @@ public class PceccNegativeScenarioTest {
         this.tlvRegistry = this.ctx.getTlvHandlerRegistry();
         this.viTlvRegistry = this.ctx.getVendorInformationTlvRegistry();
     }
+
+    /*
+    * testPceccFecIpv4AdjacencyObjectParserHitLengthCheck
+    * Description :- Test FecIpv4Adjacency Object length check in PceccFecIpv4AdjacencyObjectParser.
+    */
 
     @Test
     public void testPceccFecIpv4AdjacencyObjectParserHitLengthCheck() throws PCEPDeserializerException {
@@ -212,6 +220,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccFecObjectParserHitLengthCheck
+    * Description :- Test Fec Object length check in PceccFecObjectParser.
+    */
     @Test
     public void testPceccFecObjectParserHitLengthCheck() throws PCEPDeserializerException {
         try {
@@ -225,6 +237,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccFecIpv4ObjectParserHitLengthCheck
+    * Description :-Test FecIpv4 Object length check in PceccFecIpv4ObjectParser.
+    */
     @Test
     public void testPceccFecIpv4ObjectParserHitLengthCheck() throws PCEPDeserializerException {
         try {
@@ -239,6 +255,10 @@ public class PceccNegativeScenarioTest {
     }
 
 
+    /*
+    * testPceccLabelObjectParserHitLengthCheck
+    * Description :- Test Label Object length check in PceccLabelObjectParser.
+    */
     @Test
     public void testPceccLabelObjectParserHitLengthCheck() throws PCEPDeserializerException {
         try {
@@ -252,6 +272,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccLabelObjectParserHitLabelCheck
+    * Description :- Test mandatory field(Label Number) in label Object.
+    */
     @Test
     public void testPceccLabelObjectParserHitLabelCheck() throws Exception {
         try {
@@ -265,6 +289,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccLabelObjectParserHitNullTlvCheck
+    * Description :- Test Label Object null Tlv check in PceccLabelObjectParser.
+    */
     @Test
     public void testPceccLabelObjectParserHitNullTlvCheck() {
         final PceccLabelObjectParser parser =
@@ -275,6 +303,10 @@ public class PceccNegativeScenarioTest {
         parser.serializeObject(builder.build(), buffer);
     }
 
+    /*
+    * testPceccOpenObjectParserHitSessionIdCheck
+    * Description :- Test mandatory field(SessionId) in Open Object.
+    */
     @Test
     public void testPceccOpenObjectParserHitSessionIdCheck() throws Exception {
         try {
@@ -288,6 +320,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccOpenObjectParserHitNullTlvCheck
+    * Description :- Test Open Object with Pcecc null Tlv check in PcepOpenObjectWithPceccTlvParser.
+    */
     @Test
     public void testPceccOpenObjectParserHitNullTlvCheck() {
         final PcepOpenObjectWithPceccTlvParser parser =
@@ -298,6 +334,10 @@ public class PceccNegativeScenarioTest {
         parser.serializeObject(builder.build(), buffer);
     }
 
+    /*
+    * testPcepOpenObjectWithLengthCheck
+    * Description :-Test FecIpv4 Object length check in PcepOpenObjectWithPceccTlvParser.
+    */
     @Test
     public void testPcepOpenObjectWithLengthCheck() throws PCEPDeserializerException {
         try {
@@ -311,6 +351,10 @@ public class PceccNegativeScenarioTest {
         }
     }
 
+    /*
+    * testPceccLabelUpdateMessageParser
+    * Description :- Test LabelUpdateMessage Object null message check in PceccLabelUpdateMessageParser.
+    */
     @Test
     public void testPceccLabelUpdateMessageParser() throws IOException, PCEPDeserializerException {
         try {
@@ -327,6 +371,8 @@ public class PceccNegativeScenarioTest {
     }
 
     /**
+     * testPceccLabelUpdateMessageParserError
+     * Description :- Test Error condition when SRP object is missing in LabelUpdateMessage Object.
      * Srp Object missing
      * error type SRP_MISSING(6, 10)
      */
@@ -337,7 +383,7 @@ public class PceccNegativeScenarioTest {
             final PceccLabelUpdateMessageParser parser = new PceccLabelUpdateMessageParser(this.ctx.getObjectHandlerRegistry());
 
             ByteBuf result = Unpooled.wrappedBuffer(PceccLabelUpdateMessageParserError);
-            final List<Message> errors = Lists.<Message>newArrayList();
+            final List<Message> errors = Lists.newArrayList();
 
             final PcerrMessageBuilder errMsgBuilder = new PcerrMessageBuilder();
             errMsgBuilder.setErrors(Lists.newArrayList(new ErrorsBuilder().setErrorObject(
