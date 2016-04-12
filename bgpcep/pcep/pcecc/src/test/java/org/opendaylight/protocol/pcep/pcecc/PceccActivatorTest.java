@@ -15,7 +15,10 @@ import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.protocol.pcep.spi.PCEPExtensionProviderContext;
 import org.opendaylight.protocol.pcep.spi.pojo.ServiceLoaderPCEPExtensionProviderContext;
 
-/* Test :- Check the registry of all object done in PceccActivator */
+/*
+* PceccActivatorTest
+* Description :- Test registry of all object done in PceccActivator.
+*/
 public class PceccActivatorTest {
     /*No of object register in PceccActivator*/
     private static final int TOTAL_OBJECT_REGISTERED = 19;

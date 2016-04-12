@@ -19,7 +19,10 @@ import org.opendaylight.controller.config.util.ConfigTransactionJMXClient;
 import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccCapabilityModuleFactory;
 import org.opendaylight.controller.config.yang.pcep.pcecc.cfg.PceccCapabilityModuleMXBean;
 
-
+/*
+* PceccCapabilityModuleTest
+* Description :- Test PceccCapabilityModule and PceccCapabilityModuleFactory create transaction,commit.
+*/
 
 public class PceccCapabilityModuleTest extends AbstractConfigTest {
 

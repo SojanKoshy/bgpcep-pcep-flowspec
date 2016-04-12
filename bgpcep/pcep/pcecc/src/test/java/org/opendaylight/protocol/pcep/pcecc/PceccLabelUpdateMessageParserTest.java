@@ -44,9 +44,89 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pce
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.pcecc.rev160225.pclabelupd.message.pclabelupd.message.PceLabelUpdatesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Message;
 
+/*
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | Object-Class  |   OT  |Res|P|I|   Object Length (bytes)       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                        (Object body)                        //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      PCEP Common Object Header
+      PCEP Open Object-Class is 1
+      TYPE = 1
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          Flags                                |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                        SRP-ID-number = 1L                     |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                      Optional TLVs                          //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      SRP Object format
+      SRP Object-Class is 33
+      TYPE = 1
+
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                PLSP-ID = 0L           |    Flag |    O|A|R|S|D|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //                        TLVs                                 //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      LSP Object format
+      LSP Object-Class is 32
+      TYPE = 1
+
+            0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |          Reserved            |              Flags           |O|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                 Label = 5001          |     Reserved          |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      //                        Optional TLV                         //
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      Label Object
+      LABEL Object-Class is 225.
+      LABEL Object-Type is 1.
 
 
+      0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |             Type=65289        |  Length = 4                   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                        IPv4 address = 1.1.1.1                 |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
+      IPV4-ADDRESS TLV:
+
+            0                   1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                      IPv4 Node ID = 1.1.1.1                   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+      FEC Object-Class is 226.
+
+      FEC Object-Type is 1 'IPv4 Node ID'.
+      Fec Ipv4 Adjacency Object TYPE = 3;
+
+*/
 public class PceccLabelUpdateMessageParserTest {
     private static final byte[] PceccLabelMapObjectWithAddressTlvBytes = {
         (byte) 0x20, (byte)0xe2,0x00, 0x2c,
@@ -106,6 +186,9 @@ public class PceccLabelUpdateMessageParserTest {
     private SimplePCEPExtensionProviderContext ctx;
     private PceccActivator act;
 
+    /*
+    * Description :- Registering the handler.
+    */
     @Before
     public void setUp() {
         this.ctx = new SimplePCEPExtensionProviderContext();
@@ -114,6 +197,10 @@ public class PceccLabelUpdateMessageParserTest {
 
     }
 
+    /*
+    * testPceLabelDownloadWithMultiElementList
+    * Description :- Test PceccLabelUpdateMessageParser Download label case with two labels.
+    */
     @Test
     public void testPceLabelDownloadWithMultiElementList() throws IOException, PCEPDeserializerException {
 
@@ -203,6 +290,10 @@ public class PceccLabelUpdateMessageParserTest {
 
     }
 
+    /*
+    * testPceLabelDownloadWithSingleElementList
+    * Description :- Test PceccLabelUpdateMessageParser Download label case with one label.
+    */
     @Test
     public void testPceLabelDownloadWithSingleElementList() throws IOException, PCEPDeserializerException {
 
@@ -273,7 +364,10 @@ public class PceccLabelUpdateMessageParserTest {
 
     }
 
-
+    /*
+    * testPceLabelMapWithAddressTlv
+    * Description :- Test PceccLabelUpdateMessageParser Map label case with Address label.
+    */
     @Test
     public void testPceLabelMapWithAddressTlv() throws IOException, PCEPDeserializerException {
 
@@ -326,6 +420,10 @@ public class PceccLabelUpdateMessageParserTest {
 
     }
 
+    /*
+    * testPceLabelMapWithAddressTlv
+    * Description :- Test PceccLabelUpdateMessageParser Map label case without Address label.
+    */
     @Test
     public void testPceLabelMapWithoutAddressTlv() throws IOException, PCEPDeserializerException {
 
