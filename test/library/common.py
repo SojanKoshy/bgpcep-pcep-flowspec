@@ -19,6 +19,7 @@ tc_step_counter = 0
 
 def tc(func):
     """Decorator for test case functions."""
+    assert func.__name__.startswith("test")
     def func_wrapper():
         global tc_step_counter
         tc_step_counter = 0
@@ -31,6 +32,7 @@ def tc(func):
 
 def tc_step(func):
     """Decorator for test step functions."""
+    assert not func.__name__.startswith("test")
     def func_wrapper():
         global tc_step_counter
         tc_step_counter += 1
@@ -43,6 +45,7 @@ def tc_step(func):
 
 def tc_fixture(func):
     """Decorator for test fixture functions."""
+    assert not func.__name__.startswith("test")
     def func_wrapper(module):
         sys.stdout.flush()
         print

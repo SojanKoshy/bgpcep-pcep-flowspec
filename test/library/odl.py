@@ -91,6 +91,10 @@ class Odl:
         self.node_id = params['node_id']  # Required for auto undo
         if params.has_key('sid'):
             body = self.read_file(v.add_lsp_sr_file, params)
+        elif params.has_key('sid2'):
+            body = self.read_file(v.add_lsp_sr2_file, params)
+        elif params.has_key('sid3'):
+            body = self.read_file(v.add_lsp_sr3_file, params)
         else:
             body = self.read_file(v.add_lsp_file, params)
         return self.post("/operations/network-topology-pcep:add-lsp", body)
@@ -99,6 +103,10 @@ class Odl:
         """Update LSP and return the content of the response."""
         if params.has_key('sid'):
             body = self.read_file(v.update_lsp_sr_file, params)
+        elif params.has_key('sid2'):
+            body = self.read_file(v.update_lsp_sr2_file, params)
+        elif params.has_key('sid3'):
+            body = self.read_file(v.update_lsp_sr3_file, params)
         else:
             body = self.read_file(v.update_lsp_file, params)
         return self.post("/operations/network-topology-pcep:update-lsp", body)

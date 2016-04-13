@@ -111,6 +111,19 @@ class Router:
             self.send_cmd("ospf timer hello 1")
             self.send_cmd("quit")
 
+        if params.has_key("intfs"):
+            self.intfs = params['intfs']  # Required for auto undo
+            for i, intf in enumerate(params['intfs']):
+                if intf:
+                    ip = params['ips'][i]
+                    self.send_cmd("interface " + intf)
+                    self.send_cmd("ip address " + ip + ' 24')
+                    self.send_cmd("mpls")
+                    self.send_cmd("mpls te")
+                    self.send_cmd("ospf enable area 1")
+                    self.send_cmd("ospf timer hello 1")
+                    self.send_cmd("quit")
+
         self.send_cmd("ospf 1 router-id " + params['node_id'])
         self.send_cmd("area 1")
         self.send_cmd("quit")
@@ -144,6 +157,14 @@ class Router:
             self.send_cmd("undo ip address")
             self.send_cmd("undo mpls")
             self.send_cmd("quit")
+
+        if params.has_key("intfs"):
+            for intf in params['intfs']:
+                if intf:
+                    self.send_cmd("interface " + intf)
+                    self.send_cmd("undo ip address")
+                    self.send_cmd("undo mpls")
+                    self.send_cmd("quit")
 
         self.send_cmd("undo ospf 1")
         self.send_cmd("y")
