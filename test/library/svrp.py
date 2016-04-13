@@ -134,7 +134,7 @@ class Router:
         if params is None:
             # Auto undo
             params = {}
-            move_attr_to_params(self, params, 'pce_server_ip', 'intf', 'intf2')
+            move_attr_to_params(self, params, 'pce_server_ip', 'intf', 'intf2', 'intfs')
 
         if params.has_key("pce_server_ip"):
             self.send_cmd("pce-client")
