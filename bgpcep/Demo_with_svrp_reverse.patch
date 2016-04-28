@@ -1,0 +1,92 @@
+Index: pcep/spi/src/main/java/org/opendaylight/protocol/pcep/spi/AbstractMessageParser.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pcep/spi/src/main/java/org/opendaylight/protocol/pcep/spi/AbstractMessageParser.java	(revision )
++++ pcep/spi/src/main/java/org/opendaylight/protocol/pcep/spi/AbstractMessageParser.java	(revision 0431268752bb167210ceb918b5a6df686e0c811f)
+@@ -97,13 +97,11 @@
+             final ObjectHeader header = new ObjectHeaderImpl(flags.get(PROCESSED), flags.get(IGNORED));
+ 
+             if (VendorInformationUtil.isVendorInformationObject(objClass, objType)) {
+-                if (this.viRegistry != null) {
+-                    Preconditions.checkState(this.viRegistry != null);
+-                    final EnterpriseNumber enterpriseNumber = new EnterpriseNumber(bytesToPass.readUnsignedInt());
+-                    final Optional<? extends Object> obj = this.viRegistry.parseVendorInformationObject(enterpriseNumber, header, bytesToPass);
+-                    if (obj.isPresent()) {
+-                        objs.add(obj.get());
++                Preconditions.checkState(this.viRegistry != null);
++                final EnterpriseNumber enterpriseNumber = new EnterpriseNumber(bytesToPass.readUnsignedInt());
++                final Optional<? extends Object> obj = this.viRegistry.parseVendorInformationObject(enterpriseNumber, header, bytesToPass);
++                if (obj.isPresent()) {
++                    objs.add(obj.get());
+-                    }
+                 }
+             } else {
+                 // parseObject is required to return null for P=0 errored objects
+Index: pcep/impl/src/main/java/org/opendaylight/protocol/pcep/impl/subobject/Type1LabelParser.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pcep/impl/src/main/java/org/opendaylight/protocol/pcep/impl/subobject/Type1LabelParser.java	(revision )
++++ pcep/impl/src/main/java/org/opendaylight/protocol/pcep/impl/subobject/Type1LabelParser.java	(revision 0431268752bb167210ceb918b5a6df686e0c811f)
+@@ -27,7 +27,7 @@
+  */
+ public class Type1LabelParser implements LabelParser, LabelSerializer {
+ 
+-    public static final int CTYPE = 0;
++    public static final int CTYPE = 1;
+ 
+     public static final int LABEL_LENGTH = 4;
+ 
+Index: pcep/topology-provider/src/main/java/org/opendaylight/bgpcep/pcep/topology/provider/Stateful07TopologySessionListener.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pcep/topology-provider/src/main/java/org/opendaylight/bgpcep/pcep/topology/provider/Stateful07TopologySessionListener.java	(revision )
++++ pcep/topology-provider/src/main/java/org/opendaylight/bgpcep/pcep/topology/provider/Stateful07TopologySessionListener.java	(revision 0431268752bb167210ceb918b5a6df686e0c811f)
+@@ -803,22 +803,8 @@
+                 .setPathSetupType(maybePST.get())
+                 .build());
+         }
+-
+-        final TlvsBuilder tlvsBuilder;
+-        if (reportedLsp.getTlvs() != null) {
+-            tlvsBuilder = new TlvsBuilder(reportedLsp.getTlvs());
+-        }
+-        else {
+-            tlvsBuilder = new TlvsBuilder();
+-        }
+-
+-        tlvsBuilder.setSymbolicPathName(
+-                new SymbolicPathNameBuilder().setPathName(new
+-                        SymbolicPathName(reportedLsp.getTlvs().getSymbolicPathName().getPathName())).build());
+-
+         rb.setSrp(srpBuilder.build());
+-        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId())
+-                .setDelegate(reportedLsp.isDelegate()).setTlvs(tlvsBuilder.build()).build());
++        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId()).setDelegate(reportedLsp.isDelegate()).build());
+         return rb.build();
+     }
+ 
+Index: pcep/controller-config/src/main/resources/initial/33-pcep-segment-routing.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- pcep/controller-config/src/main/resources/initial/33-pcep-segment-routing.xml	(revision )
++++ pcep/controller-config/src/main/resources/initial/33-pcep-segment-routing.xml	(revision 0431268752bb167210ceb918b5a6df686e0c811f)
+@@ -21,8 +21,8 @@
+                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:sr:cfg">prefix:pcep-parser-segment-routing</type>
+                     <name>pcep-parser-segment-routing</name>
+                     <!-- Proposed code point for SR-ERO/RRO subobject by draft (=36) https://tools.ietf.org/html/draft-ietf-pce-segment-routing-06.
+-                     to preserve (TYPE = 5/6) assigned type set the value to false or remove (false by default) or set true to use proposed ones-->
+-                    <iana-sr-subobjects-type>true</iana-sr-subobjects-type>
++                     to preserve (TYPE = 5/6) assigned type set the value to false or remove (false by default) or set true to use proposed ones
++                    <iana-sr-subobjects-type>true</iana-sr-subobjects-type>-->
+                 </module>
+                 <module>
+                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:sr:cfg">prefix:pcep-segment-routing-capability</type>
+\ No newline at end of file
