@@ -803,22 +803,8 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                 .setPathSetupType(maybePST.get())
                 .build());
         }
-
-        final TlvsBuilder tlvsBuilder;
-        if (reportedLsp.getTlvs() != null) {
-            tlvsBuilder = new TlvsBuilder(reportedLsp.getTlvs());
-        }
-        else {
-            tlvsBuilder = new TlvsBuilder();
-        }
-
-        tlvsBuilder.setSymbolicPathName(
-                new SymbolicPathNameBuilder().setPathName(new
-                        SymbolicPathName(reportedLsp.getTlvs().getSymbolicPathName().getPathName())).build());
-
         rb.setSrp(srpBuilder.build());
-        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId())
-                .setDelegate(reportedLsp.isDelegate()).setTlvs(tlvsBuilder.build()).build());
+        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId()).setDelegate(reportedLsp.isDelegate()).build());
         return rb.build();
     }
 
