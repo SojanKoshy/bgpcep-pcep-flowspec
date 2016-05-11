@@ -12,6 +12,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
 import org.opendaylight.bgpcep.programming.spi.SuccessfulRpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelOutputBuilder;
@@ -23,6 +26,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.NetworkTopologyPcepService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveFlowspecInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveFlowspecOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveFlowspecOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLabelOutputBuilder;
@@ -111,6 +117,26 @@ final class TopologyRPCs implements NetworkTopologyPcepService {
             @Override
             public RpcResult<RemoveLabelOutput> apply(final OperationResult input) {
                 return SuccessfulRpcResult.create(new RemoveLabelOutputBuilder(input).build());
+            }
+        });
+    }
+
+    @Override
+    public Future<RpcResult<AddFlowspecOutput>> addFlowspec(final AddFlowspecInput input) {
+        return Futures.transform(manager.addFlowspec(input), new Function<OperationResult, RpcResult<AddFlowspecOutput>>() {
+            @Override
+            public RpcResult<AddFlowspecOutput> apply(final OperationResult input) {
+                return SuccessfulRpcResult.create(new AddFlowspecOutputBuilder(input).build());
+            }
+        });
+    }
+
+    @Override
+    public Future<RpcResult<RemoveFlowspecOutput>> removeFlowspec(final RemoveFlowspecInput input) {
+        return Futures.transform(manager.removeFlowspec(input), new Function<OperationResult, RpcResult<RemoveFlowspecOutput>>() {
+            @Override
+            public RpcResult<RemoveFlowspecOutput> apply(final OperationResult input) {
+                return SuccessfulRpcResult.create(new RemoveFlowspecOutputBuilder(input).build());
             }
         });
     }

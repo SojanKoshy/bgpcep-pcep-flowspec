@@ -36,6 +36,7 @@
         <feature version='${project.version}'>odl-bgpcep-programming-api</feature>
         <feature version='${project.version}'>odl-bgpcep-programming-impl</feature>
         <feature version='${project.version}'>odl-bgpcep-pcep-pcecc</feature>
+        <feature version='${project.version}'>odl-bgpcep-pcep-flowspec</feature>
     </feature>
 
     <feature name='odl-bgpcep-pcep-dependencies' version='${project.version}'>
@@ -102,6 +103,7 @@
         <feature version='${project.version}'>odl-bgpcep-programming-impl</feature>
         <feature version='${project.version}'>odl-bgpcep-pcep-stateful07</feature>
         <feature version='${project.version}'>odl-bgpcep-pcep-pcecc</feature>
+        <feature version='${project.version}'>odl-bgpcep-pcep-flowspec</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
         <bundle>mvn:org.opendaylight.bgpcep/pcep-topology-provider/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/39-pcep-provider.xml">mvn:org.opendaylight.bgpcep/pcep-controller-config/{{VERSION}}/xml/config-provider</configfile>
@@ -130,5 +132,11 @@
         <bundle>mvn:org.opendaylight.bgpcep/pcep-pcecc/{{VERSION}}</bundle>
         <bundle>mvn:org.opendaylight.bgpcep/pcep-topology-api/{{VERSION}}</bundle>
         <configfile finalname="etc/opendaylight/karaf/35-pcep-pcecc.xml">mvn:org.opendaylight.bgpcep/pcep-controller-config/{{VERSION}}/xml/config-pcecc</configfile>
+    </feature>
+
+    <feature name='odl-bgpcep-pcep-flowspec' version='${project.version}'>
+        <feature version='${project.version}'>odl-bgpcep-pcep-stateful07</feature>
+        <bundle>mvn:org.opendaylight.bgpcep/pcep-flowspec/{{VERSION}}</bundle>
+        <bundle>mvn:org.opendaylight.bgpcep/pcep-topology-api/{{VERSION}}</bundle>
     </feature>
 </features>

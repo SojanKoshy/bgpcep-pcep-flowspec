@@ -15,6 +15,7 @@
         <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:spi?module=odl-pcep-spi-cfg&amp;revision=2013-11-15</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:programming:spi?module=odl-programming-spi-cfg&amp;revision=2013-11-15</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:stateful07:cfg?module=odl-pcep-ietf-stateful07-cfg&amp;revision=2015-07-14</capability>
+        <capability>urn:opendaylight:params:xml:ns:yang:controller:pcep:flowspec:cfg?module=odl-pcep-flowspec-cfg&amp;revision=2016-04-21</capability>
     </required-capabilities>
     <configuration>
 
@@ -41,6 +42,10 @@
                         <type xmlns:pcepspi="urn:opendaylight:params:xml:ns:yang:controller:pcep:spi">pcepspi:extension</type>
                         <name>pcep-parser-sync-optimizations</name>
                     </extension>
+                    <extension>
+                        <type xmlns:pcepspi="urn:opendaylight:params:xml:ns:yang:controller:pcep:spi">pcepspi:extension</type>
+                        <name>pcep-flowspec</name>
+                    </extension>
                 </module>
                 <module>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:impl">prefix:pcep-parser-base</type>
@@ -59,6 +64,14 @@
                     <name>pcep-parser-sync-optimizations</name>
                 </module>
                 <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:flowspec:cfg">prefix:pcep-flowspec</type>
+                    <name>pcep-flowspec</name>
+                </module>
+                <module>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:flowspec:cfg">prefix:pcep-flowspec-capability</type>
+                    <name>pcep-flowspec-capability</name>
+                </module>
+                <module>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:stateful07:cfg">prefix:stateful-capability</type>
                     <name>stateful-capability</name>
                 </module>
@@ -68,6 +81,10 @@
                     <capability>
                         <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep">prefix:pcep-capability</type>
                         <name>stateful-capability</name>
+                    </capability>
+                    <capability>
+                        <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep">prefix:pcep-capability</type>
+                        <name>pcep-flowspec-capability</name>
                     </capability>
                 </module>
                 <module>
@@ -147,12 +164,24 @@
                         <name>pcep-parser-sync-optimizations</name>
                         <provider>/config/modules/module[name='pcep-parser-sync-optimizations']/instance[name='pcep-parser-sync-optimizations']</provider>
                     </instance>
+                    <instance>
+                        <name>pcep-flowspec</name>
+                        <provider>/config/modules/module[name='pcep-flowspec']/instance[name='pcep-flowspec']</provider>
+                    </instance>
                 </service>
                 <service>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep">prefix:pcep-capability</type>
                     <instance>
                         <name>stateful-capability</name>
                         <provider>/config/modules/module[name='stateful-capability']/instance[name='stateful-capability']</provider>
+                    </instance>
+                </service>
+
+                <service>
+                    <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep">prefix:pcep-capability</type>
+                    <instance>
+                        <name>pcep-flowspec-capability</name>
+                        <provider>/config/modules/module[name='pcep-flowspec-capability']/instance[name='pcep-flowspec-capability']</provider>
                     </instance>
                 </service>
 

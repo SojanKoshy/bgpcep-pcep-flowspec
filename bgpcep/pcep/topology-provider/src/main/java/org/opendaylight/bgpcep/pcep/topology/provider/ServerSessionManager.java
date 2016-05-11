@@ -31,6 +31,7 @@ import org.opendaylight.protocol.pcep.PCEPSessionListenerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.open.object.open.TlvsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.FlowspecArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
@@ -165,6 +166,18 @@ final class ServerSessionManager implements PCEPSessionListenerFactory, AutoClos
     public synchronized ListenableFuture<OperationResult> removeLabel(final LabelArgs input) {
         final TopologySessionListener l = checkSessionPresence(input.getNode());
         return (l != null) ? l.removeLabel(input) : OperationResults.UNSENT.future();
+    }
+
+    @Override
+    public synchronized ListenableFuture<OperationResult> addFlowspec(final FlowspecArgs input) {
+        final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.addFlowspec(input) : OperationResults.UNSENT.future();
+    }
+
+    @Override
+    public synchronized ListenableFuture<OperationResult> removeFlowspec(final FlowspecArgs input) {
+        final TopologySessionListener l = checkSessionPresence(input.getNode());
+        return (l != null) ? l.removeFlowspec(input) : OperationResults.UNSENT.future();
     }
 
     @Override

@@ -1,0 +1,355 @@
+module pcep-flowspec {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:pcep-flowspec";
+    prefix "pcep-fs";
+
+    import ietf-inet-types { prefix inet; revision-date 2010-09-24; }
+    import pcep-types { prefix pcep; revision-date 2013-10-05; }
+    import pcep-message { prefix msg; revision-date 2013-10-07; }
+    import ietf-inet-types { prefix inet; revision-date 2010-09-24; }
+    import odl-pcep-ietf-stateful07 { prefix stateful; revision-date 2013-12-22; }
+    import network-topology { prefix nt; revision-date 2013-10-21; }
+    import network-topology-pcep { prefix pn; revision-date 2013-10-24; }
+    import yang-ext { prefix ext; revision-date 2013-07-09; }
+    import network-concepts { prefix netc; revision-date 2013-11-25; }
+
+    organization "Huawei Technologies Co., Ltd.";
+    contact "Swapna K <swapna.k@huawei.com>";
+
+    description
+        "This module contains the base data model of a PCEP flow specification.
+        It rolls up the definitions contained in draft-li-pce-pcep-flowspec-00.
+
+        Copyright (c) Huawei Technologies Co., Ltd. 2016. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+
+    revision "2016-04-22" {
+        description
+            "Initial revision.";
+        reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00";
+    }
+
+
+    typedef fs-id-number {
+        type uint32 {
+            range 0..4294967294;
+        }
+    }
+
+    grouping pce-flowspec-capability-tlv {
+        description "PCE-FLOWSPEC-CAPABILITY TLV";
+        reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00#section-5.1.1";
+
+        container pce-flowspec-capability {
+            uses pcep:tlv;
+
+            leaf value {
+                type uint32;
+                default zero;
+            }
+        }
+    }
+
+    augment "/msg:open/msg:open-message/msg:open/msg:tlvs" {
+        reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00#section-5.1.1";
+        ext:augment-identifier tlvs-5;
+
+        uses pce-flowspec-capability-tlv;
+    }
+
+
+    grouping action-object {
+        description "action Object";
+        reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00#section-5.3";
+        container action {
+            uses pcep:object;
+
+            container tlvs {
+                uses stateful:lsp-identifiers-tlv;
+                uses stateful:symbolic-path-name-tlv;
+            }
+        }
+    }
+
+    grouping flow-object {
+        description "flow Object";
+        reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00#section-5.2";
+        container flow {
+            uses pcep:object;
+            choice flowspec-filter-type {
+                case flowspec-filter-v4-case {
+
+                    container tlvs {
+                        uses flowspec-filter;
+                    }
+                }
+            }
+            leaf fs-id {
+                type fs-id-number;
+                mandatory true;
+            }
+        }
+    }
+
+    grouping pce-flowspec {
+        choice pce-flowspec-type {
+            case pce-flowspec-add-update-case {
+                container pce-flowspec-add-update {
+
+                    uses stateful:srp-object;
+
+                    uses flow-object;
+
+                    list action-list {
+                        uses action-object;
+                    }
+                }
+            }
+            case pce-flowspec-delete-case {
+                container pce-flowspec-delete {
+
+                    uses stateful:srp-object;
+
+                    uses flow-object;
+
+                }
+            }
+        }
+    }
+
+    grouping flowspec-message {
+        uses pcep:message;
+
+        container flowspec-message {
+            description "PCE FlowSpec Message";
+            reference "http://tools.ietf.org/html/draft-li-pce-pcep-flowspec-00#section-4.1";
+
+            uses pcep:message-header;
+
+            list pce-flowspec {
+                uses pce-flowspec;
+            }
+        }
+    }
+
+    notification flowspec {
+        uses flowspec-message;
+    }
+
+    typedef fragment {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        type bits {
+            bit last {
+                position 4;
+            }
+            bit first {
+                position 5;
+            }
+            bit is-a {
+                position 6;
+            }
+            bit do-not {
+                position 7;
+            }
+        }
+    }
+
+    typedef dscp {
+        reference "https://tools.ietf.org/html/rfc2474#section-3";
+        type uint8 {
+            range "0..63";
+        }
+    }
+
+    typedef numeric-operand {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        type bits {
+            bit end-of-list {
+                position 0;
+            }
+            bit and-bit {
+                position 1;
+            }
+            bit less-than {
+                position 5;
+            }
+            bit greater-than {
+                position 6;
+            }
+            bit equals {
+                position 7;
+            }
+        }
+    }
+
+    typedef bitmask-operand {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        type bits {
+            bit end-of-list {
+                position 0;
+            }
+            bit and-bit {
+                position 1;
+            }
+            bit not {
+                position 6;
+            }
+            bit match {
+                position 7;
+            }
+        }
+    }
+
+    grouping numeric-two-byte-value {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        leaf op {
+            type numeric-operand;
+        }
+        leaf value {
+            type uint16;
+        }
+    }
+
+    grouping numeric-one-byte-value {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        leaf op {
+            type numeric-operand;
+        }
+        leaf value {
+            type uint8;
+        }
+    }
+
+    grouping bitmask-two-byte-value {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        leaf op {
+            type bitmask-operand;
+        }
+        leaf value {
+            type uint16;
+        }
+    }
+
+    grouping dscp-value {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        leaf op {
+            type numeric-operand;
+        }
+        leaf value {
+            type dscp;
+        }
+    }
+
+    grouping fragment-value {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+        leaf op {
+            type bitmask-operand;
+        }
+        leaf value {
+            type fragment;
+        }
+    }
+
+    grouping flowspec-filter {
+        reference "http://tools.ietf.org/html/rfc5575#section-4";
+
+        list flowspec {
+            choice flowspec-type {
+                case destination-prefix-case {
+                    uses pcep:tlv;
+                    leaf destination-prefix {
+                        type inet:ipv4-prefix;
+                    }
+                }
+                case source-prefix-case {
+                    uses pcep:tlv;
+                    leaf source-prefix {
+                        type inet:ipv4-prefix;
+                    }
+                }
+                case protocol-ip-case {
+                    uses pcep:tlv;
+                    list protocol-ips {
+                        uses numeric-one-byte-value;
+                    }
+                }
+                case port-case {
+                    uses pcep:tlv;
+                    list ports {
+                        uses numeric-two-byte-value;
+                    }
+                }
+                case destination-port-case {
+                    uses pcep:tlv;
+                    list destination-ports {
+                        uses numeric-two-byte-value;
+                    }
+                }
+                case source-port-case {
+                    uses pcep:tlv;
+                    list source-ports {
+                        uses numeric-two-byte-value;
+                    }
+                }
+                case icmp-type-case {
+                    uses pcep:tlv;
+                    list types {
+                        uses numeric-one-byte-value;
+                    }
+                }
+                case icmp-code-case {
+                    uses pcep:tlv;
+                    list codes {
+                        uses numeric-one-byte-value;
+                    }
+                }
+                case tcp-flags-case {
+                    uses pcep:tlv;
+                    list tcp-flags {
+                        uses bitmask-two-byte-value;
+                    }
+                }
+                case packet-length-case {
+                    uses pcep:tlv;
+                    list packet-lengths {
+                        uses numeric-two-byte-value;
+                    }
+                }
+                case dscp-case {
+                    uses pcep:tlv;
+                    list dscps {
+                        uses dscp-value;
+                    }
+                }
+                case fragment-case {
+                    uses pcep:tlv;
+                    list fragments {
+                        uses fragment-value;
+                    }
+                }
+            }
+        }
+    }
+
+    augment "/pn:add-flowspec/pn:input/pn:arguments" {
+        ext:augment-identifier arguments-6;
+
+        uses flow-object;
+
+        list action {
+            uses action-object;
+        }
+    }
+
+    augment "/pn:remove-flowspec/pn:input/pn:arguments" {
+        ext:augment-identifier arguments-7;
+        leaf fs-id {
+            type fs-id-number;
+        }
+    }
+}

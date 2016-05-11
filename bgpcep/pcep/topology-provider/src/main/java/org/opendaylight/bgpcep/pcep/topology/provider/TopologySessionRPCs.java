@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.FlowspecArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.OperationResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.RemoveLspArgs;
@@ -31,4 +32,8 @@ interface TopologySessionRPCs {
     ListenableFuture<OperationResult> addLabel(LabelArgs input);
 
     ListenableFuture<OperationResult> removeLabel(LabelArgs input);
+
+    ListenableFuture<OperationResult> addFlowspec(FlowspecArgs input);
+
+    ListenableFuture<OperationResult> removeFlowspec(FlowspecArgs input);
 }

@@ -46,5 +46,6 @@
         <module>pcc-mock</module>
         <module>auto-bandwidth-extension</module>
         <module>pcecc</module>
+        <module>flowspec</module>
     </modules>
 </project>

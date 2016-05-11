@@ -36,6 +36,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.cra
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.crabbe.initiated.rev131126.pcinitiate.message.PcinitiateMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.crabbe.initiated.rev131126.pcinitiate.message.pcinitiate.message.Requests;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.crabbe.initiated.rev131126.pcinitiate.message.pcinitiate.message.RequestsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Arguments6;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Arguments7;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.FlowspecBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.add.flowspec.input.arguments.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.FlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.flow.flowspec.filter.type.FlowspecFilterV4Case;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.flow.flowspec.filter.type.FlowspecFilterV4CaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flowspec.message.FlowspecMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flowspec.message.flowspec.message.PceFlowspecBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.PceFlowspecAddUpdateCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.PceFlowspecDeleteCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.pce.flowspec.add.update._case.PceFlowspecAddUpdateBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.pce.flowspec.add.update._case.pce.flowspec.add.update.ActionList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.pce.flowspec.add.update._case.pce.flowspec.add.update.ActionListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.pce.flowspec.delete._case.PceFlowspecDeleteBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Arguments1;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Arguments2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.ietf.stateful.rev131222.Arguments3;
@@ -95,6 +111,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.rsvp.rev150820.TunnelId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.FlowspecArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LabelArgs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.LspId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.Node1;
@@ -404,6 +421,137 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         final PclabelupdMessageBuilder pclabelupdMessageBuilder = new PclabelupdMessageBuilder(MESSAGE_HEADER);
         pclabelupdMessageBuilder.setPceLabelUpdates(Collections.singletonList(labelUpdatesBuilder.build()));
         final Message msg = new PclabelupdBuilder().setPclabelupdMessage(pclabelupdMessageBuilder.build()).build();
+        sendLabelMessage(msg, srpIdNumber, null);
+        return OperationResults.SUCCESS.future();
+    }
+
+
+    @Override
+    public ListenableFuture<OperationResult> addFlowspec(FlowspecArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("AddFlowspecArgs {}", input);
+
+        // check if the peer is PCECC capable
+        //if (!isPceccCapable()) {
+        //    return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        //}
+
+        final Arguments6 args = input.getArguments().getAugmentation(Arguments6.class);
+
+        if (args == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        final PceFlowspecAddUpdateCaseBuilder flowspecAddUpdateCase = new PceFlowspecAddUpdateCaseBuilder();
+        final PceFlowspecAddUpdateBuilder flowspecAddUpdate = new PceFlowspecAddUpdateBuilder();
+        final PceFlowspecBuilder pceFlowspecBuilder = new PceFlowspecBuilder();
+
+        SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
+
+        // SRP Mandatory in Flowspec message
+        final SrpBuilder srpBuilder = new SrpBuilder().addAugmentation(Srp1.class, new Srp1Builder()
+                .setRemove(false).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE);
+
+        final Srp srp = srpBuilder.build();
+
+        srpIdNumber = srp.getOperationId();
+
+        flowspecAddUpdate.setSrp(srp);
+
+        if(args.getFlow() == null) {
+            LOG.warn("Node {} does not contain Flow data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        final FlowBuilder flowBuilder = new FlowBuilder().setFsId(args.getFlow().getFsId());
+
+        if (args.getFlow().getFlowspecFilterType() instanceof FlowspecFilterV4Case) {
+
+            final FlowspecFilterV4Case flowspecFilterV4Case = (FlowspecFilterV4Case) args.getFlow().getFlowspecFilterType();
+            final FlowspecFilterV4CaseBuilder flowspecFilterV4CaseBuilder = new FlowspecFilterV4CaseBuilder();
+            flowspecFilterV4CaseBuilder.setTlvs(flowspecFilterV4Case.getTlvs());
+
+            flowBuilder.setFlowspecFilterType(flowspecFilterV4CaseBuilder.build());
+        }
+
+        final Flow flow = flowBuilder.build();
+
+        flowspecAddUpdate.setFlow(flow);
+
+        if(args.getAction() == null) {
+            LOG.warn("Node {} does not contain Action data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        final List<ActionList> actionList = new ArrayList<>();
+
+        for (final Action action : args.getAction()) {
+            ActionListBuilder actionBuilder
+                    = new ActionListBuilder().setAction(action.getAction());
+            actionList.add(actionBuilder.build());
+        }
+
+        flowspecAddUpdate.setActionList(actionList);
+
+        flowspecAddUpdateCase.setPceFlowspecAddUpdate(flowspecAddUpdate.build());
+        pceFlowspecBuilder.setPceFlowspecType(flowspecAddUpdateCase.build());
+
+        final FlowspecMessageBuilder flowspecMessageBuilder = new FlowspecMessageBuilder(MESSAGE_HEADER);
+        flowspecMessageBuilder.setPceFlowspec(Collections.singletonList(pceFlowspecBuilder.build()));
+
+        final Message msg = new FlowspecBuilder().setFlowspecMessage(flowspecMessageBuilder.build()).build();
+        sendLabelMessage(msg, srpIdNumber, null);
+        return OperationResults.SUCCESS.future();
+    }
+
+    @Override
+    public ListenableFuture<OperationResult> removeFlowspec(FlowspecArgs input) {
+        Preconditions.checkArgument(input != null, MISSING_XML_TAG);
+        LOG.trace("RemoveFlowspecArgs {}", input);
+
+        // check if the peer is PCECC capable
+        //if (!isPceccCapable()) {
+        //    return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        //}
+
+        final Arguments7 args = input.getArguments().getAugmentation(Arguments7.class);
+
+        if (args == null) {
+            LOG.warn("Node {} does not contain mandatory data", input.getNode());
+            return OperationResults.UNSENT.future();
+        }
+
+        final PceFlowspecDeleteCaseBuilder flowspecDeleteCase = new PceFlowspecDeleteCaseBuilder();
+        final PceFlowspecDeleteBuilder flowspecDelete = new PceFlowspecDeleteBuilder();
+        final PceFlowspecBuilder pceFlowspecBuilder = new PceFlowspecBuilder();
+
+        SrpIdNumber srpIdNumber = new SrpIdNumber(1L);
+
+        // SRP Mandatory in Flowspec
+        final SrpBuilder srpBuilder = new SrpBuilder().addAugmentation(Srp1.class, new Srp1Builder()
+                .setRemove(true).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE);
+
+        final Srp srp = srpBuilder.build();
+
+        srpIdNumber = srp.getOperationId();
+
+        flowspecDelete.setSrp(srp);
+
+
+        final FlowBuilder flowBuilder = new FlowBuilder().setFsId(args.getFsId());
+
+        final Flow flow = flowBuilder.build();
+
+        flowspecDelete.setFlow(flow);
+
+        flowspecDeleteCase.setPceFlowspecDelete(flowspecDelete.build());
+        pceFlowspecBuilder.setPceFlowspecType(flowspecDeleteCase.build());
+
+        final FlowspecMessageBuilder flowspecMessageBuilder = new FlowspecMessageBuilder(MESSAGE_HEADER);
+        flowspecMessageBuilder.setPceFlowspec(Collections.singletonList(pceFlowspecBuilder.build()));
+
+        final Message msg = new FlowspecBuilder().setFlowspecMessage(flowspecMessageBuilder.build()).build();
         sendLabelMessage(msg, srpIdNumber, null);
         return OperationResults.SUCCESS.future();
     }
@@ -803,8 +951,10 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
                 .setPathSetupType(maybePST.get())
                 .build());
         }
+
         rb.setSrp(srpBuilder.build());
-        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId()).setDelegate(reportedLsp.isDelegate()).build());
+        rb.setLsp(new LspBuilder().setRemove(Boolean.FALSE).setPlspId(reportedLsp.getPlspId())
+                .setDelegate(reportedLsp.isDelegate()).build());
         return rb.build();
     }
 
