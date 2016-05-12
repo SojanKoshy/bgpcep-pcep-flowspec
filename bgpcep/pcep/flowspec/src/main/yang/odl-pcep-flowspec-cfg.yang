@@ -2,7 +2,7 @@
 module odl-pcep-flowspec-cfg {
     yang-version 1;
     namespace "urn:opendaylight:params:xml:ns:yang:controller:pcep:flowspec:cfg";
-    prefix "pcepfs";
+    prefix "pcepfs-cfg";
 
     import config { prefix config; revision-date 2013-04-05; }
     import odl-pcep-spi-cfg { prefix spi; revision-date 2013-11-15; }

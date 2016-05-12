@@ -75,6 +75,11 @@
                                     <classifier>config-pcecc</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>${project.build.directory}/classes/initial/36-pcep-flowspec.xml</file>
+                                    <type>xml</type>
+                                    <classifier>config-flowspec</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>${project.build.directory}/classes/initial/39-pcep-provider.xml</file>
                                     <type>xml</type>
                                     <classifier>config-provider</classifier>

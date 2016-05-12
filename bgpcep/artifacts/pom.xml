@@ -313,7 +313,13 @@
                 <type>xml</type>
                 <classifier>config-pcecc</classifier>
             </dependency>
-
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>pcep-controller-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config-flowspec</classifier>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>programming-api</artifactId>

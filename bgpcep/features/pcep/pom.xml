@@ -196,6 +196,13 @@
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>
+          <artifactId>pcep-controller-config</artifactId>
+          <type>xml</type>
+          <classifier>config-flowspec</classifier>
+          <version>0.5.0-Beryllium</version>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
           <artifactId>pcep-api</artifactId>
       </dependency>
       <dependency>
