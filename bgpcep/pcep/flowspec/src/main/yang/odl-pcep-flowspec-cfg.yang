@@ -54,6 +54,16 @@ module odl-pcep-flowspec-cfg {
                 type boolean;
                 default true;
             }
+
+            leaf i-bit {
+                type boolean;
+                default false;
+            }
+
+            leaf d-bit {
+                type boolean;
+                default false;
+            }
         }
     }
 }

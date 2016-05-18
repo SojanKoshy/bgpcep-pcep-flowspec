@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.opendaylight.protocol.pcep.ietf.stateful07.Stateful07LSPIdentifierIpv4TlvParser;
 import org.opendaylight.protocol.pcep.ietf.stateful07.Stateful07LspSymbolicNameTlvParser;
-import org.opendaylight.protocol.pcep.ietf.stateful07.Stateful07SrpObjectParser;
 import org.opendaylight.protocol.pcep.spi.ObjectRegistry;
 import org.opendaylight.protocol.pcep.spi.PCEPExtensionProviderContext;
 import org.opendaylight.protocol.pcep.spi.TlvRegistry;
@@ -78,10 +77,9 @@ public class FlowspecActivator extends AbstractPCEPExtensionProviderActivator {
                 actionParser));
         regs.add(context.registerObjectSerializer(Action.class, actionParser));
 
-        regs.add(context.registerObjectParser(Stateful07SrpObjectParser.CLASS, Stateful07SrpObjectParser.TYPE,
-                new Stateful07SrpObjectParser(tlvReg, viTlvRegistry)));
-        regs.add(context.registerObjectSerializer(Srp.class, new Stateful07SrpObjectParser(tlvReg, viTlvRegistry)));
-
+        regs.add(context.registerObjectParser(FlowspecSrpObjectParser.CLASS, FlowspecSrpObjectParser.TYPE,
+                new FlowspecSrpObjectParser(tlvReg, viTlvRegistry)));
+        regs.add(context.registerObjectSerializer(Srp.class, new FlowspecSrpObjectParser(tlvReg, viTlvRegistry)));
 
         regs.add(context.registerObjectParser(PcepOpenObjectWithFlowspecTlvParser.CLASS,
                 PcepOpenObjectWithFlowspecTlvParser.TYPE, new PcepOpenObjectWithFlowspecTlvParser(tlvReg, viTlvRegistry)));

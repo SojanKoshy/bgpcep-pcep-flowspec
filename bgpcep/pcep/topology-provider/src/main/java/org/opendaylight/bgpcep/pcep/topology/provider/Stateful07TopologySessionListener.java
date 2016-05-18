@@ -451,7 +451,9 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
 
         // SRP Mandatory in Flowspec message
         final SrpBuilder srpBuilder = new SrpBuilder().addAugmentation(Srp1.class, new Srp1Builder()
-                .setRemove(false).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE);
+                .setRemove(false).build()).setOperationId(nextRequest()).setProcessingRule(Boolean.TRUE)
+                .addAugmentation(org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Srp1.class, new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Srp1Builder()
+                        .setSync(args.isSync()).build());
 
         final Srp srp = srpBuilder.build();
 
@@ -537,7 +539,6 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         srpIdNumber = srp.getOperationId();
 
         flowspecDelete.setSrp(srp);
-
 
         final FlowBuilder flowBuilder = new FlowBuilder().setFsId(args.getFsId());
 

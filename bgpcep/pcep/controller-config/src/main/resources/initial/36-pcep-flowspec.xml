@@ -25,6 +25,9 @@
                 <module>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:flowspec:cfg">prefix:pcep-flowspec-capability</type>
                     <name>pcep-flowspec-capability</name>
+                    <!-- Flags to enable flowspec synchronization and optimization procedure
+                    <i-bit>true</i-bit>
+                    <d-bit>true</d-bit>-->
                 </module>
                 <module>
                     <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:controller:pcep:impl">prefix:pcep-session-proposal-factory-impl</type>

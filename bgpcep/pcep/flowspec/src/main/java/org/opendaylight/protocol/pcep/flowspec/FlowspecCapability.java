@@ -20,22 +20,36 @@ public class FlowspecCapability implements PCEPCapability {
 
 
     private final boolean isFlowspecCapable;
+    private final boolean isICapable;
+    private final boolean isDCapable;
 
 
-    public FlowspecCapability(final boolean isFlowspecCapable){
+    public FlowspecCapability(final boolean isFlowspecCapable, final boolean isICapable, final boolean isDCapable){
+
         this.isFlowspecCapable = isFlowspecCapable;
+        this.isICapable = isICapable;
+        this.isDCapable = isDCapable;
     }
 
     @Override
     public void setCapabilityProposal(final InetSocketAddress address, final TlvsBuilder builder) {
         if (this.isFlowspecCapable) {
-            builder.addAugmentation(Tlvs5.class, new Tlvs5Builder().setPceFlowspecCapability(new PceFlowspecCapabilityBuilder().build())
+            builder.addAugmentation(Tlvs5.class, new Tlvs5Builder().setPceFlowspecCapability(new PceFlowspecCapabilityBuilder()
+                    .setIBit(this.isICapable).setDBit(this.isDCapable).build())
                             .build());
         }
     }
 
     public boolean isFlowspecCapable() {
         return this.isFlowspecCapable;
+    }
+
+    public boolean isICapable() {
+        return this.isICapable;
+    }
+
+    public boolean isDCapable() {
+        return this.isDCapable;
     }
 
 }

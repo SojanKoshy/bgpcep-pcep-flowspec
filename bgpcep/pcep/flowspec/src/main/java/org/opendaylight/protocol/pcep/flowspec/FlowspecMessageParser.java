@@ -66,6 +66,7 @@ public class FlowspecMessageParser extends AbstractMessageParser {
         for (final PceFlowspec flowspec : flowspeclst) {
             serializeFlowspec(flowspec, buffer);
         }
+
         MessageUtil.formatMessage(TYPE, buffer, out);
     }
 

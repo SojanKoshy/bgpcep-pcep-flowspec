@@ -23,7 +23,7 @@ public class FlowspecCapabilityModule extends org.opendaylight.controller.config
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final FlowspecCapability inner = new FlowspecCapability(getFlowspecCapable());
+        final FlowspecCapability inner = new FlowspecCapability(getFlowspecCapable(), getIBit(), getDBit());
         return new FlowspecCapabilityModuleCloseable(inner);
     }
     private static final class FlowspecCapabilityModuleCloseable implements PCEPCapability, AutoCloseable {

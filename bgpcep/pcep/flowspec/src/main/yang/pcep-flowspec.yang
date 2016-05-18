@@ -48,6 +48,14 @@ module pcep-flowspec {
         container pce-flowspec-capability {
             uses pcep:tlv;
 
+            leaf I-bit {
+                type boolean;
+                default false;
+            }
+            leaf D-bit {
+                type boolean;
+                default false;
+            }
             leaf value {
                 type uint32;
                 default zero;
@@ -344,12 +352,25 @@ module pcep-flowspec {
         list action {
             uses action-object;
         }
+
+        leaf sync {
+            type boolean;
+            default false;
+        }
     }
 
     augment "/pn:remove-flowspec/pn:input/pn:arguments" {
         ext:augment-identifier arguments-7;
         leaf fs-id {
             type fs-id-number;
+        }
+    }
+
+    augment "/stateful:pcrpt/stateful:pcrpt-message/stateful:reports/stateful:srp" {
+        reference "http://tools.ietf.org/html/draft-kuppani-pce-pcep-flowspec-sync-00#section-5.1";
+        leaf sync {
+            type boolean;
+            default false;
         }
     }
 }

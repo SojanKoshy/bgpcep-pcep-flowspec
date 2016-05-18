@@ -8,7 +8,6 @@
 
 package org.opendaylight.protocol.pcep.flowspec;
 
-import static org.opendaylight.protocol.util.ByteBufWriteUtil.writeUnsignedInt;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -17,6 +16,7 @@ import org.opendaylight.protocol.pcep.spi.PCEPDeserializerException;
 import org.opendaylight.protocol.pcep.spi.TlvParser;
 import org.opendaylight.protocol.pcep.spi.TlvSerializer;
 import org.opendaylight.protocol.pcep.spi.TlvUtil;
+import org.opendaylight.protocol.util.BitArray;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.capability.tlv.PceFlowspecCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.capability.tlv.PceFlowspecCapabilityBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.types.rev131005.Tlv;
@@ -26,15 +26,24 @@ public class FlowspecCapabilityTlvParser implements TlvParser, TlvSerializer {
 
     public static final int TYPE = 65290;
     public static final int LENGTH = 32;
+    protected static final int I_FLAG_OFFSET = 31;
+    protected static final int D_FLAG_OFFSET = 30;
 
     @Override
     public void serializeTlv(final Tlv tlv, final ByteBuf buffer) {
-        final long value = 0L;
+        final BitArray flags = new BitArray(LENGTH);
+
         Preconditions.checkArgument(tlv instanceof PceFlowspecCapability, "FlowspecCapability is mandatory.");
         final PceFlowspecCapability sct = (PceFlowspecCapability) tlv;
-        final ByteBuf body = Unpooled.buffer();
-        writeUnsignedInt(value, body);
-        TlvUtil.formatTlv(TYPE, body, buffer);
+        TlvUtil.formatTlv(TYPE, Unpooled.wrappedBuffer(serializeFlags(sct).array()), buffer);
+    }
+
+    protected BitArray serializeFlags(final PceFlowspecCapability sct) {
+        final BitArray flags = new BitArray(LENGTH);
+
+        flags.set(I_FLAG_OFFSET, sct.isIBit());
+        flags.set(D_FLAG_OFFSET, sct.isDBit());
+        return flags;
     }
 
     @Override
@@ -50,8 +59,14 @@ public class FlowspecCapabilityTlvParser implements TlvParser, TlvSerializer {
         }
 
         final PceFlowspecCapabilityBuilder sb = new PceFlowspecCapabilityBuilder();
-        sb.setValue(value);
+        parseFlags(sb, buffer);
         return sb.build();
+    }
+
+    protected void parseFlags(final PceFlowspecCapabilityBuilder sb, final ByteBuf buffer) {
+        final BitArray flags = BitArray.valueOf(buffer, LENGTH);
+        sb.setIBit(flags.get(I_FLAG_OFFSET));
+        sb.setDBit(flags.get(D_FLAG_OFFSET));
     }
 
 }
