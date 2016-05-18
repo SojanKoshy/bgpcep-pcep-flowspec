@@ -17,9 +17,9 @@ In order to build it's required to have JDK 1.7+ and Maven 3+, to get a build go
 
 Steps:
 
-    git clone https://github.com/SojanKoshy/bgpcep-pcecc.git
+    git clone https://github.com/SojanKoshy/bgpcep-pcep-flowspec.git
 
-    cd bgpcep-pcecc/bgpcep
+    cd bgpcep-pcep-flowspec/bgpcep
     mvn clean install
 
     cd ../integration-distribution
