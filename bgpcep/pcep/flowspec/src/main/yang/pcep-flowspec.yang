@@ -344,7 +344,7 @@ module pcep-flowspec {
         }
     }
 
-    augment "/pn:add-flowspec/pn:input/pn:arguments" {
+    augment "/pn:add-or-update-flowspec/pn:input/pn:arguments" {
         ext:augment-identifier arguments-6;
 
         uses flow-object;

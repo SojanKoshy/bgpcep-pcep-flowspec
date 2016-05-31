@@ -124,6 +124,7 @@ public abstract class AbstractTopologySessionListener<S, L> implements PCEPSessi
     private boolean triggeredResyncInProcess;
 
     private boolean pceccCapable;
+    private boolean flowSpecCapable;
 
     private ListenerStateRuntimeRegistration registration;
     private final SessionListenerState listenerState;
@@ -551,8 +552,16 @@ public abstract class AbstractTopologySessionListener<S, L> implements PCEPSessi
         return this.pceccCapable;
     }
 
+    protected final boolean isFlowspecCapable() {
+        return this.flowSpecCapable;
+    }
+
     protected final void setPceccCapable(boolean pceccCapable){
         this.pceccCapable = pceccCapable;
+    }
+
+    protected final void setFlowspecCapable(boolean flowspecCapable){
+        this.flowSpecCapable = flowspecCapable;
     }
 
     /**

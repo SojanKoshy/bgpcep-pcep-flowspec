@@ -39,13 +39,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.cra
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Arguments6;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Arguments7;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.FlowspecBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.add.flowspec.input.arguments.Action;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.Tlvs5;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.add.or.update.flowspec.input.arguments.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.flow.flowspec.filter.type.FlowspecFilterV4Case;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flow.object.flow.flowspec.filter.type.FlowspecFilterV4CaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flowspec.message.FlowspecMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.flowspec.message.flowspec.message.PceFlowspecBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.capability.tlv.PceFlowspecCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.PceFlowspecAddUpdateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.PceFlowspecDeleteCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.pcep.flowspec.rev160422.pce.flowspec.pce.flowspec.type.pce.flowspec.add.update._case.PceFlowspecAddUpdateBuilder;
@@ -183,7 +185,15 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
             } else {
                 LOG.debug("Peer {} does not advertise PCECC capability TLV", peerAddress);
             }
-        } else {
+        } else if (tlvs != null && tlvs.getAugmentation(Tlvs5.class) != null) {
+            final PceFlowspecCapability flowspecCapability = tlvs.getAugmentation(Tlvs5.class).getPceFlowspecCapability();
+            if (flowspecCapability != null) {
+                setFlowspecCapable(true);
+            } else {
+                LOG.debug("Peer {} does not advertise Flowspec capability TLV", peerAddress);
+            }
+        }
+        else {
             LOG.debug("Peer {} does not advertise PCECC capability TLV", peerAddress);
         }
     }
@@ -427,14 +437,14 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
 
 
     @Override
-    public ListenableFuture<OperationResult> addFlowspec(FlowspecArgs input) {
+    public ListenableFuture<OperationResult> addOrUpdateFlowspec(FlowspecArgs input) {
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("AddFlowspecArgs {}", input);
 
-        // check if the peer is PCECC capable
-        //if (!isPceccCapable()) {
-        //    return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
-        //}
+        // check if the peer is Flowspec capable
+        if (!isFlowspecCapable()) {
+            return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        }
 
         final Arguments6 args = input.getArguments().getAugmentation(Arguments6.class);
 
@@ -512,10 +522,10 @@ class Stateful07TopologySessionListener extends AbstractTopologySessionListener<
         Preconditions.checkArgument(input != null, MISSING_XML_TAG);
         LOG.trace("RemoveFlowspecArgs {}", input);
 
-        // check if the peer is PCECC capable
-        //if (!isPceccCapable()) {
-        //    return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
-        //}
+        // check if the peer is Flowspec capable
+        if (!isFlowspecCapable()) {
+            return OperationResults.createUnsent(PCEPErrors.CAPABILITY_NOT_SUPPORTED).future();
+        }
 
         final Arguments7 args = input.getArguments().getAugmentation(Arguments7.class);
 

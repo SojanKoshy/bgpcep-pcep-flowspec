@@ -33,7 +33,7 @@ interface TopologySessionRPCs {
 
     ListenableFuture<OperationResult> removeLabel(LabelArgs input);
 
-    ListenableFuture<OperationResult> addFlowspec(FlowspecArgs input);
+    ListenableFuture<OperationResult> addOrUpdateFlowspec(FlowspecArgs input);
 
     ListenableFuture<OperationResult> removeFlowspec(FlowspecArgs input);
 }

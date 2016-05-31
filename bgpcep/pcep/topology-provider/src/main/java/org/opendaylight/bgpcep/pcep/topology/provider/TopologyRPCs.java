@@ -12,15 +12,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.Future;
 import org.opendaylight.bgpcep.programming.spi.SuccessfulRpcResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddFlowspecOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLabelOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddLspOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddOrUpdateFlowspecInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddOrUpdateFlowspecOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.AddOrUpdateFlowspecOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.pcep.rev131024.EnsureLspOperationalOutputBuilder;
@@ -122,11 +122,11 @@ final class TopologyRPCs implements NetworkTopologyPcepService {
     }
 
     @Override
-    public Future<RpcResult<AddFlowspecOutput>> addFlowspec(final AddFlowspecInput input) {
-        return Futures.transform(manager.addFlowspec(input), new Function<OperationResult, RpcResult<AddFlowspecOutput>>() {
+    public Future<RpcResult<AddOrUpdateFlowspecOutput>> addOrUpdateFlowspec(final AddOrUpdateFlowspecInput input) {
+        return Futures.transform(manager.addOrUpdateFlowspec(input), new Function<OperationResult, RpcResult<AddOrUpdateFlowspecOutput>>() {
             @Override
-            public RpcResult<AddFlowspecOutput> apply(final OperationResult input) {
-                return SuccessfulRpcResult.create(new AddFlowspecOutputBuilder(input).build());
+            public RpcResult<AddOrUpdateFlowspecOutput> apply(final OperationResult input) {
+                return SuccessfulRpcResult.create(new AddOrUpdateFlowspecOutputBuilder(input).build());
             }
         });
     }

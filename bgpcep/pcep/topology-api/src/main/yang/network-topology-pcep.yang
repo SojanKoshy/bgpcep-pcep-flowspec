@@ -337,7 +337,7 @@ module network-topology-pcep {
         }
     }
 
-    rpc add-flowspec {
+    rpc add-or-update-flowspec {
         input {
             uses ont:network-topology-reference;
             uses flowspec-args;

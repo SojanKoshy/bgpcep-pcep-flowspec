@@ -169,9 +169,9 @@ final class ServerSessionManager implements PCEPSessionListenerFactory, AutoClos
     }
 
     @Override
-    public synchronized ListenableFuture<OperationResult> addFlowspec(final FlowspecArgs input) {
+    public synchronized ListenableFuture<OperationResult> addOrUpdateFlowspec(final FlowspecArgs input) {
         final TopologySessionListener l = checkSessionPresence(input.getNode());
-        return (l != null) ? l.addFlowspec(input) : OperationResults.UNSENT.future();
+        return (l != null) ? l.addOrUpdateFlowspec(input) : OperationResults.UNSENT.future();
     }
 
     @Override
